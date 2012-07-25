@@ -124,11 +124,10 @@ class Connection(EWrapper):
 				# Create EClientSocket for TWS Connection
 				self.__tws = EClientSocket(self)
 				
-				# Connect to TWS
-				self.connect()
+				# Connection status
+				self.__connected = False
+				self.__accountUpdatesSubscribed = False
 
-				# Subscribe for account updates
-				self.requestAccountUpdate()
 
 		def __getNextTickerId(self):
 				"""Returns the next unique Ticker ID"""
@@ -150,17 +149,19 @@ class Connection(EWrapper):
 		
 		def connect(self):
 				"""Initiates TWS Connection"""
-				log.info("Initiating TWS Connection (%s:%d, clientId=%d) with accountCode=%s" % 
-						 (self.__twsHost, self.__twsPort, self.__twsClientId, self.__accountCode))
+				if not self.__connected:
+					log.info("Initiating TWS Connection (%s:%d, clientId=%d) with accountCode=%s" % 
+						 	 (self.__twsHost, self.__twsPort, self.__twsClientId, self.__accountCode))
 
-				self.__tws.eConnect(self.__twsHost, self.__twsPort, self.__twsClientId)
+					self.__tws.eConnect(self.__twsHost, self.__twsPort, self.__twsClientId)
+					self.__connected = True
 
 		def disconnect(self):
 				"""Disconnects from TWS"""
-				log.info("Disconnecting from TWS")
-				self.__tws.eDisconnect()
-
-
+				if self.__connected:
+					log.info("Disconnecting from TWS")
+					self.__tws.eDisconnect()
+					self.__connected = False
 
 		########################################################################################
 		# Requests for TWS
@@ -222,6 +223,7 @@ class Connection(EWrapper):
 				:param currency: Specifies the currency for the trade.
 				:type currency: str
 				"""
+				self.connect()
 				orderId = self.__getNextOrderId()
 
 				self.__orderIds[orderId] = instrument
@@ -255,6 +257,7 @@ class Connection(EWrapper):
 				:param orderId: Order ID.
 				:type orderId: str
 				"""
+				self.connect()
 				self.__tws.cancelOrder(orderId)
 
 		def subscribeOrderUpdates(self, handler):
@@ -263,6 +266,7 @@ class Connection(EWrapper):
 				:param handler: Function which will be called on order state changes.
 				:type handler: Function
 				"""
+				self.connect()
 				self.__orderUpdateHandler.subscribe(handler)
 
 		def subscribeRealtimeBars(self, instrument, handler, 
@@ -294,6 +298,7 @@ class Connection(EWrapper):
 							   falls partially or completely outside of the RTH.
 				:type useRTH: int
 				"""
+				self.connect()
 				if instrument not in self.__realtimeBarIDs:
 						# Register the tickerId with the instrument name
 						tickerId = self.__getNextTickerId()
@@ -325,6 +330,7 @@ class Connection(EWrapper):
 				:param handler: The function which will be called on new market data (every 5 secs)
 				:type handler: Function
 				"""
+				self.connect()
 				if instrument in self.__realtimeBarIDs:
 						tickerId = self.__realtimeBarIDs[instrument]
 
@@ -377,6 +383,8 @@ class Connection(EWrapper):
 								   1: Dates applying to bars returned in the format: yyyymmdd{space}{space}hh:mm:dd .
 								   2: Dates are returned as a long integer specifying the number of seconds since 1/1/1970 GMT .
 				"""
+				self.connect()
+
 				# Get a unique tickerId for the request
 				tickerId = self.__getNextTickerId()
 
@@ -457,6 +465,8 @@ class Connection(EWrapper):
 				:param instrument: Defines the instrument type for the scan.
 				:type instrument: str
 				"""
+				self.connect()
+
 				tickerId = self.__getNextTickerId()
 
 				subscript = ScannerSubscription()
@@ -483,10 +493,16 @@ class Connection(EWrapper):
 
 		def requestAccountUpdate(self):
 				"""Subscribes for account updates"""
-				self.__tws.reqAccountUpdates(True, self.__accountCode)
+				self.connect()
+
+				if not self.__accountUpdatesSubscribed:
+					self.__tws.reqAccountUpdates(True, self.__accountCode)
+					self.__accountUpdatesSubscribed = True
 
 		def getCash(self, currency='USD'):
 				"""Returns the cash (TotalCashBalance) available for the currency."""
+				self.requestAccountUpdate()
+
 				self.__accUpdateLock.acquire()
 				
 				# Try to load cash
@@ -505,9 +521,11 @@ class Connection(EWrapper):
 				return(cash)
 
 		def getAccountValues(self):
+				self.requestAccountUpdate()
 				return self.__accountValues
 
 		def getPortfolio(self):
+				self.requestAccountUpdate()
 				return self.__portfolio
 
 		########################################################################################
@@ -582,7 +600,7 @@ class Connection(EWrapper):
 															  volume, vwap, tradeCount))
 
 		
-		def scannerData(self, tickerId, rank, contractDetails, distance, benchmark, projection, legsStr):
+		def scannerData(self, reqId, rank, contractDetails, distance, benchmark, projection, legsStr=False):
 				"""
 				This function receives the requested market scanner data results and appends it to the
 				market scanner buffer. A dict appended to the market scanner buffer with the following
@@ -609,7 +627,7 @@ class Connection(EWrapper):
 						'legsStr': legsStr }
 				self.__marketScannerBuffer.append(msd)
 
-		def scannerDataEnd(self, tickerId):
+		def scannerDataEnd(self, reqId):
 				"""This function is called when the snapshot is received and marks the end of one scan.
 				This function will notify the requestMarketScanner() function that data is available in the buffer.
 
@@ -795,8 +813,6 @@ class Connection(EWrapper):
 				:type reqId: int
 				"""
 				pass
-
-		
 
 		def managedAccounts(self, accountsList): 
 				"""Logs the managed account list by this TWS connection."""

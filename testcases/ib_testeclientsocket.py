@@ -27,8 +27,8 @@ from ib.ext.Order import Order
 
 class TestEClientSocket(EClientSocket):
 	def __init__(self, testcase):
-		# Testcase
 		self.tc  = testcase
+		self.ibConnection = None # Set in a later stage when IB Connection is created
 
 		# Connect / Disconnect
 		self.host      = None
@@ -66,6 +66,8 @@ class TestEClientSocket(EClientSocket):
 		self.orderId	   = None
 		self.orderContract = None
 
+	def setIBConnection(self, conn):
+		self.ibConnection = conn
 
 	def eConnect(self, host, port, clientId):
 		self.tc.assertFalse(self.connected == True)
@@ -197,6 +199,131 @@ class TestEClientSocket(EClientSocket):
 		self.tc.assertIsInstance(subscribe, bool)
 		self.tc.assertIsInstance(acctCode, str)
 
+		self.tc.assertTrue(self.ibConnection != None)
+
+		accUpdateList = [ 
+			('AccountCode', 'DU123456', '', 'DU123456'),
+			('AccountReady', 'true', '', 'DU123456'),
+			('AccountType', 'INDIVIDUAL', '', 'DU123456'),
+			('AccruedCash', '0.00', 'BASE', 'DU123456'),
+			('AccruedCash', '0.00', 'CHF', 'DU123456'),
+			('AccruedCash', '0.00', 'USD', 'DU123456'),
+			('AccruedCash-S', '0.00', 'USD', 'DU123456'),
+			('AccruedDividend', '0.00', 'USD', 'DU123456'),
+			('AccruedDividend-S', '0.00', 'USD', 'DU123456'),
+			('AvailableFunds', '980848.80', 'USD', 'DU123456'),
+			('AvailableFunds-S', '980848.80', 'USD', 'DU123456'),
+			('Billable', '0.00', 'USD', 'DU123456'),
+			('Billable-S', '0.00', 'USD', 'DU123456'),
+			('BuyingPower', '3923395.18', 'USD', 'DU123456'),
+			('CashBalance', '980848.80', 'BASE', 'DU123456'),
+			('CashBalance', '931999.15', 'CHF', 'DU123456'),
+			('CashBalance', '28989.07', 'USD', 'DU123456'),
+			('CorporateBondValue', '0.00', 'BASE', 'DU123456'),
+			('CorporateBondValue', '0.00', 'CHF', 'DU123456'),
+			('CorporateBondValue', '0.00', 'USD', 'DU123456'),
+			('Currency', 'BASE', 'BASE', 'DU123456'),
+			('Currency', 'CHF', 'CHF', 'DU123456'),
+			('Currency', 'USD', 'USD', 'DU123456'),
+			('Cushion', '1', '', 'DU123456'),
+			('DayTradesRemaining', '-1', '', 'DU123456'),
+			('DayTradesRemainingT+1', '-1', '', 'DU123456'),
+			('DayTradesRemainingT+2', '-1', '', 'DU123456'),
+			('DayTradesRemainingT+3', '-1', '', 'DU123456'),
+			('DayTradesRemainingT+4', '-1', '', 'DU123456'),
+			('EquityWithLoanValue', '980848.80', 'USD', 'DU123456'),
+			('EquityWithLoanValue-S', '980848.80', 'USD', 'DU123456'),
+			('ExcessLiquidity', '980848.80', 'USD', 'DU123456'),
+			('ExcessLiquidity-S', '980848.80', 'USD', 'DU123456'),
+			('ExchangeRate', '1.00', 'BASE', 'DU123456'),
+			('ExchangeRate', '1.02131', 'CHF', 'DU123456'),
+			('ExchangeRate', '1.00', 'USD', 'DU123456'),
+			('FullAvailableFunds', '980848.80', 'USD', 'DU123456'),
+			('FullAvailableFunds-S', '980848.80', 'USD', 'DU123456'),
+			('FullExcessLiquidity', '980848.80', 'USD', 'DU123456'),
+			('FullExcessLiquidity-S', '980848.80', 'USD', 'DU123456'),
+			('FullInitMarginReq', '0.00', 'USD', 'DU123456'),
+			('FullInitMarginReq-S', '0.00', 'USD', 'DU123456'),
+			('FullMaintMarginReq', '0.00', 'USD', 'DU123456'),
+			('FullMaintMarginReq-S', '0.00', 'USD', 'DU123456'),
+			('FundValue', '0.00', 'BASE', 'DU123456'),
+			('FundValue', '0.00', 'CHF', 'DU123456'),
+			('FundValue', '0.00', 'USD', 'DU123456'),
+			('FutureOptionValue', '0.00', 'BASE', 'DU123456'),
+			('FutureOptionValue', '0.00', 'CHF', 'DU123456'),
+			('FutureOptionValue', '0.00', 'USD', 'DU123456'),
+			('FuturesPNL', '0.00', 'BASE', 'DU123456'),
+			('FuturesPNL', '0.00', 'CHF', 'DU123456'),
+			('FuturesPNL', '0.00', 'USD', 'DU123456'),
+			('FxCashBalance', '0.00', 'BASE', 'DU123456'),
+			('FxCashBalance', '0.00', 'CHF', 'DU123456'),
+			('FxCashBalance', '0.00', 'USD', 'DU123456'),
+			('GrossPositionValue', '0.00', 'USD', 'DU123456'),
+			('GrossPositionValue-S', '0.00', 'USD', 'DU123456'),
+			('IndianStockHaircut', '0.00', 'USD', 'DU123456'),
+			('IndianStockHaircut-S', '0.00', 'USD', 'DU123456'),
+			('InitMarginReq', '0.00', 'USD', 'DU123456'),
+			('InitMarginReq-S', '0.00', 'USD', 'DU123456'),
+			('Leverage-S', '0.00', '', 'DU123456'),
+			('LookAheadAvailableFunds', '980848.80', 'USD', 'DU123456'),
+			('LookAheadAvailableFunds-S', '980848.80', 'USD', 'DU123456'),
+			('LookAheadExcessLiquidity', '980848.80', 'USD', 'DU123456'),
+			('LookAheadExcessLiquidity-S', '980848.80', 'USD', 'DU123456'),
+			('LookAheadInitMarginReq', '0.00', 'USD', 'DU123456'),
+			('LookAheadInitMarginReq-S', '0.00', 'USD', 'DU123456'),
+			('LookAheadMaintMarginReq', '0.00', 'USD', 'DU123456'),
+			('LookAheadMaintMarginReq-S', '0.00', 'USD', 'DU123456'),
+			('LookAheadNextChange', '0', '', 'DU123456'),
+			('MaintMarginReq', '0.00', 'USD', 'DU123456'),
+			('MaintMarginReq-S', '0.00', 'USD', 'DU123456'),
+			('MoneyMarketFundValue', '0.00', 'BASE', 'DU123456'),
+			('MoneyMarketFundValue', '0.00', 'CHF', 'DU123456'),
+			('MoneyMarketFundValue', '0.00', 'USD', 'DU123456'),
+			('MutualFundValue', '0.00', 'BASE', 'DU123456'),
+			('MutualFundValue', '0.00', 'CHF', 'DU123456'),
+			('MutualFundValue', '0.00', 'USD', 'DU123456'),
+			('NetDividend', '0.00', 'BASE', 'DU123456'),
+			('NetDividend', '0.00', 'CHF', 'DU123456'),
+			('NetDividend', '0.00', 'USD', 'DU123456'),
+			('NetLiquidation', '980848.80', 'USD', 'DU123456'),
+			('NetLiquidation-S', '980848.80', 'USD', 'DU123456'),
+			('NetLiquidationByCurrency', '980848.80', 'BASE', 'DU123456'),
+			('NetLiquidationByCurrency', '931999.15', 'CHF', 'DU123456'),
+			('NetLiquidationByCurrency', '28989.07', 'USD', 'DU123456'),
+			('OptionMarketValue', '0.00', 'BASE', 'DU123456'),
+			('OptionMarketValue', '0.00', 'CHF', 'DU123456'),
+			('OptionMarketValue', '0.00', 'USD', 'DU123456'),
+			('PASharesValue', '0.00', 'USD', 'DU123456'),
+			('PASharesValue-S', '0.00', 'USD', 'DU123456'),
+			('PNL', 'true', '', 'DU123456'),
+			('PreviousDayEquityWithLoanValue', '983583.56', 'USD', 'DU123456'),
+			('PreviousDayEquityWithLoanValue-S', '983583.56', 'USD', 'DU123456'),
+			('RealizedPnL', '-264.00', 'BASE', 'DU123456'),
+			('RealizedPnL', '0.00', 'CHF', 'DU123456'),
+			('RealizedPnL', '-264.00', 'USD', 'DU123456'),
+			('RegTEquity', '980848.80', 'USD', 'DU123456'),
+			('RegTEquity-S', '980848.80', 'USD', 'DU123456'),
+			('RegTMargin', '0.00', 'USD', 'DU123456'),
+			('RegTMargin-S', '0.00', 'USD', 'DU123456'),
+			('SMA', '1010306.96', 'USD', 'DU123456'),
+			('SMA-S', '1010306.96', 'USD', 'DU123456'),
+			('StockMarketValue', '0.00', 'BASE', 'DU123456'),
+			('StockMarketValue', '0.00', 'CHF', 'DU123456'),
+			('StockMarketValue', '0.00', 'USD', 'DU123456'),
+			('TBillValue', '0.00', 'BASE', 'DU123456'),
+			('TBillValue', '0.00', 'CHF', 'DU123456'),
+			('TBillValue', '0.00', 'USD', 'DU123456'),
+			('TBondValue', '0.00', 'BASE', 'DU123456'),
+			('TBondValue', '0.00', 'CHF', 'DU123456'),
+			('TBondValue', '0.00', 'USD', 'DU123456'),
+			('TotalCashBalance', '980848.80', 'BASE', 'DU123456'),
+			('TotalCashBalance', '931999.15', 'CHF', 'DU123456'),
+			('TotalCashBalance', '28989.07', 'USD', 'DU123456') ]
+
+		for key, value, currency, accountCode in  accUpdateList:
+			self.ibConnection.updateAccountValue(key, value, currency, accountCode)
+
+
 	def placeOrder(self, id, contract, order):
 		self.tc.assertEqual(self.orderId, None)
 
@@ -250,7 +377,7 @@ class TestEClientSocket(EClientSocket):
 
 		self.tc.assertIsInstance(order.m_allOrNone, bool)
 		self.tc.assertIsInstance(order.m_minQuantity, int)
-		self.tc.assertGreater(order.m_minQuantity, 0)
+		self.tc.assertGreaterEqual(order.m_minQuantity, 0)
 		self.tc.assertIsInstance(order.m_totalQuantity, int)
 		self.tc.assertGreater(order.m_totalQuantity, 0)
 		self.tc.assertIsInstance(order.m_outsideRth, bool)

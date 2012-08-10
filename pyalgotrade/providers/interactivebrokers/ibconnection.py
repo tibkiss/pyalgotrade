@@ -24,7 +24,7 @@
 """
 
 import threading, copy, datetime
-from time import localtime 
+from time import localtime, sleep 
 
 from pyalgotrade import observer
 
@@ -38,6 +38,8 @@ from ib.ext.Order import Order
 
 import logging
 log = logging.getLogger(__name__)
+
+TIMEOUT=15.0 # seconds
 
 class Connection(EWrapper):
 		'''Wrapper class for Interactive Brokers TWS Connection.
@@ -61,7 +63,7 @@ class Connection(EWrapper):
 		:type twsClientId: int
 		'''
 
-		def __init__(self, accountCode, timezone=0, twsHost='localhost', twsPort=7496, twsClientId=27):
+		def __init__(self, accountCode='NONE', timezone=0, twsHost='localhost', twsPort=7496, twsClientId=27, eClientSocket=None):
 				self.__accountCode = accountCode
 				self.__zone = timezone
 				self.__twsHost = twsHost
@@ -88,6 +90,9 @@ class Connection(EWrapper):
 
 				# Dictionary to map instruments to realtime bar observer events
 				self.__realtimeBarEvents = {}
+
+				# Number of active listeners for the realtime stream
+				self.__realtimeBarListeners = {}
 				
 				# Dictionary to map instruments to historical data tickerIds
 				self.__historicalDataTickerIds = {}
@@ -95,6 +100,9 @@ class Connection(EWrapper):
 				# List to buffer historical data which is produced by 
 				# historicalData(), consumed by requestHistoricalData()
 				self.__historicalDataBuffer = []
+
+				# Bool to mark completion of historical data receiving
+				self.__historicalDataReceived = False
 
 				# Lock for the historicalDataBuffer
 				self.__historicalDataLock = threading.Condition()
@@ -122,7 +130,10 @@ class Connection(EWrapper):
 				self.__orderUpdateHandler = observer.Event()
 
 				# Create EClientSocket for TWS Connection
-				self.__tws = EClientSocket(self)
+				if eClientSocket is None:
+					self.__tws = EClientSocket(self)
+				else:
+					self.__tws = eClientSocket
 				
 				# Connection status
 				self.__connected = False
@@ -249,6 +260,8 @@ class Connection(EWrapper):
 				order.m_whatif = whatif
 
 				self.__tws.placeOrder(orderId, contract, order)
+				
+				return orderId
 
 
 		def cancelOrder(self, orderId):
@@ -271,7 +284,7 @@ class Connection(EWrapper):
 
 		def subscribeRealtimeBars(self, instrument, handler, 
 								  secType='STK', exchange='SMART', currency='USD', 
-								  barSize=5, whatToShow='TRADES', useRTH=1):
+								  barSize=5, whatToShow='TRADES', useRTH=True):
 				"""Subscribes handler for realtime market data of instrument.
 
 				:param instrument: Instrument's symbol
@@ -296,7 +309,7 @@ class Connection(EWrapper):
 							   0: All data is returned even where the market in question was outside of its regular trading hours.
 							   1: Only data within the regular trading hours is returned, even if the requested time span
 							   falls partially or completely outside of the RTH.
-				:type useRTH: int
+				:type useRTH: bool
 				"""
 				self.connect()
 				if instrument not in self.__realtimeBarIDs:
@@ -306,8 +319,8 @@ class Connection(EWrapper):
 
 						# Prepare the contract 
 						contract = Contract()
-						contract.m_symbol = instrument
-						contract.m_secType = secType
+						contract.m_symbol   = instrument
+						contract.m_secType  = secType
 						contract.m_exchange = exchange
 						contract.m_currency = currency
 						
@@ -317,10 +330,12 @@ class Connection(EWrapper):
 						# Register handler for the realtime bar event observer
 						self.__realtimeBarEvents[instrument] = observer.Event()
 						self.__realtimeBarEvents[instrument].subscribe(handler)
+						self.__realtimeBarListeners[instrument] = 1
 
 				else:
 						# Instrument already subscribed, add handler to the event observer
 						self.__realtimeBarEvents[instrument].subscribe(handler)
+						self.__realtimeBarListeners[instrument] += 1
 
 		def unsubscribeRealtimeBars(self, instrument, handler):
 				"""Cancels realtime data feed for the given instrument and handler.
@@ -332,15 +347,14 @@ class Connection(EWrapper):
 				"""
 				self.connect()
 				if instrument in self.__realtimeBarIDs:
-						tickerId = self.__realtimeBarIDs[instrument]
+						self.__realtimeBarEvents[instrument].unsubscribe(handler)
+						self.__realtimeBarListeners[instrument] -= 1
 
-						# TODO: Check for other observes and 
-						# deregister only if last is freed
-						self.__tws.cancelRealTimeBars(tickerId)
+						if self.__realtimeBarListeners[instrument] == 0:
+							tickerId = self.__realtimeBarIDs[instrument]
+							self.__tws.cancelRealTimeBars(tickerId)
+							del self.__realtimeBarIDs[instrument]
 
-						del self.__realtimeBarIDs[instrument]
-						del self.__realtimeBarEvents[instrument]
-						del self.__realtimeBarBuffer[instrument]
 				else:
 						# Instrument was not subscribed, ignore
 						pass
@@ -385,30 +399,54 @@ class Connection(EWrapper):
 				"""
 				self.connect()
 
+				self.clearError()
+
 				# Get a unique tickerId for the request
 				tickerId = self.__getNextTickerId()
+				self.__historicalDataTickerIds[tickerId] = instrument
 
 				# Prepare the Contract for the historical data order
 				contract = Contract()
-				contract.m_symbol	= instrument;
-				contract.m_secType	= secType;
-				contract.m_exchange = exchange;
-				contract.m_currency = currency;
-
-				# map the tickerId to instrument
-				self.__historicalDataTickerIds[tickerId] = instrument
+				contract.m_symbol	= instrument
+				contract.m_secType	= secType
+				contract.m_exchange = exchange
+				contract.m_currency = currency
 
 				# Request historical data
+				self.__historicalDataBuffer = []
+				self.__historicalDataReceived = False
 				self.__tws.reqHistoricalData(tickerId, contract, endTime, duration, barSize, whatToShow, useRTH, formatDate)
 
-				# Wait for the result to appear in the buffer
-				self.__historicalDataLock.acquire()
-				self.__historicalDataLock.wait()
-				self.__historicalDataLock.release()
+				while not self.__historicalDataReceived:
+					# Wait for the result to appear in the buffer
+					self.__historicalDataLock.acquire()
+					self.__historicalDataLock.wait(TIMEOUT)
+					self.__historicalDataLock.release()
+
+					err = self.getError()
+					self.clearError()
+					if err == None or err['tickerId'] == None or err['tickerId'] != tickerId:
+						continue
+					else:
+						if err['errorCode'] == 162:
+							# Historical data request pacing violation
+							# Wait 30 secs and reissue the request
+							log.warning("Violated the historical data pace requirements, retry in 30 secs")
+							sleep(30)
+							tickerId = self.__getNextTickerId()
+							self.__historicalDataTickerIds[tickerId] = instrument
+							self.__tws.reqHistoricalData(tickerId, contract, endTime, duration, barSize, whatToShow, useRTH, formatDate)
+							continue
+						elif err['errorCode'] == 200:
+							# No security definition has been found for the request
+							return None
+						else:
+							print err
+							return None
 
 				# Copy the downloaded historical data and empty the buffer
 				historicalData = copy.copy(self.__historicalDataBuffer)
-				self.__historicalDataBuffer = []
+
 
 				return historicalData 
 				
@@ -537,6 +575,8 @@ class Connection(EWrapper):
 				# EOD is signaled in the date variable, eg.:
 				# date='finished-20120628  00:00:00-20120630  00:00:00'
 				if date.find("finished") != -1:
+					self.__historicalDataReceived = True
+					
 					# Signal the requestHistoricalData 
 					self.__historicalDataLock.acquire()
 					self.__historicalDataLock.notify()
@@ -549,7 +589,7 @@ class Connection(EWrapper):
 				dt += datetime.timedelta(hours= (-1 * self.__zone))
 
 				# Create the bar
-				bar = Bar(instrument, dt, open_, high, low, close, volume, vwap, tradeCount)
+				bar = Bar(dt, open_, high, low, close, volume, vwap, tradeCount)
 
 				# Append it to the buffer
 				self.__historicalDataBuffer.append(bar)
@@ -588,16 +628,20 @@ class Connection(EWrapper):
 				dt += datetime.timedelta(hours= (-1 * self.__zone))
 
 				# Look up the instrument's name based on its tickerId
+				instrument = None
 				for i in self.__realtimeBarIDs:
 					if self.__realtimeBarIDs[i] == tickerId:
 						instrument = i
+						break
 
-				log.debug("RT Bar: %s [%d] time=%s open=%.2f high=%.2f low=%.2f close=%.2f volume=%d wap=%.2f tradeCount=%d" % 
-						  (instrument, tickerId, dt, open_, high, low, close, volume, vwap, tradeCount))
+				if instrument:
+					log.debug("RT Bar: %s [%d] time=%s open=%.2f high=%.2f low=%.2f close=%.2f volume=%d wap=%.2f tradeCount=%d" % 
+						  	  (instrument, tickerId, dt, open_, high, low, close, volume, vwap, tradeCount))
 
-				self.__realtimeBarEvents[instrument].emit(Bar(instrument, dt,
-															  open_, high, low, close,
-															  volume, vwap, tradeCount))
+					self.__realtimeBarEvents[instrument].emit((instrument, 
+																Bar(dt,open_, high, low, close, volume, vwap, tradeCount)))
+				else:
+					log.warning("Realtime bar received for unregistered instrument: %s" % instrument)
 
 		
 		def scannerData(self, reqId, rank, contractDetails, distance, benchmark, projection, legsStr=False):
@@ -791,7 +835,7 @@ class Connection(EWrapper):
 				log.debug("openOrder: orderId: %s, instrument: %s", orderId, contract.m_symbol)
 				self.__orderIds[orderId] = contract.m_symbol
 
-		def execDetails(self, orderId, contract, execution, liquidation):
+		def execDetails(self, orderId, contract, execution):
 				"""This event is fired when the reqExecutions() functions is invoked, or when an order is filled.
 				
 				:param orderId: The order ID that was specified previously in the call to placeOrder().
@@ -847,8 +891,14 @@ class Connection(EWrapper):
 				if tickerId != -1:
 						log.error( 'error: %s, %s, %s' %(tickerId, errorCode, errorString))
 
+		def clearError(self):
+				"""Clears the error dictionary.
+				Keys: tickerId, errorCode, errorString
+				"""
+				self.__error = {'tickerId': None, 'errorCode': None, 'errorString': None}
+
 		def getError(self):
-				"""Returns the error dictionary.
+				"""Clears and returns the error dictionary.
 				Keys: tickerId, errorCode, errorString
 				"""
 				return self.__error

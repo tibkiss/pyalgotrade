@@ -19,7 +19,7 @@
 
 .. moduleauthor:: Tibor Kiss <tibor.kiss@gmail.com>
 """
-import csv, datetime
+import csv, datetime, time
 
 from pyalgotrade.providers.interactivebrokers import ibconnection
 
@@ -105,13 +105,39 @@ def get_historical_data(instrument, endTime, duration, barSize,
 	if twsConnection == None:
 		twsConnection = ibconnection.Connection('', 0, twsHost, twsPort, twsClientID)
 
-	bars = twsConnection.requestHistoricalData(instrument, endTime, duration, barSize,
-						 secType, exchange, currency,
-						 whatToShow, useRTH, formatDate)
+	if duration == '1 D' and barSize == '5 secs' and endTime.endswith('16:00:00 EST'):
+		bars = []
+		et = endTime[:-12] # Crop the '16:00:00 EST' from the end
+		for endTime_ in ('10:30:00 EST', '11:30:00 EST', '12:30:00 EST', '13:30:00 EST', '14:30:00 EST', '15:30:00 EST'):
+			b = twsConnection.requestHistoricalData(instrument, et+endTime_, '3600 S', barSize,
+						 	 	 	 	 	 	 	secType, exchange, currency,
+						 	 	 	 	 	 	 	whatToShow, useRTH, formatDate)
+			if b == None:
+				print 'error with endTime: ', endTime_
+			bars.extend(b)
+
+			time.sleep(5)
+
+		b = twsConnection.requestHistoricalData(instrument, et+'16:00:00 EST', '1800 S', barSize,
+						 	 	 	 	 	 	secType, exchange, currency,
+						 	 	 	 	 	 	whatToShow, useRTH, formatDate)
+		if b == None:
+			print 'error2'
+
+		bars.extend(b)
+			
+		if (bars[0].getDateTime().time() != datetime.time(9,30,00) or
+		    bars[-1].getDateTime().time() != datetime.time(15, 59, 55) or
+			len(bars) != 4680):
+		   	print 'Error, bars are missing for instrument ', instrument
+	else:
+		bars = twsConnection.requestHistoricalData(instrument, endTime, duration, barSize,
+						 	 secType, exchange, currency,
+						 	 whatToShow, useRTH, formatDate)
 
 	# Check for errors
 	error = twsConnection.getError()
-	if error['tickerId'] != -1:
+	if error['tickerId'] != None and error['tickerId'] != -1:
 		print "ERROR: ", error
 
 	# Return the loaded bars

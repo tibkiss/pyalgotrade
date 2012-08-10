@@ -34,6 +34,9 @@ from testcases import strategy_test
 from testcases import smacrossover_strategy_test
 from testcases import talib_test
 from testcases import observer_test
+from testcases import ibconnection_test
+from testcases import ibfeed_test
+from testcases import ibbroker_test
 
 def getTestCases():
 	ret = []
@@ -52,6 +55,9 @@ def getTestCases():
 	ret += smacrossover_strategy_test.getTestCases()
 	ret += talib_test.getTestCases()
 	ret += observer_test.getTestCases()
+        ret += ibconnection_test.getTestCases()
+        ret += ibfeed_test.getTestCases()
+        ret += ibbroker_test.getTestCases()
 	return ret
 
 def main():

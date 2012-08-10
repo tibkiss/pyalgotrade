@@ -58,7 +58,7 @@ class FlatRateCommission(broker.Commission):
 ## Orders
 
 class Order(broker.Order):
-	def __init__(self, type_, action, instrument, price, quantity, ibConnection, goodTillCanceled=False):
+	def __init__(self, ibConnection, type_, action, instrument, price, quantity, goodTillCanceled=False):
 		broker.Order.__init__(self, type_, action, instrument, price, quantity, goodTillCanceled)
 		self.__ibConnection = ibConnection
 		self.__orderId = None
@@ -78,25 +78,24 @@ class Order(broker.Order):
 		if self.__orderId != None:
 			self.__ibConnection.cancelOrder(self.__orderId)
 		
-		# The canceled flag will be updated through the __orderUpdate()
-		# callback and setCanceled() call
+		# The canceled flag will be updated through the Broker's __orderUpdate()
 
 class MarketOrder(Order):
-	def __init__(self, action, instrument, quantity, ibConnection, goodTillCanceled=False):
+	def __init__(self, ibConnection, action, instrument, quantity, goodTillCanceled=False):
 		price = 0
-		Order.__init__(self, Order.Type.MARKET, action, instrument, price, quantity, ibConnection, goodTillCanceled)
+		Order.__init__(self, ibConnection, Order.Type.MARKET, action, instrument, price, quantity, goodTillCanceled)
 
 class LimitOrder(Order):
-	def __init__(self, action, instrument, price, quantity, ibConnection, goodTillCanceled=False):
-		Order.__init__(self, Order.Type.LIMIT, action, instrument, price, quantity, ibConnection, goodTillCanceled)
+	def __init__(self, ibConnection, action, instrument, price, quantity, goodTillCanceled=False):
+		Order.__init__(self, ibConnection, Order.Type.LIMIT, action, instrument, price, quantity, goodTillCanceled)
 	
 class StopOrder(Order):
-	def __init__(self, action, instrument, price, quantity, ibConnection, goodTillCanceled=False):
-		Order.__init__(self, Order.Type.STOP, action, instrument, price, quantity, ibConnection, goodTillCanceled)
+	def __init__(self, ibConnection, action, instrument, price, quantity, goodTillCanceled=False):
+		Order.__init__(self, ibConnection, Order.Type.STOP, action, instrument, price, quantity, goodTillCanceled)
 
 class StopLimitOrder(Order):
-	def __init__(self, action, instrument, limitPrice, stopPrice, quantity, ibConnection, goodTillCanceled=False):
-		Order.__init__(self, Order.Type.STOP_LIMIT, action, instrument, limitPrice, quantity, goodTillCanceled)
+	def __init__(self, ibConnection, action, instrument, limitPrice, stopPrice, quantity, goodTillCanceled=False):
+		Order.__init__(self, ibConnection, Order.Type.STOP_LIMIT, action, instrument, limitPrice, quantity, goodTillCanceled)
 
 		self.__stopPrice = stopPrice
 		self.__limitOrderActive = False # Set to true when the limit order is activated (stop price is hit)
@@ -161,7 +160,7 @@ class Broker(broker.BasicBroker):
 			# Wait until all the stocks are obtained
 			if remaining == 0:
 				log.info("Order complete: orderId: %d, instrument: %s, filled: %d, avgFillPrice=%.2f, lastFillPrice=%.2f" %
-					 (orderId, instrument, status, filled, avgFillPrice, lastFillPrice))
+					 (orderId, instrument, filled, avgFillPrice, lastFillPrice))
 
 				# Set commission to 0, avgFillPrice contains it 
 				orderExecutionInfo = broker.OrderExecutionInfo(avgFillPrice, comission=0, dateTime=None)
@@ -172,7 +171,7 @@ class Broker(broker.BasicBroker):
 			else:
 				# And signal partial completions
 				log.info("Partial order completion: orderId: %d, instrument: %s, filled: %d, remaining: %d, avgFillPrice=%.2f, lastFillPrice=%.2f" %
-					 (orderId, instrument, status, filled, remaining, avgFillPrice, lastFillPrice))
+					 (orderId, instrument, filled, remaining, avgFillPrice, lastFillPrice))
 
 
 	def getCash(self):
@@ -209,13 +208,18 @@ class Broker(broker.BasicBroker):
 		elif ot == broker.Order.Type.STOP_LIMIT:	orderType = "STP LMT"
 		else: raise Exception("Invalid orderType: %s!"% ot)
 
-		# Setup quantities
-		if ot  == broker.Order.Type.STOP_LIMIT:
-			lmtPrice	 = order.getStopPrice() 
-			auxPrice	 = order.getPrice() 
-		else:
-			auxPrice	 = order.getPrice()
+		if ot == broker.Order.Type.MARKET:
+			lmtPrice     = 0
+			auxPrice     = 0
+		elif ot == broker.Order.Type.LIMIT:
+			lmtPrice     = order.getPrice()
+			auxPrice     = 0
+		elif ot == broker.Order.Type.STOP:
 			lmtPrice	 = 0
+			auxPrice	 = order.getPrice()
+		elif ot == broker.Order.Type.STOP_LIMIT:
+			lmtPrice	 = order.getPrice() 
+			auxPrice	 = order.getStopPrice() 
 
 		goodTillDate = ""
 		if order.getGoodTillCanceled():
@@ -225,8 +229,8 @@ class Broker(broker.BasicBroker):
 		minQty		 = 0
 		totalQty	 = order.getQuantity()
 
-		orderId = self.__ibConnection.createOrder(instrument, action, auxPrice, lmtPrice, orderType, totalQty, minQty,
-												  goodTillDate, tif, trailingPct=0, trailStopPrice=0, transmit=True, whatif=False)
+		orderId = self.__ibConnection.createOrder(instrument, action, lmtPrice, auxPrice, orderType, totalQty, minQty,
+												  tif, goodTillDate, trailingPct=0, trailStopPrice=0, transmit=True, whatif=False)
 
 		order.setOrderId(orderId)
 
@@ -252,29 +256,29 @@ class Broker(broker.BasicBroker):
 		pass
 
 	def createLongMarketOrder(self, instrument, quantity, goodTillCanceled=False):
-		return(MarketOrder(broker.Order.Action.BUY, instrument, quantity, self.__ibConnection, goodTillCanceled))
+		return(MarketOrder(self.__ibConnection, broker.Order.Action.BUY, instrument, quantity, goodTillCanceled))
 
 	def createShortMarketOrder(self, instrument, quantity, goodTillCanceled=False):
-		return(MarketOrder(broker.Order.Action.SELL, instrument, quantity, self.__ibConnection, goodTillCanceled))
+		return(MarketOrder(self.__ibConnection, broker.Order.Action.SELL, instrument, quantity, goodTillCanceled))
 
 	def createLongLimitOrder(self, instrument, price, quantity, goodTillCanceled=False): 
-		return(LimitOrder(broker.Order.Action.BUY, instrument, price, quantity, self.__ibConnection, goodTillCanceled))
+		return(LimitOrder(self.__ibConnection, broker.Order.Action.BUY, instrument, price, quantity, goodTillCanceled))
 
 	def createShortLimitOrder(self, instrument, price, quantity, goodTillCanceled=False): 
-		return(LimitOrder(broker.Order.Action.SELL, instrument, price, quantity, self.__ibConnection, goodTillCanceled))
+		return(LimitOrder(self.__ibConnection, broker.Order.Action.SELL, instrument, price, quantity, goodTillCanceled))
 
 	def createLongStopOrder(self, instrument, price, quantity, goodTillCanceled=False): 
-		return(StopOrder(broker.Order.Action.BUY, instrument, price, quantity, self.__ibConnection, goodTillCanceled))
+		return(StopOrder(self.__ibConnection, broker.Order.Action.BUY, instrument, price, quantity, goodTillCanceled))
 
 	def createShortStopOrder(self, instrument, price, quantity, goodTillCanceled=False): 
-		return(StopOrder(broker.Order.Action.SELL, instrument, price, quantity, self.__ibConnection, goodTillCanceled))
+		return(StopOrder(self.__ibConnection, broker.Order.Action.SELL, instrument, price, quantity, goodTillCanceled))
 
 	def createLongStopLimitOrder(self, instrument, limitPrice, stopPrice, quantity, goodTillCanceled=False): 
-		return(StopLimitOrder(broker.Order.Action.BUY, instrument, limitPrice, stopPrice, quantity, self.__ibConnection, 
+		return(StopLimitOrder(self.__ibConnection, broker.Order.Action.BUY, instrument, limitPrice, stopPrice, quantity, 
 							  goodTillCanceled))
 
 	def createShortStopLimitOrder(self, instrument, limitPrice, stopPrice, quantity, goodTillCanceled=False): 
-		return(StopLimitOrder(broker.Order.Action.SELL, instrument, limitPrice, stopPrice, quantity, self.__ibConnection,
+		return(StopLimitOrder(self.__ibConnection, broker.Order.Action.SELL, instrument, limitPrice, stopPrice, quantity, 
 							  goodTillCanceled))
 
 # vim: noet:ci:pi:sts=0:sw=4:ts=4

@@ -162,8 +162,8 @@ class Broker(broker.BasicBroker):
 				log.info("Order complete: orderId: %d, instrument: %s, filled: %d, avgFillPrice=%.2f, lastFillPrice=%.2f" %
 					 (orderId, instrument, filled, avgFillPrice, lastFillPrice))
 
-				# Set commission to 0, avgFillPrice contains it 
-				orderExecutionInfo = broker.OrderExecutionInfo(avgFillPrice, comission=0, dateTime=None)
+				# Set commission to 0, the avgFillPrice returned by IB already has this number included (per share)
+				orderExecutionInfo = broker.OrderExecutionInfo(avgFillPrice, commission=0, dateTime=None)
 				order.setExecuted(orderExecutionInfo)
 
 				# Notify the listeners

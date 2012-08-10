@@ -139,7 +139,7 @@ class BarFeed(BasicBarFeed):
 
 		if barInstruments != registeredInstruments:
                         print barInstruments, registeredInstruments
-			raise Exception("Some bars are missing")
+			#raise Exception("Some bars are missing")
 
 		# This will check for incosistent datetimes between bars.
 		ret = bar.Bars(barDict)

@@ -64,7 +64,7 @@ class RowParser(csvfeed.RowParser):
 		VWAP = float(csvRowDict["VWAP"])
 		# hasGaps = bool(csvRowDict["HasGaps"] == "True")
 
-		return ibbar.Bar(self.__instrument, date, open_, high, low, close, volume, VWAP, tradeCnt)
+		return ibbar.Bar(date, open_, high, low, close, volume, VWAP, tradeCnt)
 
 class CSVFeed(csvfeed.BarFeed):
 	"""A :class:`pyalgotrade.barfeed.BarFeed` that loads bars from a CSV file downloaded from IB TWS"""
@@ -128,28 +128,28 @@ class LiveFeed(BarFeed):
 					return None
 
 		def subscribeRealtimeBars(self, instrument, useRTH_=0):
-				self.__ibConnection.subscribeRealtimeBars(instrument, self.onRealtimeBars, useRTH=useRTH_)
+				self.__ibConnection.subscribeRealtimeBars(instrument, self.onRealtimeBar, useRTH=useRTH_)
 
 				# Register the instrument
 				self.registerInstrument(instrument)
 		
 		def unsubscribeRealtimeBars(self, instrument):
-				self.__ibConnection.unsubscribeRealtimeBars(instrument)
+				self.__ibConnection.unsubscribeRealtimeBars(instrument, self.onRealtimeBar)
 
-				# TODO: Deregister instrument
+				# XXX: Deregistering instrument is not yet possible, missing from BarFeed
 
-		def onRealtimeBars(self, bar):
+		def onRealtimeBar(self, instrumentBar):
+				instrument, bar = instrumentBar # Unbox the tuple
 				if len(self.__currentBars) == 0:
 						self.__currentDatetime = bar.getDateTime()
-						self.__currentBars[bar.getInstrument()] = bar
+						self.__currentBars[instrument] = bar
 				elif len(self.__currentBars) > 0:
 						if self.__currentDatetime != bar.getDateTime():
 								bars = copy.copy(self.__currentBars)
 								self.__currentDatetime = bar.getDateTime()
-								#self.__currentBars[bar.getInstrument()] = bar # First bar in the next set of bars.
-								self.__currentBars = {bar.getInstrument() : bar} # First bar in the next set of bars.
+								self.__currentBars = {instrument : bar} # First bar in the next set of bars.
 								self.__queue.put(bars)
 						else:
-								self.__currentBars[bar.getInstrument()] = bar
+								self.__currentBars[instrument] = bar
 
 # vim: noet:ci:pi:sts=0:sw=4:ts=4

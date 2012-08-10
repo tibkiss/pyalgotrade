@@ -635,11 +635,11 @@ class Connection(EWrapper):
 						break
 
 				if instrument:
-					log.debug("RT Bar: %s [%d] time=%s open=%.2f high=%.2f low=%.2f close=%.2f volume=%d wap=%.2f tradeCount=%d" % 
-						  	  (instrument, tickerId, dt, open_, high, low, close, volume, vwap, tradeCount))
+					bar = Bar(dt,open_, high, low, close, volume, vwap, tradeCount)
+					log.debug("RT Bar: %s [%d] %s" % (instrument, tickerId, bar))
 
-					self.__realtimeBarEvents[instrument].emit((instrument, 
-																Bar(dt,open_, high, low, close, volume, vwap, tradeCount)))
+					instrumentBar = (instrument, bar)
+					self.__realtimeBarEvents[instrument].emit(instrumentBar)
 				else:
 					log.warning("Realtime bar received for unregistered instrument: %s" % instrument)
 
@@ -685,7 +685,7 @@ class Connection(EWrapper):
 		def updateAccountValue(self, key, value, currency, accountName):
 				"""
 				This function is called only when ReqAccountUpdates has been called.
-				It will notify the __accUpdateLock waiters (e.g. getCash()) if new data is available.
+				It will notify the __accUpdateLock listeners (e.g. getCash()) if new data is available.
 
 				:param key: A string that indicates one type of account value.
 				:type key:	str
@@ -713,7 +713,7 @@ class Connection(EWrapper):
 				"""
 				self.__accUpdateLock.acquire()
 
-				# log.debug('updateAccountValue key=%s, value=%s, currency=%s, accountCode=%s' % (key, value, currency, accountName))
+				log.debug('updateAccountValue key=%s, value=%s, currency=%s, accountCode=%s' % (key, value, currency, accountName))
 				self.__accountValues.setdefault(accountName, {})
 				self.__accountValues[accountName].setdefault(currency, {})
 				self.__accountValues[accountName][currency].setdefault(key, {})

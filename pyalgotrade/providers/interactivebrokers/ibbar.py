@@ -1,7 +1,7 @@
 # PyAlgoTrade
 # 
 # Related materials
-# Interactive Brokers API:  http://www.interactivebrokers.com/en/software/api/api.htm
+# Interactive Brokers API:	http://www.interactivebrokers.com/en/software/api/api.htm
 # IbPy: http://code.google.com/p/ibpy/ 
 # 
 # Copyright 2012 Gabriel Martin Becedillas Ruiz
@@ -10,7 +10,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 # 
-#   http://www.apache.org/licenses/LICENSE-2.0
+#	http://www.apache.org/licenses/LICENSE-2.0
 # 
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -61,8 +61,8 @@ class Bar(bar.Bar):
 
 	def __repr__(self):
 		return str("%s: open=%.2f, high=%.2f, low=%.2f, close=%.2f, volume=%d, vwap=%.2f, tradeCount=%d" %
-			    (self.getDateTime(), self.getOpen(), self.getHigh(), self.getLow(), self.getClose(),
-			     self.getVolume(), self.getVWAP(), self.getTradeCount()))
-    
+				(self.getDateTime(), self.getOpen(), self.getHigh(), self.getLow(), self.getClose(),
+				 self.getVolume(), self.getVWAP(), self.getTradeCount()))
+	
 
 # vim: noet:ci:pi:sts=0:sw=4:ts=4

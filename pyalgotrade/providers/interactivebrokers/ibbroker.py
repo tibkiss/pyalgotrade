@@ -34,17 +34,17 @@ log = logging.getLogger(__name__)
 
 class FlatRateCommission(broker.Commission):
 	"""Flat Rate - US API Directed Orders
-	Value	         Flat Rate		Minimum Per Order	Maximum Per Order
-	< = 500 shares	$0.0131/share		USD 1.30		0.5% of trade value
-	> 500 shares	$0.0081/share		USD 1.30		0.5% of trade value
+	Value			 Flat Rate		Minimum Per Order	Maximum Per Order
+	< = 500 shares	$0.013/share		USD 1.30		0.5% of trade value
+	> 500 shares	$0.008/share		USD 1.30		0.5% of trade value
 	"""
 	def calculate(self, order, price, quantity):
 		minPerOrder=1.3
 		maxPerOrder=(price * quantity) * 0.005 
 		if quantity <= 500:
-			flatRate = 0.0131 * quantity
+			flatRate = 0.013 * quantity
 		else:
-			flatRate = 0.0081 * quantity
+			flatRate = 0.013 * 500 + 0.008 * (quantity - 500)
 
 		commission = max(minPerOrder, flatRate)
 		commission = min(maxPerOrder, commission)
@@ -121,7 +121,7 @@ class Broker(broker.BasicBroker):
 	"""
 	def __init__(self, barFeed, ibConnection):
 		self.__ibConnection = ibConnection
-		self.__barFeed      = barFeed
+		self.__barFeed		= barFeed
 
 		# Query the server for available funds
 		self.__cash = self.__ibConnection.getCash()
@@ -166,13 +166,14 @@ class Broker(broker.BasicBroker):
 				# Set commission to 0, avgFillPrice contains it 
 				orderExecutionInfo = broker.OrderExecutionInfo(avgFillPrice, comission=0, dateTime=None)
 				order.setExecuted(orderExecutionInfo)
+
+				# Notify the listeners
+				self.getOrderUpdatedEvent().emit(self, order)
 			else:
 				# And signal partial completions
 				log.info("Partial order completion: orderId: %d, instrument: %s, filled: %d, remaining: %d, avgFillPrice=%.2f, lastFillPrice=%.2f" %
 					 (orderId, instrument, status, filled, remaining, avgFillPrice, lastFillPrice))
 
-		# Notify the listeners
-		self.getOrderUpdatedEvent().emit(self, order)
 
 	def getCash(self):
 		"""Returns the amount of cash."""
@@ -197,35 +198,35 @@ class Broker(broker.BasicBroker):
 		# and SELL seems to work well with short orders.
 		#action = "SSHORT"
 		act = order.getAction()
-		if act == broker.Order.Action.BUY:             action = "BUY"
-		elif act == broker.Order.Action.SELL: 		   action = "SELL"
-		elif act == broker.Order.Action.SELL_SHORT:    action = "SELL"
+		if act == broker.Order.Action.BUY:	action = "BUY"
+		elif act == broker.Order.Action.SELL:	action = "SELL"
+		elif act == broker.Order.Action.SELL_SHORT: action = "SELL"
 
 		ot = order.getType()
-		if ot == broker.Order.Type.MARKET:        	orderType = "MKT"
-		elif ot == broker.Order.Type.LIMIT:  	 	orderType = "LMT"
-		elif ot == broker.Order.Type.STOP:   		orderType = "STP"
-		elif ot == broker.Order.Type.STOP_LIMIT: 	orderType = "STP LMT"
+		if ot == broker.Order.Type.MARKET:			orderType = "MKT"
+		elif ot == broker.Order.Type.LIMIT:			orderType = "LMT"
+		elif ot == broker.Order.Type.STOP:			orderType = "STP"
+		elif ot == broker.Order.Type.STOP_LIMIT:	orderType = "STP LMT"
 		else: raise Exception("Invalid orderType: %s!"% ot)
 
 		# Setup quantities
 		if ot  == broker.Order.Type.STOP_LIMIT:
-			auxPrice     = order.getStopPrice() 
-			lmtPrice     = order.getPrice() 
+			lmtPrice	 = order.getStopPrice() 
+			auxPrice	 = order.getPrice() 
 		else:
-			auxPrice     = order.getPrice()
-			lmtPrice     = 0
+			auxPrice	 = order.getPrice()
+			lmtPrice	 = 0
 
 		goodTillDate = ""
 		if order.getGoodTillCanceled():
-			tif      = "GTC"
+			tif		 = "GTC"
 		else:
-			tif      = "DAY"
-		minQty       = 0
-		totalQty     = order.getQuantity()
+			tif		 = "DAY"
+		minQty		 = 0
+		totalQty	 = order.getQuantity()
 
 		orderId = self.__ibConnection.createOrder(instrument, action, auxPrice, lmtPrice, orderType, totalQty, minQty,
-						 	                      goodTillDate, tif, trailingPct=0, trailStopPrice=0, transmit=True, whatif=False)
+												  goodTillDate, tif, trailingPct=0, trailStopPrice=0, transmit=True, whatif=False)
 
 		order.setOrderId(orderId)
 

@@ -30,47 +30,119 @@ class NotEnoughCash(Exception):
 
 ######################################################################
 ## Orders
-class MarketOrder(broker.MarketOrder):
-	"""
-	An :class:`Order` subclass that instructs the broker to buy or sell the stock immediately at the prevailing price, whatever that may be.
-	If useClosingPrice is set to False then the opening price will be used to fill the order, otherwise the closing price will be used.
-	"""
-	def __init__(self, action, instrument, quantity, goodTillCanceled = False, useClosingPrice = False):
-		price = 0
-		broker.MarketOrder.__init__(self, action, instrument, quantity, goodTillCanceled)
-		self.__useClosingPrice = useClosingPrice
 
-	def __getPrice(self, broker, bar_):
-		if self.__useClosingPrice:
-			if broker.getUseAdjustedValues():
-				ret = bar_.getAdjClose()
-			else:
-				ret = bar_.getClose()
+class BacktestingOrder:
+	def checkCanceled(self, bars):
+		# If its the last bar of the session and the order is not GTC, then cancel it.
+		if self.isAccepted() and self.getGoodTillCanceled() == False and bars.getBar(self.getInstrument()).getSessionClose():
+			self.cancel()
+
+	def tryExecute(self, broker, bars):
+		if self.isAccepted():
+			self.tryExecuteImpl(broker, bars)
+			self.checkCanceled(bars)
+
+class MarketOrder(broker.MarketOrder, BacktestingOrder):
+	def __init__(self, action, instrument, quantity, onClose, goodTillCanceled):
+		broker.MarketOrder.__init__(self, action, instrument, quantity, goodTillCanceled)
+		self.__onClose = onClose
+
+	def __getPrice(self, broker_, bar_):
+		# Fill the order at the open or close price (as in NinjaTrader).
+		if self.__onClose:
+			ret = broker_.getBarClose(bar_)
 		else:
-			# Try to fill the order at the Open price.
-			if broker.getUseAdjustedValues():
-				ret = bar_.getAdjOpen()
-			else:
-				ret = bar_.getOpen()
+			ret = broker_.getBarOpen(bar_)
 		return ret
 
-	def tryExecute(self, broker_, bars):
+	def tryExecuteImpl(self, broker_, bars):
 		try:
-			if self.isAccepted():
-				bar_ = bars.getBar(self.getInstrument())
-				price = self.__getPrice(broker_, bar_)
-				broker_.commitOrderExecution(self, price, self.getQuantity(), bar_.getDateTime())
-
-				self.checkCanceled(bars)
+			bar_ = bars.getBar(self.getInstrument())
+			price = self.__getPrice(broker_, bar_)
+			broker_.commitOrderExecution(self, price, self.getQuantity(), bar_.getDateTime())
 		except KeyError:
 			pass
 
-class LimitOrder(broker.LimitOrder):
-	"""
-	An :class:`Order` subclass that instructs the broker to buy or sell the stock stock at a particular price.
-	The purchase or sale will not happen unless you get your price.
-	"""
+class LimitOrder(broker.LimitOrder, BacktestingOrder):
 	def __getPrice(self, broker_, bar_):
+		ret = None
+		open_ = broker_.getBarOpen(bar_)
+		high = broker_.getBarHigh(bar_)
+		low = broker_.getBarLow(bar_)
+		limitPrice = self.getPrice()
+
+		# If the bar is below the limit price, use the open price.
+		# If the bar includes the limit price, use the open price or the limit price. Whichever is better.
+		if self.getAction() in [broker.Order.Action.BUY, broker.Order.Action.BUY_TO_COVER]:
+			if high < limitPrice:
+				ret = open_
+			elif limitPrice >= low:
+				if open_ < limitPrice: # The limit price was penetrated on open.
+					ret = open_
+				else:
+					ret = limitPrice
+		# If the bar is above the limit price, use the open price.
+		# If the bar includes the limit price, use the open price or the limit price. Whichever is better.
+		elif self.getAction() in [broker.Order.Action.SELL, broker.Order.Action.SELL_SHORT]:
+			if low > limitPrice:
+				ret = open_
+			elif limitPrice <= high:
+				if open_ > limitPrice: # The limit price was penetrated on open.
+					ret = open_
+				else:
+					ret = limitPrice
+		return ret
+
+	def tryExecuteImpl(self, broker_, bars):
+		try:
+			bar_ = bars.getBar(self.getInstrument())
+			price = self.__getPrice(broker_, bar_)
+			if price != None:
+				broker_.commitOrderExecution(self, price, self.getQuantity(), bar_.getDateTime())
+		except KeyError:
+			pass
+
+class StopOrder(broker.StopOrder, BacktestingOrder):
+	def __getPrice(self, broker_, bar_):
+		ret = None
+		open_ = broker_.getBarOpen(bar_)
+		high = broker_.getBarHigh(bar_)
+		low = broker_.getBarLow(bar_)
+		stopPrice = self.getPrice()
+
+		# If the bar is above the stop price, use the open price.
+		# If the bar includes the stop price, use the open price or the stop price. Whichever is better.
+		if self.getAction() in [broker.Order.Action.BUY, broker.Order.Action.BUY_TO_COVER]:
+			if low > stopPrice:
+				ret = open_
+			elif stopPrice <= high:
+				if open_ > stopPrice: # The stop price was penetrated on open.
+					ret = open_
+				else:
+					ret = stopPrice
+		# If the bar is below the stop price, use the open price.
+		# If the bar includes the stop price, use the open price or the stop price. Whichever is better.
+		elif self.getAction() in [broker.Order.Action.SELL, broker.Order.Action.SELL_SHORT]:
+			if high < stopPrice:
+				ret = open_
+			if stopPrice >= low:
+				if open_ < stopPrice: # The stop price was penetrated on open.
+					ret = open_
+				else:
+					ret = stopPrice
+		return ret
+
+	def tryExecuteImpl(self, broker_, bars):
+		try:
+			bar_ = bars.getBar(self.getInstrument())
+			price = self.__getPrice(broker_, bar_)
+			if price != None:
+				broker_.commitOrderExecution(self, price, self.getQuantity(), bar_.getDateTime())
+		except KeyError:
+			pass
+
+class StopLimitOrder(broker.StopLimitOrder, BacktestingOrder):
+	def __priceInRange(self, broker_, bar_, price):
 		if broker_.getUseAdjustedValues():
 			high = bar_.getAdjHigh()
 			low = bar_.getAdjLow()
@@ -78,94 +150,36 @@ class LimitOrder(broker.LimitOrder):
 			high = bar_.getHigh()
 			low = bar_.getLow()
 
-			price = self.getPrice()
-
 		if price >= low and price <= high:
-			ret = price
+			ret = True
+		else:
+			ret = False
+		return ret
+
+	def __getPrice(self, broker_, bar_):
+		assert(self.isLimitOrderActive())
+
+		# Fill the order at the limit price (as in NinjaTrader).
+		limitPrice = self.getPrice()
+		if self.__priceInRange(broker_, bar_, limitPrice):
+			ret = limitPrice
 		else:
 			ret = None
 		return ret
 
-	def tryExecute(self, broker_, bars):
+	def tryExecuteImpl(self, broker_, bars):
 		try:
-			if self.isAccepted():
-				bar_ = bars.getBar(self.getInstrument())
+			bar_ = bars.getBar(self.getInstrument())
+
+			# Check if we have to activate the limit order first.
+			if not self.isLimitOrderActive() and self.__priceInRange(broker_, bar_, self.getStopPrice()):
+				self.setLimitOrderActive(True)
+
+			if self.isLimitOrderActive():
+				# Check if we have ever reached the limit price
 				price = self.__getPrice(broker_, bar_)
-				if price:
+				if price != None:
 					broker_.commitOrderExecution(self, price, self.getQuantity(), bar_.getDateTime())
-
-				self.checkCanceled(bars)
-		except KeyError:
-			pass
-
-
-class StopOrder(broker.StopOrder):
-	"""
-	An :class:`Order` subclass that gives your broker a price trigger that protects you from a big drop in a stock.
-		You enter a stop loss order at a point below the current market price. If the stock falls to this price point, 
-		the stop loss order becomes a market order and your broker sells the stock. If the stock stays level or rises, 
-		the stop loss order does nothing.
-	"""
-	def tryExecute(self, broker_, bars):
-		try:
-			if self.isAccepted():
-				bar_ = bars.getBar(self.getInstrument())
-
-				# Check if we have reached the limit price:
-				high = bar_.getHigh()
-				low = bar_.getLow()
-
-				stopPrice = self.getPrice()
-				action = self.getAction()
-
-				# Stop price reached, initiate a market order.
-				# Fill the market order with the worst price: 
-				#	High for Long, Low for Short orders
-				if stopPrice <= high and action == broker.Order.Action.BUY:
-					orderPrice = high
-					broker_.commitOrderExecution(self, orderPrice, self.getQuantity(), bar_.getDateTime())
-				elif stopPrice >= low and action in (broker.Order.Action.SELL, broker.Order.Action.SELL_SHORT):
-					orderPrice = low
-					broker_.commitOrderExecution(self, orderPrice, self.getQuantity(), bar_.getDateTime())
-
-				self.checkCanceled(bars)
-		except KeyError:
-			pass
-
-
-class StopLimitOrder(broker.StopLimitOrder):
-	"""
-	An :class:`Order` subclass that gives your broker a price trigger that protects you from a big drop in a stock.
-		You enter a stop loss order at a point below the current market price. If the stock falls to this price point, 
-		the stop loss order becomes a limit order with the defined limit price. If the stock stays level or rises, 
-		the stop loss order does nothing.
-	"""
-	def tryExecute(self, broker_, bars):
-		try:
-			if self.isAccepted():
-				bar_ = bars.getBar(self.getInstrument())
-
-				# Check if we have reached the stop price:
-				high = bar_.getHigh()
-				low = bar_.getLow()
-				
-				limitPrice = self.getPrice()
-				stopPrice = self.getStopPrice()
-				action = self.getAction()
-				
-				# Check if we have ever reached the stop price
-				if self.isLimitOrderActive():
-					if limitPrice >= low and action == broker.Order.Action.BUY:
-						broker_.commitOrderExecution(self, limitPrice, self.getQuantity(), bar_.getDateTime())
-					elif limitPrice <= high and action in (broker.Order.Action.SELL, broker.Order.Action.SELL_SHORT):
-						broker_.commitOrderExecution(self, limitPrice, self.getQuantity(), bar_.getDateTime())
-				else:
-					if stopPrice <= high and action == broker.Order.Action.BUY:
-						self.setLimitOrderActive(True)
-					elif stopPrice >= low and action in (broker.Order.Action.SELL, broker.Order.Action.SELL_SHORT):
-						self.setLimitOrderActive(True)
-
-				self.checkCanceled(bars)
 		except KeyError:
 			pass
 
@@ -175,7 +189,6 @@ class ExecuteIfFilled(broker.ExecuteIfFilled):
 			self.getDependent().tryExecute(broker, bars)
 		elif self.getIndependent().isCanceled(): 
 			self.getDependent().cancel()
-
 
 ######################################################################
 ## Broker
@@ -200,6 +213,34 @@ class Broker(broker.BasicBroker):
 		# It is VERY important that the broker subscribes to barfeed events before the strategy.
 		barFeed.getNewBarsEvent().subscribe(self.onBars)
 		self.__barFeed = barFeed
+
+	def getBarOpen(self, bar_):
+		if self.getUseAdjustedValues():
+			ret = bar_.getAdjOpen()
+		else:
+			ret = bar_.getOpen()
+		return ret
+
+	def getBarHigh(self, bar_):
+		if self.getUseAdjustedValues():
+			ret = bar_.getAdjHigh()
+		else:
+			ret = bar_.getHigh()
+		return ret
+
+	def getBarLow(self, bar_):
+		if self.getUseAdjustedValues():
+			ret = bar_.getAdjLow()
+		else:
+			ret = bar_.getLow()
+		return ret
+
+	def getBarClose(self, bar_):
+		if self.getUseAdjustedValues():
+			ret = bar_.getAdjClose()
+		else:
+			ret = bar_.getClose()
+		return ret
 
 	def getUseAdjustedValues(self):
 		return self.__useAdjustedValues
@@ -232,7 +273,7 @@ class Broker(broker.BasicBroker):
 
 	# Tries to commit an order execution. Returns True if the order was commited, or False is there is not enough cash.
 	def commitOrderExecution(self, order, price, quantity, dateTime):
-		if order.getAction() == broker.Order.Action.BUY:
+		if order.getAction() in [broker.Order.Action.BUY, broker.Order.Action.BUY_TO_COVER]:
 			cost = price * quantity * -1
 			assert(cost < 0)
 			sharesDelta = quantity
@@ -305,31 +346,19 @@ class Broker(broker.BasicBroker):
 		# All events were already emitted while handling barfeed events.
 		pass
 	
-	def createLongMarketOrder(self, instrument, quantity, goodTillCanceled=False, useClosingPrice=False): 
-		return(MarketOrder(broker.Order.Action.BUY, instrument, quantity, goodTillCanceled, useClosingPrice))
+	def createMarketOrder(self, action, instrument, quantity, onClose, goodTillCanceled):
+		return MarketOrder(action, instrument, quantity, onClose, goodTillCanceled)
 
-	def createShortMarketOrder(self, instrument, quantity, goodTillCanceled=False, useClosingPrice=False): 
-		return(MarketOrder(broker.Order.Action.SELL, instrument, quantity, goodTillCanceled, useClosingPrice))
+	def createLimitOrder(self, action, instrument, limitPrice, quantity, goodTillCanceled):
+		return LimitOrder(action, instrument, limitPrice, quantity, goodTillCanceled)
 
-	def createLongLimitOrder(self, instrument, price, quantity, goodTillCanceled=False): 
-		return(LimitOrder(broker.Order.Action.BUY, instrument, price, quantity, goodTillCanceled))
+	def createStopOrder(self, action, instrument, stopPrice, quantity, goodTillCanceled):
+		return StopOrder(action, instrument, stopPrice, quantity, goodTillCanceled)
 
-	def createShortLimitOrder(self, instrument, price, quantity, goodTillCanceled=False): 
-		return(LimitOrder(broker.Order.Action.SELL, instrument, price, quantity, goodTillCanceled))
+	def createStopLimitOrder(self, action, instrument, stopPrice, limitPrice, quantity, goodTillCanceled):
+		return StopLimitOrder(action, instrument, limitPrice, stopPrice, quantity, goodTillCanceled)
 
-	def createLongStopOrder(self, instrument, price, quantity, goodTillCanceled=False): 
-		return(StopOrder(broker.Order.Action.BUY, instrument, price, quantity, goodTillCanceled))
-
-	def createShortStopOrder(self, instrument, price, quantity, goodTillCanceled=False): 
-		return(StopOrder(broker.Order.Action.SELL, instrument, price, quantity, goodTillCanceled))
-
-	def createLongStopLimitOrder(self, instrument, limitPrice, stopPrice, quantity, goodTillCanceled=False): 
-		return(StopLimitOrder(broker.Order.Action.BUY, instrument, limitPrice, stopPrice, quantity, goodTillCanceled))
-
-	def createShortStopLimitOrder(self, instrument, limitPrice, stopPrice, quantity, goodTillCanceled=False): 
-		return(StopLimitOrder(broker.Order.Action.SELL, instrument, limitPrice, stopPrice, quantity, goodTillCanceled))
-	
 	def createExecuteIfFilled(self, dependent, independent):
-		return(ExecuteIfFilled(dependent, independent))
+		return ExecuteIfFilled(dependent, independent)
 
 # vim: noet:ci:pi:sts=0:sw=4:ts=4

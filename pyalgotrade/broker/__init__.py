@@ -6,7 +6,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 # 
-#	http://www.apache.org/licenses/LICENSE-2.0
+#   http://www.apache.org/licenses/LICENSE-2.0
 # 
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@ from pyalgotrade import observer
 
 class Commission:
 	def calculate(self, order, price, quantity):
-		raise Exception("Not implemented")
+		raise NotImplementedError()
 
 class NoCommission(Commission):
 	def calculate(self, order, price, quantity):
@@ -63,6 +63,7 @@ class Order:
 		Valid **action** parameter values are:
 
 		 * Order.Action.BUY
+		 * Order.Action.BUY_TO_COVER
 		 * Order.Action.SELL
 		 * Order.Action.SELL_SHORT
 
@@ -70,9 +71,10 @@ class Order:
 	"""
 
 	class Action:
-		BUY			= 1
-		SELL		= 2
-		SELL_SHORT	= 3
+		BUY				= 1
+		BUY_TO_COVER	= 2
+		SELL			= 3
+		SELL_SHORT		= 4
 
 	class State:
 		ACCEPTED		= 1
@@ -152,11 +154,6 @@ class Order:
 		self.__executionInfo = orderExecutionInfo
 		self.__state = Order.State.FILLED
 
-	def checkCanceled(self, bars):
-		# If its the last bar of the session and the order is not GTC, then cancel it.
-		if self.isAccepted() and self.getGoodTillCanceled() == False and bars.getBar(self.__instrument).getSessionClose():
-			self.__state = Order.State.CANCELED
-
 	def getExecutionInfo(self):
 		"""Returns the order execution info if the order was filled, or None otherwise.
 
@@ -165,44 +162,19 @@ class Order:
 		return self.__executionInfo
 	
 class MarketOrder(Order):
-	"""
-	An :class:`Order` subclass that instructs the broker to buy or sell the stock immediately at the prevailing price, whatever that may be.
-	If useClosingPrice is set to False then the opening price will be used to fill the order, otherwise the closing price will be used.
-	"""
-
 	def __init__(self, action, instrument, quantity, goodTillCanceled = False):
 		price = 0
 		Order.__init__(self, Order.Type.MARKET, action, instrument, price, quantity, goodTillCanceled)
 
-
 class LimitOrder(Order):
-	"""
-	An :class:`Order` subclass that instructs the broker to buy or sell the stock stock at a particular price.
-	The purchase or sale will not happen unless you get your price.
-	"""
-
-	def __init__(self, action, instrument, price, quantity, goodTillCanceled = False):
-		Order.__init__(self, Order.Type.LIMIT, action, instrument, price, quantity, goodTillCanceled)
-	
+	def __init__(self, action, instrument, limitPrice, quantity, goodTillCanceled = False):
+		Order.__init__(self, Order.Type.LIMIT, action, instrument, limitPrice, quantity, goodTillCanceled)
 
 class StopOrder(Order):
-	"""
-	An :class:`Order` subclass that gives your broker a price trigger that protects you from a big drop in a stock.
-		You enter a stop loss order at a point below the current market price. If the stock falls to this price point, 
-		the stop loss order becomes a market order and your broker sells the stock. If the stock stays level or rises, 
-		the stop loss order does nothing.
-	"""
-
-	def __init__(self, action, instrument, price, quantity, goodTillCanceled = False):
-		Order.__init__(self, Order.Type.STOP, action, instrument, price, quantity, goodTillCanceled)
+	def __init__(self, action, instrument, stopPrice, quantity, goodTillCanceled = False):
+		Order.__init__(self, Order.Type.STOP, action, instrument, stopPrice, quantity, goodTillCanceled)
 
 class StopLimitOrder(Order):
-	"""
-	An :class:`Order` subclass that gives your broker a price trigger that protects you from a big drop in a stock.
-		You enter a stop loss order at a point below the current market price. If the stock falls to this price point, 
-		the stop loss order becomes a limit order with the defined limit price. If the stock stays level or rises, 
-		the stop loss order does nothing.
-	"""
 	def __init__(self, action, instrument, limitPrice, stopPrice, quantity, goodTillCanceled = False):
 		Order.__init__(self, Order.Type.STOP_LIMIT, action, instrument, limitPrice, quantity, goodTillCanceled)
 		self.__stopPrice = stopPrice
@@ -221,7 +193,6 @@ class StopLimitOrder(Order):
 	def isLimitOrderActive(self):
 		"""Returns the Limit Order Active boolean variable"""
 		return self.__limitOrderActive
-
 
 # Special order wrapper that executes an order (dependent) only if another order (independent) was filled.
 class ExecuteIfFilled:
@@ -319,30 +290,88 @@ class BasicBroker:
 		"""
 		raise NotImplementedError()
 	
-	def createLongMarketOrder(self, instrument, quantity, goodTillCanceled=False):
+	def createMarketOrder(self, action, instrument, quantity, onClose, goodTillCanceled):
+		"""Creates a Market order.
+		A market order is an order to buy or sell a stock at the best available price.
+		Generally, this type of order will be executed immediately. However, the price at which a market order will be executed
+		is not guaranteed.
+
+		:param action: The order action.
+		:type action: Order.Action.BUY, or Order.Action.BUY_TO_COVER, or Order.Action.SELL or Order.Action.SELL_SHORT.
+		:param instrument: Instrument identifier.
+		:type instrument: string.
+		:param quantity: Order quantity.
+		:type quantity: int.
+		:param onClose: True if the order should be filled as close to the closing price as possible (Market-On-Close order).
+		:type onClose: boolean.
+		:param goodTillCanceled: True if the order is good till canceled. Orders that are not filled by the time the session closes will be will be automatically canceled if they were not set as good till canceled.
+		:type goodTillCanceled: boolean.
+		"""
 		raise NotImplementedError()
 
-	def createShortMarketOrder(self, instrument, quantity, goodTillCanceled=False):
+	def createLimitOrder(self, action, instrument, limitPrice, quantity, goodTillCanceled): 
+		"""Creates a Limit order.
+		A limit order is an order to buy or sell a stock at a specific price or better.
+		A buy limit order can only be executed at the limit price or lower, and a sell limit order can only be executed at the
+		limit price or higher.		
+
+		:param action: The order action.
+		:type action: Order.Action.BUY, or Order.Action.BUY_TO_COVER, or Order.Action.SELL or Order.Action.SELL_SHORT.
+		:param instrument: Instrument identifier.
+		:type instrument: string.
+		:param limitPrice: The order price.
+		:type limitPrice: float
+		:param quantity: Order quantity.
+		:type quantity: int.
+		:param goodTillCanceled: True if the order is good till canceled. Orders that are not filled by the time the session closes will be will be automatically canceled if they were not set as good till canceled.
+		:type goodTillCanceled: boolean.
+		"""
 		raise NotImplementedError()
 
-	def createLongLimitOrder(self, instrument, price, quantity, goodTillCanceled=False): 
+	def createStopOrder(self, action, instrument, stopPrice, quantity, goodTillCanceled): 
+		"""Creates a Stop order.
+		A stop order, also referred to as a stop-loss order, is an order to buy or sell a stock once the price of the stock
+		reaches a specified price, known as the stop price.
+		When the stop price is reached, a stop order becomes a market order.
+		A buy stop order is entered at a stop price above the current market price. Investors generally use a buy stop order
+		to limit a loss or to protect a profit on a stock that they have sold short.
+		A sell stop order is entered at a stop price below the current market price. Investors generally use a sell stop order
+		to limit a loss or to protect a profit on a stock that they own.
+
+		:param action: The order action.
+		:type action: Order.Action.BUY, or Order.Action.BUY_TO_COVER, or Order.Action.SELL or Order.Action.SELL_SHORT.
+		:param instrument: Instrument identifier.
+		:type instrument: string.
+		:param stopPrice: The trigger price.
+		:type stopPrice: float
+		:param quantity: Order quantity.
+		:type quantity: int.
+		:param goodTillCanceled: True if the order is good till canceled. Orders that are not filled by the time the session closes will be will be automatically canceled if they were not set as good till canceled.
+		:type goodTillCanceled: boolean.
+		"""
 		raise NotImplementedError()
 
-	def createShortLimitOrder(self, instrument, price, quantity, goodTillCanceled=False): 
+	def createStopLimitOrder(self, action, instrument, stopPrice, limitPrice, quantity, goodTillCanceled): 
+		"""Creates a Stop-Limit order.
+		A stop-limit order is an order to buy or sell a stock that combines the features of a stop order and a limit order.
+		Once the stop price is reached, a stop-limit order becomes a limit order that will be executed at a specified price
+		(or better). The benefit of a stop-limit order is that the investor can control the price at which the order can be executed.
+
+		:param action: The order action.
+		:type action: Order.Action.BUY, or Order.Action.BUY_TO_COVER, or Order.Action.SELL or Order.Action.SELL_SHORT.
+		:param instrument: Instrument identifier.
+		:type instrument: string.
+		:param stopPrice: The trigger price.
+		:type stopPrice: float
+		:param limitPrice: The price for the limit order.
+		:type limitPrice: float
+		:param quantity: Order quantity.
+		:type quantity: int.
+		:param goodTillCanceled: True if the order is good till canceled. Orders that are not filled by the time the session closes will be will be automatically canceled if they were not set as good till canceled.
+		:type goodTillCanceled: boolean.
+		"""
 		raise NotImplementedError()
 
-	def createLongStopOrder(self, instrument, price, quantity, goodTillCanceled=False): 
-		raise NotImplementedError()
-
-	def createShortStopOrder(self, instrument, price, quantity, goodTillCanceled=False): 
-		raise NotImplementedError()
-
-	def createLongStopLimitOrder(self, instrument, limitPrice, stopPrice, quantity, goodTillCanceled=False): 
-		raise NotImplementedError()
-
-	def createShortStopLimitOrder(self, instrument, limitPrice, stopPrice, quantity, goodTillCanceled=False): 
-		raise NotImplementedError()
-	
 	def createExecuteIfFilled(self, dependent, independent):
 		raise NotImplementedError()
 

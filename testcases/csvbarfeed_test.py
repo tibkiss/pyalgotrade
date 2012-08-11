@@ -24,48 +24,48 @@ import os
 
 from pyalgotrade.barfeed import csvfeed
 from pyalgotrade.barfeed import ninjatraderfeed
-from pyalgotrade.providers.interactivebrokers import ibfeed
+# from pyalgotrade.providers.interactivebrokers import ibfeed
 import common
 
 class BarFeedEventHandler_TestLoadOrder:
-		def __init__(self, testcase, barFeed, instrument):
-				self.__testcase = testcase
-				self.__count = 0
-				self.__prevDateTime = None
-				self.__barFeed = barFeed
-				self.__instrument = instrument
+	def __init__(self, testcase, barFeed, instrument):
+		self.__testcase = testcase
+		self.__count = 0
+		self.__prevDateTime = None
+		self.__barFeed = barFeed
+		self.__instrument = instrument
 
-		def onBars(self, bars):
-				self.__count += 1
-				dateTime = bars.getBar(self.__instrument).getDateTime()
-				if self.__prevDateTime != None:
-						# Check that bars are loaded in order
-						self.__testcase.assertTrue(self.__prevDateTime < dateTime)
-						# Check that the last value in the dataseries match the current datetime.
-						self.__testcase.assertTrue(self.__barFeed.getDataSeries().getValue().getDateTime() == dateTime)
-				self.__prevDateTime = dateTime
+	def onBars(self, bars):
+		self.__count += 1
+		dateTime = bars.getBar(self.__instrument).getDateTime()
+		if self.__prevDateTime != None:
+			# Check that bars are loaded in order
+			self.__testcase.assertTrue(self.__prevDateTime < dateTime)
+			# Check that the last value in the dataseries match the current datetime.
+			self.__testcase.assertTrue(self.__barFeed.getDataSeries().getValue().getDateTime() == dateTime)
+		self.__prevDateTime = dateTime
 
-		def getEventCount(self):
-				return self.__count
-		
+	def getEventCount(self):
+			return self.__count
+	
 class BarFeedEventHandler_TestFilterRange:
-		def __init__(self, testcase, instrument, fromDate, toDate):
-				self.__testcase = testcase
-				self.__count = 0
-				self.__instrument = instrument
-				self.__fromDate = fromDate
-				self.__toDate = toDate
+	def __init__(self, testcase, instrument, fromDate, toDate):
+		self.__testcase = testcase
+		self.__count = 0
+		self.__instrument = instrument
+		self.__fromDate = fromDate
+		self.__toDate = toDate
 
-		def onBars(self, bars):
-				self.__count += 1
+	def onBars(self, bars):
+		self.__count += 1
 
-				if self.__fromDate != None:
-					self.__testcase.assertTrue(bars.getBar(self.__instrument).getDateTime() >= self.__fromDate)
-				if self.__toDate != None:
-					self.__testcase.assertTrue(bars.getBar(self.__instrument).getDateTime() <= self.__toDate)
+		if self.__fromDate != None:
+			self.__testcase.assertTrue(bars.getBar(self.__instrument).getDateTime() >= self.__fromDate)
+		if self.__toDate != None:
+			self.__testcase.assertTrue(bars.getBar(self.__instrument).getDateTime() <= self.__toDate)
 
-		def getEventCount(self):
-				return self.__count
+	def getEventCount(self):
+			return self.__count
 
 class YahooTestCase(unittest.TestCase):
 	TestInstrument = "orcl"
@@ -239,12 +239,12 @@ def getTestCases():
 	ret.append(YahooTestCase("testFilteredRangeTo"))
 	ret.append(YahooTestCase("testFilteredRangeFromTo"))
 	ret.append(IntradayBarFeedTestCase("testSessionClose"))
-	ret.append(IBTestCase("testParseDate_1"))
-	ret.append(IBTestCase("testDateCompare"))
-	ret.append(IBTestCase("testCSVFeedLoadOrder"))
-	ret.append(IBTestCase("testFilteredRangeFrom"))
-	ret.append(IBTestCase("testFilteredRangeTo"))
-	ret.append(IBTestCase("testFilteredRangeFromTo"))
+	# ret.append(IBTestCase("testParseDate_1"))
+	# ret.append(IBTestCase("testDateCompare"))
+	# ret.append(IBTestCase("testCSVFeedLoadOrder"))
+	# ret.append(IBTestCase("testFilteredRangeFrom"))
+	# ret.append(IBTestCase("testFilteredRangeTo"))
+	# ret.append(IBTestCase("testFilteredRangeFromTo"))
 	return ret
 
 

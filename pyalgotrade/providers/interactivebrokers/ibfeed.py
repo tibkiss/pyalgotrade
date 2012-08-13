@@ -37,9 +37,8 @@ import Queue
 
 
 class RowParser(csvfeed.RowParser):
-	def __init__(self, instrument, zone = 0):
+	def __init__(self, zone = 0):
 		self.__zone = zone
-		self.__instrument = instrument
 
 	def __parseDate(self, dateString):
 		ret = datetime.datetime.strptime(dateString, "%Y-%m-%d %H:%M:%S")
@@ -82,7 +81,7 @@ class CSVFeed(csvfeed.BarFeed):
 		:param timeZone: The timezone for bars. 0 if bar dates are in UTC.
 		:type timeZone: int.
 		"""
-		rowParser = RowParser(instrument, timeZone)
+		rowParser = RowParser(timeZone)
 		csvfeed.BarFeed.addBarsFromCSV(self, instrument, path, rowParser)
 
 

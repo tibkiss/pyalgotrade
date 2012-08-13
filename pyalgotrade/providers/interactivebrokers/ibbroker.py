@@ -255,30 +255,16 @@ class Broker(broker.BasicBroker):
 		# All events were already emitted while handling barfeed events.
 		pass
 
-	def createLongMarketOrder(self, instrument, quantity, goodTillCanceled=False):
-		return(MarketOrder(self.__ibConnection, broker.Order.Action.BUY, instrument, quantity, goodTillCanceled))
+	def createMarketOrder(self, action, instrument, quantity, onClose=False, goodTillCanceled=False):
+		return MarketOrder(self.__ibConnection, action, instrument, quantity, goodTillCanceled)
 
-	def createShortMarketOrder(self, instrument, quantity, goodTillCanceled=False):
-		return(MarketOrder(self.__ibConnection, broker.Order.Action.SELL, instrument, quantity, goodTillCanceled))
+	def createLimitOrder(self, action, instrument, limitPrice, quantity, goodTillCanceled=False):
+		return LimitOrder(self.__ibConnection, action, instrument, limitPrice, quantity, goodTillCanceled)
 
-	def createLongLimitOrder(self, instrument, price, quantity, goodTillCanceled=False): 
-		return(LimitOrder(self.__ibConnection, broker.Order.Action.BUY, instrument, price, quantity, goodTillCanceled))
+	def createStopOrder(self, action, instrument, stopPrice, quantity, goodTillCanceled=False):
+		return StopOrder(self.__ibConnection, action, instrument, stopPrice, quantity, goodTillCanceled)
 
-	def createShortLimitOrder(self, instrument, price, quantity, goodTillCanceled=False): 
-		return(LimitOrder(self.__ibConnection, broker.Order.Action.SELL, instrument, price, quantity, goodTillCanceled))
-
-	def createLongStopOrder(self, instrument, price, quantity, goodTillCanceled=False): 
-		return(StopOrder(self.__ibConnection, broker.Order.Action.BUY, instrument, price, quantity, goodTillCanceled))
-
-	def createShortStopOrder(self, instrument, price, quantity, goodTillCanceled=False): 
-		return(StopOrder(self.__ibConnection, broker.Order.Action.SELL, instrument, price, quantity, goodTillCanceled))
-
-	def createLongStopLimitOrder(self, instrument, limitPrice, stopPrice, quantity, goodTillCanceled=False): 
-		return(StopLimitOrder(self.__ibConnection, broker.Order.Action.BUY, instrument, limitPrice, stopPrice, quantity, 
-							  goodTillCanceled))
-
-	def createShortStopLimitOrder(self, instrument, limitPrice, stopPrice, quantity, goodTillCanceled=False): 
-		return(StopLimitOrder(self.__ibConnection, broker.Order.Action.SELL, instrument, limitPrice, stopPrice, quantity, 
-							  goodTillCanceled))
+	def createStopLimitOrder(self, action, instrument, stopPrice, limitPrice, quantity, goodTillCanceled=False):
+		return StopLimitOrder(self.__ibConnection, action, instrument, limitPrice, stopPrice, quantity, goodTillCanceled)
 
 # vim: noet:ci:pi:sts=0:sw=4:ts=4

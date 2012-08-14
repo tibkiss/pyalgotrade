@@ -108,17 +108,17 @@ def get_historical_data(instrument, endTime, duration, barSize,
 	if duration == '1 D' and barSize == '5 secs' and endTime.endswith('16:00:00 EST'):
 		bars = []
 		et = endTime[:-12] # Crop the '16:00:00 EST' from the end
-		for endTime_ in ('10:30:00 EST', '11:30:00 EST', '12:30:00 EST', '13:30:00 EST', '14:30:00 EST', '15:30:00 EST'):
-			b = twsConnection.requestHistoricalData(instrument, et+endTime_, '3600 S', barSize,
+		for endTime_ in ('11:30:00 EST', '13:30:00 EST'):
+			b = twsConnection.requestHistoricalData(instrument, et+endTime_, '7200 S', barSize,
 						 	 	 	 	 	 	 	secType, exchange, currency,
 						 	 	 	 	 	 	 	whatToShow, useRTH, formatDate)
 			if b == None:
 				print 'error with endTime: ', endTime_
 			bars.extend(b)
 
-			time.sleep(5)
+			time.sleep(1)
 
-		b = twsConnection.requestHistoricalData(instrument, et+'16:00:00 EST', '1800 S', barSize,
+		b = twsConnection.requestHistoricalData(instrument, et+'16:00:00 EST', '9000 S', barSize, # 13:30 - 16:00
 						 	 	 	 	 	 	secType, exchange, currency,
 						 	 	 	 	 	 	whatToShow, useRTH, formatDate)
 		if b == None:
@@ -172,9 +172,10 @@ if __name__ == '__main__':
 	import logging
 	logging.basicConfig(level=logging.DEBUG, format=LOGFMT)
 
-	bars = get_historical_data(args.instrument, " ".join(args.endtime), " ".join(args.duration), " ".join(args.barsize))
+	rth=True
+	bars = get_historical_data(args.instrument, " ".join(args.endtime), " ".join(args.duration), " ".join(args.barsize), useRTH=rth)
 	if bars != None:
-		bars_to_csv(bars, args.filename)
+		bars_to_csv(bars, args.filename, rth)
 		print 'Historical data saved to %s.' % args.filename
 	else:
 		print 'No data returned!'

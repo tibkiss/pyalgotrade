@@ -777,6 +777,10 @@ class Connection(EWrapper):
 				self.__portfolioLock.notify()
 				self.__portfolioLock.release()
 
+
+		def accountDownloadEnd(self, accountName):
+				pass
+
 		def updateAccountTime(self, timestamp): 
 				"""This function is called only when reqAccountUpdates on EClientSocket object has been called.
 				Logs the account update time.
@@ -834,6 +838,9 @@ class Connection(EWrapper):
 		def openOrder(self, orderId, contract, order, orderState):
 				log.debug("openOrder: orderId: %s, instrument: %s", orderId, contract.m_symbol)
 				self.__orderIds[orderId] = contract.m_symbol
+
+		def openOrderEnd(self, orderId): 
+			pass
 
 		def execDetails(self, orderId, contract, execution):
 				"""This event is fired when the reqExecutions() functions is invoked, or when an order is filled.

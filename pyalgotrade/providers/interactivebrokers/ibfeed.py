@@ -18,6 +18,7 @@
 .. moduleauthor:: Tibor Kiss <tibor.kiss@gmail.com>
 """
 
+from pyalgotrade import bar
 from pyalgotrade.barfeed import csvfeed, BarFeed
 from pyalgotrade.providers.interactivebrokers import ibbar
 
@@ -125,6 +126,42 @@ class LiveFeed(BarFeed):
 						pass
 				else:
 					return None
+
+		def getNextBars(self):
+			"""Returns the next :class:`pyalgotrade.bar.Bars` in the feed or None if there are no more bars.
+			False is returned in case of out of order bar.
+			"""
+
+			barDict = self.fetchNextBars()
+			if barDict == None:
+				return None
+
+			# This will check for incosistent datetimes between bars.
+			ret = bar.Bars(barDict)
+
+			# Check that current bar datetimes are greater than the previous one.
+			if self.__prevDateTime != None and self.__prevDateTime >= ret.getDateTime():
+				print "WARNING: Bar data times are not in order. Previous datetime was %s and current datetime is %s, skipping bar" % (self.__prevDateTime, ret.getDateTime())
+				return False
+			else:
+				self.__prevDateTime = ret.getDateTime()
+
+				return ret
+
+		# Dispatch events.
+		def dispatch(self):
+			bars = self.getNextBars()
+			if bars == None:
+				self.__stopDispatching = True
+			elif bars == False:
+				pass
+			else:
+				self.__lastBars = bars
+				# Update the dataseries.
+				for instrument in bars.getInstruments():
+					self.__ds[instrument].appendValue(bars.getBar(instrument))
+				# Emit event.
+				self.__newBarsEvent.emit(bars)
 
 		def subscribeRealtimeBars(self, instrument, useRTH_=0):
 				self.__ibConnection.subscribeRealtimeBars(instrument, self.onRealtimeBar, useRTH=useRTH_)

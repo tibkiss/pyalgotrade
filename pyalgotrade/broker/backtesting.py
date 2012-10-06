@@ -21,103 +21,143 @@
 from pyalgotrade import broker
 
 ######################################################################
-## Exceptions
+## Filling strategies
 
-class NotEnoughCash(Exception):
-	def __init__(self):
-		Exception.__init__(self, "Not enough cash")
+class FillStrategy:
+	"""Base class for order filling strategies."""
 
+	# Return the fill price for a MarketOrder or None.
+	def fillMarketOrder(self, order, broker_, bar):
+		"""Override to return the fill price for a market order or None if the order can't be filled at the given time.
 
-######################################################################
-## Orders
+		:param order: The order.
+		:type order: :class:`pyalgotrade.broker.MarketOrder`.
+		:param broker_: The broker.
+		:type broker_: :class:`Broker`.
+		:param bar: The current bar.
+		:type bar: :class:`pyalgotrade.bar.Bar`.
+		:rtype: An int/float with the fill price or None if the order should not be filled.
+		"""
+		raise NotImplementedError()
 
-class BacktestingOrder:
-	def checkCanceled(self, bars):
-		# If its the last bar of the session and the order is not GTC, then cancel it.
-		if self.isAccepted() and self.getGoodTillCanceled() == False and bars.getBar(self.getInstrument()).getSessionClose():
-			self.cancel()
+	# Return the fill price for a LimitOrder or None.
+	def fillLimitOrder(self, order, broker_, bar):
+		"""Override to return the fill price for a limit order or None if the order can't be filled at the given time.
 
-	def tryExecute(self, broker, bars):
-		if self.isAccepted():
-			self.tryExecuteImpl(broker, bars)
-			self.checkCanceled(bars)
+		:param order: The order.
+		:type order: :class:`pyalgotrade.broker.LimitOrder`.
+		:param broker_: The broker.
+		:type broker_: :class:`Broker`.
+		:param bar: The current bar.
+		:type bar: :class:`pyalgotrade.bar.Bar`.
+		:rtype: An int/float with the fill price or None if the order should not be filled.
+		"""
+		raise NotImplementedError()
 
-class MarketOrder(broker.MarketOrder, BacktestingOrder):
-	def __init__(self, action, instrument, quantity, onClose, goodTillCanceled):
-		broker.MarketOrder.__init__(self, action, instrument, quantity, goodTillCanceled)
-		self.__onClose = onClose
+	# Return the fill price for a StopOrder or None.
+	def fillStopOrder(self, order, broker_, bar):
+		"""Override to return the fill price for a stop order or None if the order can't be filled at the given time.
 
-	def __getFillPrice(self, broker_, bar_):
-		# Fill the order at the open or close price (as in NinjaTrader).
-		if self.__onClose:
-			ret = broker_.getBarClose(bar_)
-		else:
-			ret = broker_.getBarOpen(bar_)
-		return ret
+		:param order: The order.
+		:type order: :class:`pyalgotrade.broker.StopOrder`.
+		:param broker_: The broker.
+		:type broker_: :class:`Broker`.
+		:param bar: The current bar.
+		:type bar: :class:`pyalgotrade.bar.Bar`.
+		:rtype: An int/float with the fill price or None if the order should not be filled.
+		"""
+		raise NotImplementedError()
 
-	def tryExecuteImpl(self, broker_, bars):
-		try:
-			bar_ = bars.getBar(self.getInstrument())
-			price = self.__getFillPrice(broker_, bar_)
-			broker_.commitOrderExecution(self, price, self.getQuantity(), bar_.getDateTime())
-		except KeyError:
-			pass
+	# Return the fill price for a StopLimitOrder or None.
+	def fillStopLimitOrder(self, order, broker_, bar, justHitStopPrice):
+		"""Override to return the fill price for a stop limit order or None if the order can't be filled at the given time.
 
-# Returns the fill price for a limit order or None. 
-def get_limit_order_fill_price(broker_, bar_, action, limitPrice):
-	ret = None
-	open_ = broker_.getBarOpen(bar_)
-	high = broker_.getBarHigh(bar_)
-	low = broker_.getBarLow(bar_)
+		:param order: The order.
+		:type order: :class:`pyalgotrade.broker.StopLimitOrder`.
+		:param broker_: The broker.
+		:type broker_: :class:`Broker`.
+		:param bar: The current bar.
+		:type bar: :class:`pyalgotrade.bar.Bar`.
+		:param justHitStopPrice: True if the stop price has just been hit with the current bar.
+		:type justHitStopPrice: boolean.
+		:rtype: An int/float with the fill price or None if the order should not be filled.
+		"""
+		raise NotImplementedError()
 
-	# If the bar is below the limit price, use the open price.
-	# If the bar includes the limit price, use the open price or the limit price. Whichever is better.
-	if action in [broker.Order.Action.BUY, broker.Order.Action.BUY_TO_COVER]:
-		if high < limitPrice:
-			ret = open_
-		elif limitPrice >= low:
-			if open_ < limitPrice: # The limit price was penetrated on open.
-				ret = open_
-			else:
-				ret = limitPrice
-	# If the bar is above the limit price, use the open price.
-	# If the bar includes the limit price, use the open price or the limit price. Whichever is better.
-	elif action in [broker.Order.Action.SELL, broker.Order.Action.SELL_SHORT]:
-		if low > limitPrice:
-			ret = open_
-		elif limitPrice <= high:
-			if open_ > limitPrice: # The limit price was penetrated on open.
-				ret = open_
-			else:
-				ret = limitPrice
-	else: # Unknown action
-		assert(False)
-	return ret
+class DefaultStrategy(FillStrategy):
+	"""
+	This strategy works as follows:
 
-class LimitOrder(broker.LimitOrder, BacktestingOrder):
-	def __getFillPrice(self, broker_, bar_):
-		return get_limit_order_fill_price(broker_, bar_, self.getAction(), self.getPrice())
+	* A :class:`pyalgotrade.broker.MarketOrder` is always filled using the open/close price.
+	* A :class:`pyalgotrade.broker.LimitOrder` will be filled like this:
+		* If the limit price was penetrated with the open price, then the open price is used.
+		* If the bar includes the limit price, then the limit price is used.
+		* Note that when buying the price is penetrated if it gets <= the limit price, and when selling the price is penetrated if it gets >= the limit price
+	* A :class:`pyalgotrade.broker.StopOrder` will be filled like this:
+		* If the stop price was penetrated with the open price, then the open price is used.
+		* If the bar includes the stop price, then the stop price is used.
+		* Note that when buying the price is penetrated if it gets >= the stop price, and when selling the price is penetrated if it gets <= the stop price
+	* A :class:`pyalgotrade.broker.StopLimitOrder` will be filled like this:
+		* If the stop price was penetrated with the open price, or if the bar includes the stop price, then the limit order becomes active.
+		* If the limit order is active:
+			* If the limit order was activated in this same bar and the limit price is penetrated as well, then the best between the stop price and the limit fill price (as described earlier) is used.
+			* If the limit order was activated at a previous bar then the limit fill price (as described earlier) is used.
 
-	def tryExecuteImpl(self, broker_, bars):
-		try:
-			bar_ = bars.getBar(self.getInstrument())
-			price = self.__getFillPrice(broker_, bar_)
-			if price != None:
-				broker_.commitOrderExecution(self, price, self.getQuantity(), bar_.getDateTime())
-		except KeyError:
-			pass
-
-class StopOrder(broker.StopOrder, BacktestingOrder):
-	def __getFillPrice(self, broker_, bar_):
+	.. note::
+		This is the default strategy used by the Broker.
+	"""
+	def __getLimitOrderFillPrice(self, broker_, bar_, action, limitPrice):
 		ret = None
 		open_ = broker_.getBarOpen(bar_)
 		high = broker_.getBarHigh(bar_)
 		low = broker_.getBarLow(bar_)
-		stopPrice = self.getPrice()
+
+		# If the bar is below the limit price, use the open price.
+		# If the bar includes the limit price, use the open price or the limit price.
+		if action in [broker.Order.Action.BUY, broker.Order.Action.BUY_TO_COVER]:
+			if high < limitPrice:
+				ret = open_
+			elif limitPrice >= low:
+				if open_ < limitPrice: # The limit price was penetrated on open.
+					ret = open_
+				else:
+					ret = limitPrice
+		# If the bar is above the limit price, use the open price.
+		# If the bar includes the limit price, use the open price or the limit price.
+		elif action in [broker.Order.Action.SELL, broker.Order.Action.SELL_SHORT]:
+			if low > limitPrice:
+				ret = open_
+			elif limitPrice <= high:
+				if open_ > limitPrice: # The limit price was penetrated on open.
+					ret = open_
+				else:
+					ret = limitPrice
+		else: # Unknown action
+			assert(False)
+		return ret
+
+	def fillMarketOrder(self, order, broker_, bar):
+		if order.getFillOnClose():
+			ret = broker_.getBarClose(bar)
+		else:
+			ret = broker_.getBarOpen(bar)
+		return ret
+
+	# Return the fill price for a LimitOrder or None.
+	def fillLimitOrder(self, order, broker_, bar):
+		return self.__getLimitOrderFillPrice(broker_, bar, order.getAction(), order.getLimitPrice())
+
+	# Return the fill price for a StopOrder or None.
+	def fillStopOrder(self, order, broker_, bar):
+		ret = None
+		open_ = broker_.getBarOpen(bar)
+		high = broker_.getBarHigh(bar)
+		low = broker_.getBarLow(bar)
+		stopPrice = order.getStopPrice()
 
 		# If the bar is above the stop price, use the open price.
 		# If the bar includes the stop price, use the open price or the stop price. Whichever is better.
-		if self.getAction() in [broker.Order.Action.BUY, broker.Order.Action.BUY_TO_COVER]:
+		if order.getAction() in [broker.Order.Action.BUY, broker.Order.Action.BUY_TO_COVER]:
 			if low > stopPrice:
 				ret = open_
 			elif stopPrice <= high:
@@ -127,10 +167,10 @@ class StopOrder(broker.StopOrder, BacktestingOrder):
 					ret = stopPrice
 		# If the bar is below the stop price, use the open price.
 		# If the bar includes the stop price, use the open price or the stop price. Whichever is better.
-		elif self.getAction() in [broker.Order.Action.SELL, broker.Order.Action.SELL_SHORT]:
+		elif order.getAction() in [broker.Order.Action.SELL, broker.Order.Action.SELL_SHORT]:
 			if high < stopPrice:
 				ret = open_
-			if stopPrice >= low:
+			elif stopPrice >= low:
 				if open_ < stopPrice: # The stop price was penetrated on open.
 					ret = open_
 				else:
@@ -139,10 +179,63 @@ class StopOrder(broker.StopOrder, BacktestingOrder):
 			assert(False)
 		return ret
 
+	# Return the fill price for a StopLimitOrder or None.
+	def fillStopLimitOrder(self, order, broker_, bar, justHitStopPrice):
+		ret = self.__getLimitOrderFillPrice(broker_, bar, order.getAction(), order.getLimitPrice())
+		# If we just hit the stop price, we need to make additional checks.
+		if ret != None and justHitStopPrice:
+			if order.getAction() in [broker.Order.Action.BUY, broker.Order.Action.BUY_TO_COVER]:
+				# If the stop price is lower than the limit price, then use that one. Else use the limit price.
+				ret = min(order.getStopPrice(), order.getLimitPrice())
+			elif order.getAction() in [broker.Order.Action.SELL, broker.Order.Action.SELL_SHORT]:
+				# If the stop price is greater than the limit price, then use that one. Else use the limit price.
+				ret = max(order.getStopPrice(), order.getLimitPrice())
+			else: # Unknown action
+				assert(False)
+		return ret
+
+######################################################################
+## Orders
+
+class BacktestingOrder:
+	def checkCanceled(self, broker, bars):
+		# If its the last bar of the session and the order is not GTC, then cancel it.
+		if self.isAccepted() and self.getGoodTillCanceled() == False and bars.getBar(self.getInstrument()).getSessionClose():
+			broker.cancelOrder(self)
+
+	def tryExecute(self, broker, bars):
+		if self.isAccepted():
+			self.tryExecuteImpl(broker, bars)
+			self.checkCanceled(broker, bars)
+
+class MarketOrder(broker.MarketOrder, BacktestingOrder):
+	def __init__(self, action, instrument, quantity, onClose):
+		broker.MarketOrder.__init__(self, action, instrument, quantity, onClose)
+
 	def tryExecuteImpl(self, broker_, bars):
 		try:
 			bar_ = bars.getBar(self.getInstrument())
-			price = self.__getFillPrice(broker_, bar_)
+			price = broker_.getFillStrategy().fillMarketOrder(self, broker_, bar_)
+			if price != None:
+				broker_.commitOrderExecution(self, price, self.getQuantity(), bar_.getDateTime())
+		except KeyError:
+			pass
+
+class LimitOrder(broker.LimitOrder, BacktestingOrder):
+	def tryExecuteImpl(self, broker_, bars):
+		try:
+			bar_ = bars.getBar(self.getInstrument())
+			price = broker_.getFillStrategy().fillLimitOrder(self, broker_, bar_)
+			if price != None:
+				broker_.commitOrderExecution(self, price, self.getQuantity(), bar_.getDateTime())
+		except KeyError:
+			pass
+
+class StopOrder(broker.StopOrder, BacktestingOrder):
+	def tryExecuteImpl(self, broker_, bars):
+		try:
+			bar_ = bars.getBar(self.getInstrument())
+			price = broker_.getFillStrategy().fillStopOrder(self, broker_, bar_)
 			if price != None:
 				broker_.commitOrderExecution(self, price, self.getQuantity(), bar_.getDateTime())
 		except KeyError:
@@ -169,20 +262,6 @@ class StopLimitOrder(broker.StopLimitOrder, BacktestingOrder):
 			assert(False)
 		return ret
 
-	def __getFillPrice(self, broker_, bar_, justHitStopPrice):
-		ret = get_limit_order_fill_price(broker_, bar_, self.getAction(), self.getPrice())
-		# If we just hit the stop price, we need to make additional checks.
-		if ret != None and justHitStopPrice:
-			if self.getAction() in [broker.Order.Action.BUY, broker.Order.Action.BUY_TO_COVER]:
-				# If the stop price is lower than the limit price, then use that one. Else use the limit price.
-				ret = min(self.getStopPrice(), self.getPrice())
-			elif self.getAction() in [broker.Order.Action.SELL, broker.Order.Action.SELL_SHORT]:
-				# If the stop price is greater than the limit price, then use that one. Else use the limit price.
-				ret = max(self.getStopPrice(), self.getPrice())
-			else: # Unknown action
-				assert(False)
-		return ret
-
 	def tryExecuteImpl(self, broker_, bars):
 		try:
 			bar_ = bars.getBar(self.getInstrument())
@@ -195,24 +274,17 @@ class StopLimitOrder(broker.StopLimitOrder, BacktestingOrder):
 
 			# Check if we have ever reached the limit price
 			if self.isLimitOrderActive():
-				price = self.__getFillPrice(broker_, bar_, justHitStopPrice)
+				price = broker_.getFillStrategy().fillStopLimitOrder(self, broker_, bar_, justHitStopPrice)
 				if price != None:
 					broker_.commitOrderExecution(self, price, self.getQuantity(), bar_.getDateTime())
 		except KeyError:
 			pass
 
-class ExecuteIfFilled(broker.ExecuteIfFilled):
-	def tryExecute(self, broker, bars):
-		if self.getIndependent().isFilled():
-			self.getDependent().tryExecute(broker, bars)
-		elif self.getIndependent().isCanceled(): 
-			self.getDependent().cancel()
-
 ######################################################################
 ## Broker
 
-class Broker(broker.BasicBroker):
-	"""Class responsible for processing orders.
+class Broker(broker.Broker):
+	"""Backtesting broker.
 
 	:param cash: The initial amount of cash.
 	:type cash: int or float.
@@ -223,14 +295,23 @@ class Broker(broker.BasicBroker):
 	"""
 
 	def __init__(self, cash, barFeed, commission = None):
-		broker.BasicBroker.__init__(self, cash, commission)
+		broker.Broker.__init__(self, cash, commission)
 		self.__shares = {}
 		self.__pendingOrders = []
 		self.__useAdjustedValues = False
+		self.__fillStrategy = DefaultStrategy()
 
 		# It is VERY important that the broker subscribes to barfeed events before the strategy.
 		barFeed.getNewBarsEvent().subscribe(self.onBars)
 		self.__barFeed = barFeed
+
+	def setFillStrategy(self, strategy):
+		"""Sets the :class:`FillStrategy` to use."""
+		self.__fillStrategy = strategy 
+
+	def getFillStrategy(self):
+		"""Returns the :class:`FillStrategy` currently set."""
+		return self.__fillStrategy
 
 	def getBarOpen(self, bar_):
 		if self.getUseAdjustedValues():
@@ -321,16 +402,12 @@ class Broker(broker.BasicBroker):
 		return ret
 
 	def placeOrder(self, order):
-		"""Submits an order.
-
-		:param order: The order to submit.
-		:type order: :class:`Order`.
-		"""
-
-		if not order.isAccepted() or order in self.__pendingOrders:
-			raise Exception("Can't place the same order twice")
-
-		self.__pendingOrders.append(order)
+		if order.isAccepted():
+			if order not in self.__pendingOrders:
+				self.__pendingOrders.append(order)
+			order.setDirty(False)
+		else:
+			raise Exception("The order was already processed")
 
 	def onBars(self, bars):
 		pendingOrders = self.__pendingOrders
@@ -364,19 +441,21 @@ class Broker(broker.BasicBroker):
 		# All events were already emitted while handling barfeed events.
 		pass
 	
-	def createMarketOrder(self, action, instrument, quantity, onClose, goodTillCanceled):
-		return MarketOrder(action, instrument, quantity, onClose, goodTillCanceled)
+	def createMarketOrder(self, action, instrument, quantity, onClose = False):
+		return MarketOrder(action, instrument, quantity, onClose)
 
-	def createLimitOrder(self, action, instrument, limitPrice, quantity, goodTillCanceled):
-		return LimitOrder(action, instrument, limitPrice, quantity, goodTillCanceled)
+	def createLimitOrder(self, action, instrument, limitPrice, quantity):
+		return LimitOrder(action, instrument, limitPrice, quantity)
 
-	def createStopOrder(self, action, instrument, stopPrice, quantity, goodTillCanceled):
-		return StopOrder(action, instrument, stopPrice, quantity, goodTillCanceled)
+	def createStopOrder(self, action, instrument, stopPrice, quantity):
+		return StopOrder(action, instrument, stopPrice, quantity)
 
-	def createStopLimitOrder(self, action, instrument, stopPrice, limitPrice, quantity, goodTillCanceled):
-		return StopLimitOrder(action, instrument, limitPrice, stopPrice, quantity, goodTillCanceled)
+	def createStopLimitOrder(self, action, instrument, stopPrice, limitPrice, quantity):
+		return StopLimitOrder(action, instrument, limitPrice, stopPrice, quantity)
 
-	def createExecuteIfFilled(self, dependent, independent):
-		return ExecuteIfFilled(dependent, independent)
+	def cancelOrder(self, order):
+		if order.isFilled():
+			raise Exception("Can't cancel order that has already been filled")
+		order.setState(broker.Order.State.CANCELED)
 
 # vim: noet:ci:pi:sts=0:sw=4:ts=4

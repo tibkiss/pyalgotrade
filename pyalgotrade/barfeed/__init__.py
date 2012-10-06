@@ -36,7 +36,6 @@ class BasicBarFeed:
 		self.__ds = {}
 		self.__defaultInstrument = None
 		self.__newBarsEvent = observer.Event()
-		self.__stopDispatching = False
 		self.__lastBars = None
 
 	def getLastBars(self):
@@ -51,7 +50,11 @@ class BasicBarFeed:
 	def join(self):
 		raise NotImplementedError()
 
-	# Subclasses should implement this and return a pyalgotrade.bar.Bars or None if there are no more bars.
+	# Return True if there are not more events to dispatch.
+	def stopDispatching(self):
+		raise NotImplementedError()
+
+	# Subclasses should implement this and return a pyalgotrade.bar.Bars or None if there are no bars.
 	def getNextBars(self):
 		raise NotImplementedError()
 
@@ -61,10 +64,6 @@ class BasicBarFeed:
 	def getDefaultInstrument(self):
 		"""Returns the default instrument."""
 		return self.__defaultInstrument
-
-	# Return True if there are not more events to dispatch.
-	def stopDispatching(self):
-		return self.__stopDispatching
 
 	# Dispatch events.
 	def dispatch(self):
@@ -76,8 +75,6 @@ class BasicBarFeed:
 				self.__ds[instrument].appendValue(bars.getBar(instrument))
 			# Emit event.
 			self.__newBarsEvent.emit(bars)
-		else:
-			self.__stopDispatching = True
 
 	def getRegisteredInstruments(self):
 		"""Returns a list of registered intstrument names."""
@@ -115,12 +112,20 @@ class BarFeed(BasicBarFeed):
 		BasicBarFeed.__init__(self)
 		self.__prevDateTime = None
 
-	# Override to return a map from instrument names to bars or None if there is no more data. All bars datetime must be equal.
+	def __iter__(self):
+		return self
+
+	def next(self):
+		if self.stopDispatching():
+			raise StopIteration()
+		return self.getNextBars()
+
+	# Override to return a map from instrument names to bars or None if there is no data. All bars datetime must be equal.
 	def fetchNextBars(self):
 		raise NotImplementedError()
 
 	def getNextBars(self):
-		"""Returns the next :class:`pyalgotrade.bar.Bars` in the feed or None if there are no more bars."""
+		"""Returns the next :class:`pyalgotrade.bar.Bars` in the feed or None if there are no bars."""
 
 		barDict = self.fetchNextBars()
 		if barDict == None:
@@ -153,6 +158,7 @@ class OptimizerBarFeed(BasicBarFeed):
 		for instrument in instruments:
 			self.registerInstrument(instrument)
 		self.__bars = bars
+		self.__nextBar = 0
 
 	def start(self):
 		pass
@@ -165,7 +171,12 @@ class OptimizerBarFeed(BasicBarFeed):
 
 	def getNextBars(self):
 		ret = None
-		if len(self.__bars):
-			ret = self.__bars.pop(0)
+		if self.__nextBar < len(self.__bars):
+			ret = self.__bars[self.__nextBar]
+			self.__nextBar += 1
 		return ret
+
+	def stopDispatching(self):
+		return self.__nextBar >= len(self.__bars)
+
 

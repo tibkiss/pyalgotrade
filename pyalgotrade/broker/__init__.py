@@ -41,6 +41,7 @@ class FixedCommission(Commission):
 ######################################################################
 ## Orders
 ## http://stocks.about.com/od/tradingbasics/a/markords.htm
+## http://www.interactivebrokers.com/en/software/tws/usersguidebook/ordertypes/basic_order_types.htm
 
 class Order:
 	"""Base class for orders. 
@@ -51,12 +52,8 @@ class Order:
 	:type action: :class:`Order.Action`
 	:param instrument: Instrument identifier.
 	:type instrument: string.
-	:param price: The price associated with the order. The meaning of this variable depends on the order type.
-	:type price: float
 	:param quantity: Order quantity.
 	:type quantity: int.
-	:param goodTillCanceled: True if the order is good till canceled. Orders that are not filled by the time the session closes will be will be automatically canceled if they were not set as good till canceled.
-	:type goodTillCanceled: boolean.
 
 	.. note::
 
@@ -86,17 +83,23 @@ class Order:
 		LIMIT				= 2
 		STOP				= 3
 		STOP_LIMIT			= 4
-		EXEC_IF_FILLED		= 5
 
-	def __init__(self, type_, action, instrument, price, quantity, goodTillCanceled = False):
+	def __init__(self, type_, action, instrument, quantity):
 		self.__type = type_
 		self.__action = action
 		self.__instrument = instrument
-		self.__price = price
 		self.__quantity = quantity
 		self.__executionInfo = None
-		self.__goodTillCanceled = goodTillCanceled
+		self.__goodTillCanceled = False
+		self.__allOrNone = True
 		self.__state = Order.State.ACCEPTED
+		self.__dirty = False
+
+	def isDirty(self):
+		return self.__dirty
+
+	def setDirty(self, dirty):
+		self.__dirty = dirty
 
 	def getType(self):
 		"""Returns the order type"""
@@ -128,31 +131,53 @@ class Order:
 		"""Returns True if the order state is Order.State.FILLED."""
 		return self.__state == Order.State.FILLED
 
-	def cancel(self):
-		"""Cancels an accepted order. If the order is filled an Exception is raised."""
-		if self.isFilled():
-			raise Exception("Can't cancel order that has already been processed")
-		self.__state = Order.State.CANCELED
-
 	def getInstrument(self):
 		"""Returns the instrument identifier."""
 		return self.__instrument
-
-	def getPrice(self):
-		"""Returns order price."""
-		return self.__price
 
 	def getQuantity(self):
 		"""Returns the quantity."""
 		return self.__quantity
 
+	def setQuantity(self, quantity):
+		"""Updates the quantity."""
+		self.__quantity = quantity
+		self.setDirty(True)
+
 	def getGoodTillCanceled(self):
 		"""Returns True if the order is good till canceled."""
 		return self.__goodTillCanceled
 
+	def setGoodTillCanceled(self, goodTillCanceled):
+		"""Sets if the order should be good till canceled.
+		Orders that are not filled by the time the session closes will be will be automatically canceled
+		if they were not set as good till canceled
+
+		:param goodTillCanceled: True if the order should be good till canceled.
+		:type goodTillCanceled: boolean.
+		"""
+		self.__goodTillCanceled = goodTillCanceled
+		self.setDirty(True)
+
+	def getAllOrNone(self):
+		"""Returns True if the order should be completely filled or else canceled."""
+		return self.__allOrNone
+
+	def setAllOrNone(self, allOrNone):
+		"""Sets the All-Or-None property for this order.
+
+		:param allOrNone: True if the order should be completely filled or else canceled.
+		:type allOrNone: boolean.
+		"""
+		self.__allOrNone = allOrNone
+		self.setDirty(True)
+
 	def setExecuted(self, orderExecutionInfo):
 		self.__executionInfo = orderExecutionInfo
 		self.__state = Order.State.FILLED
+
+	def setState(self, state):
+		self.__state = state
 
 	def getExecutionInfo(self):
 		"""Returns the order execution info if the order was filled, or None otherwise.
@@ -162,56 +187,106 @@ class Order:
 		return self.__executionInfo
 	
 class MarketOrder(Order):
-	def __init__(self, action, instrument, quantity, goodTillCanceled = False):
-		price = 0
-		Order.__init__(self, Order.Type.MARKET, action, instrument, price, quantity, goodTillCanceled)
+	"""Base class for market orders.
+
+	.. note::
+
+		This is a base class and should not be used directly.
+	"""
+
+	def __init__(self, action, instrument, quantity, onClose):
+		Order.__init__(self, Order.Type.MARKET, action, instrument, quantity)
+		self.__onClose = onClose
+
+	def getFillOnClose(self):
+		"""Returns True if the order should be filled as close to the closing price as possible (Market-On-Close order)."""
+		return self.__onClose
+
+	def setFillOnClose(self, onClose):
+		"""Sets if the order should be filled as close to the closing price as possible (Market-On-Close order)."""
+		self.__onClose = onClose
+		self.setDirty(True)
 
 class LimitOrder(Order):
-	def __init__(self, action, instrument, limitPrice, quantity, goodTillCanceled = False):
-		Order.__init__(self, Order.Type.LIMIT, action, instrument, limitPrice, quantity, goodTillCanceled)
+	"""Base class for limit orders.
+
+	.. note::
+
+		This is a base class and should not be used directly.
+	"""
+
+	def __init__(self, action, instrument, limitPrice, quantity):
+		Order.__init__(self, Order.Type.LIMIT, action, instrument, quantity)
+		self.__limitPrice = limitPrice
+
+	def getLimitPrice(self):
+		"""Returns the limit price."""
+		return self.__limitPrice
+
+	def setLimitPrice(self, limitPrice):
+		"""Updates the limit price."""
+		self.__limitPrice = limitPrice
+		self.setDirty(True)
 
 class StopOrder(Order):
-	def __init__(self, action, instrument, stopPrice, quantity, goodTillCanceled = False):
-		Order.__init__(self, Order.Type.STOP, action, instrument, stopPrice, quantity, goodTillCanceled)
+	"""Base class for stop orders.
+
+	.. note::
+
+		This is a base class and should not be used directly.
+	"""
+
+	def __init__(self, action, instrument, stopPrice, quantity):
+		Order.__init__(self, Order.Type.STOP, action, instrument, quantity)
+		self.__stopPrice = stopPrice
+
+	def getStopPrice(self):
+		"""Returns the stop price."""
+		return self.__stopPrice
+
+	def setStopPrice(self, stopPrice):
+		"""Updates the stop price."""
+		self.__stopPrice = stopPrice
+		self.setDirty(True)
 
 class StopLimitOrder(Order):
-	def __init__(self, action, instrument, limitPrice, stopPrice, quantity, goodTillCanceled = False):
-		Order.__init__(self, Order.Type.STOP_LIMIT, action, instrument, limitPrice, quantity, goodTillCanceled)
+	"""Base class for stop limit orders.
+
+	.. note::
+
+		This is a base class and should not be used directly.
+	"""
+
+	def __init__(self, action, instrument, limitPrice, stopPrice, quantity):
+		Order.__init__(self, Order.Type.STOP_LIMIT, action, instrument, quantity)
+		self.__limitPrice = limitPrice
 		self.__stopPrice = stopPrice
 		self.__limitOrderActive = False # Set to true when the limit order is activated (stop price is hit)
 		
+	def getLimitPrice(self):
+		"""Returns the limit price."""
+		return self.__limitPrice
+
+	def setLimitPrice(self, limitPrice):
+		"""Updates the limit price."""
+		self.__limitPrice = limitPrice
+		self.setDirty(True)
+
 	def getStopPrice(self):
-		"""Returns orders stop price."""
+		"""Returns the stop price."""
 		return self.__stopPrice
 
+	def setStopPrice(self, stopPrice):
+		"""Updates the stop price."""
+		self.__stopPrice = stopPrice
+		self.setDirty(True)
+
 	def setLimitOrderActive(self, limitOrderActive):
-		"""Sets the Limit Order Active boolean variable:
-		Indicates if the Stop price is broken and the Limit Order is
-		active on the market."""
 		self.__limitOrderActive = limitOrderActive
 
 	def isLimitOrderActive(self):
-		"""Returns the Limit Order Active boolean variable"""
+		"""Returns True if the limit order is active."""
 		return self.__limitOrderActive
-
-# Special order wrapper that executes an order (dependent) only if another order (independent) was filled.
-class ExecuteIfFilled:
-	def __init__(self, dependent, independent):
-		self.__type = Order.Type.EXEC_IF_FILLED
-		self.__dependent = dependent
-		self.__independent = independent
-
-	def getType(self):
-		return self.__type
-
-	def getDependent(self):
-		return self.__dependent
-
-	def getIndependent(self):
-		return self.__independent
-
-	def __getattr__(self, name):
-		return getattr(self.__dependent, name) 
 
 class OrderExecutionInfo:
 	"""Execution information for a filled order."""
@@ -221,11 +296,11 @@ class OrderExecutionInfo:
 		self.__dateTime = dateTime
 
 	def getPrice(self):
-		"""Returns execution price."""
+		"""Returns the fill price."""
 		return self.__price
 
 	def getCommission(self):
-		"""Returns commission applied."""
+		"""Returns the commission applied."""
 		return self.__commission
 
 	def getDateTime(self):
@@ -233,8 +308,15 @@ class OrderExecutionInfo:
 		return self.__dateTime
 
 ######################################################################
-## BasicBroker
-class BasicBroker:
+## Base broker class
+class Broker:
+	"""Base class for brokers.
+
+	.. note::
+
+		This is a base class and should not be used directly.
+	"""
+
 	def __init__(self, cash, commission=None):
 		assert(cash >= 0)
 		self.__cash = cash
@@ -250,11 +332,11 @@ class BasicBroker:
 		return self.__orderUpdatedEvent
 	
 	def getCash(self):
-		"""Returns the amount of cash."""
+		"""Returns the available cash."""
 		return self.__cash
 
 	def setCash(self, cash):
-		"""Sets the amount of cash."""
+		"""Sets the available cash."""
 		self.__cash = cash
 
 	def getCommission(self):
@@ -287,10 +369,13 @@ class BasicBroker:
 
 		:param order: The order to submit.
 		:type order: :class:`Order`.
+
+		.. note::
+			If the order is filled or canceled, an exception will be raised.
 		"""
 		raise NotImplementedError()
 	
-	def createMarketOrder(self, action, instrument, quantity, onClose, goodTillCanceled):
+	def createMarketOrder(self, action, instrument, quantity, onClose = False):
 		"""Creates a Market order.
 		A market order is an order to buy or sell a stock at the best available price.
 		Generally, this type of order will be executed immediately. However, the price at which a market order will be executed
@@ -302,14 +387,13 @@ class BasicBroker:
 		:type instrument: string.
 		:param quantity: Order quantity.
 		:type quantity: int.
-		:param onClose: True if the order should be filled as close to the closing price as possible (Market-On-Close order).
+		:param onClose: True if the order should be filled as close to the closing price as possible (Market-On-Close order). Default is False.
 		:type onClose: boolean.
-		:param goodTillCanceled: True if the order is good till canceled. Orders that are not filled by the time the session closes will be will be automatically canceled if they were not set as good till canceled.
-		:type goodTillCanceled: boolean.
+		:rtype: A :class:`MarketOrder` subclass.
 		"""
 		raise NotImplementedError()
 
-	def createLimitOrder(self, action, instrument, limitPrice, quantity, goodTillCanceled): 
+	def createLimitOrder(self, action, instrument, limitPrice, quantity): 
 		"""Creates a Limit order.
 		A limit order is an order to buy or sell a stock at a specific price or better.
 		A buy limit order can only be executed at the limit price or lower, and a sell limit order can only be executed at the
@@ -323,12 +407,11 @@ class BasicBroker:
 		:type limitPrice: float
 		:param quantity: Order quantity.
 		:type quantity: int.
-		:param goodTillCanceled: True if the order is good till canceled. Orders that are not filled by the time the session closes will be will be automatically canceled if they were not set as good till canceled.
-		:type goodTillCanceled: boolean.
+		:rtype: A :class:`LimitOrder` subclass.
 		"""
 		raise NotImplementedError()
 
-	def createStopOrder(self, action, instrument, stopPrice, quantity, goodTillCanceled): 
+	def createStopOrder(self, action, instrument, stopPrice, quantity): 
 		"""Creates a Stop order.
 		A stop order, also referred to as a stop-loss order, is an order to buy or sell a stock once the price of the stock
 		reaches a specified price, known as the stop price.
@@ -346,12 +429,11 @@ class BasicBroker:
 		:type stopPrice: float
 		:param quantity: Order quantity.
 		:type quantity: int.
-		:param goodTillCanceled: True if the order is good till canceled. Orders that are not filled by the time the session closes will be will be automatically canceled if they were not set as good till canceled.
-		:type goodTillCanceled: boolean.
+		:rtype: A :class:`StopOrder` subclass.
 		"""
 		raise NotImplementedError()
 
-	def createStopLimitOrder(self, action, instrument, stopPrice, limitPrice, quantity, goodTillCanceled): 
+	def createStopLimitOrder(self, action, instrument, stopPrice, limitPrice, quantity): 
 		"""Creates a Stop-Limit order.
 		A stop-limit order is an order to buy or sell a stock that combines the features of a stop order and a limit order.
 		Once the stop price is reached, a stop-limit order becomes a limit order that will be executed at a specified price
@@ -367,12 +449,16 @@ class BasicBroker:
 		:type limitPrice: float
 		:param quantity: Order quantity.
 		:type quantity: int.
-		:param goodTillCanceled: True if the order is good till canceled. Orders that are not filled by the time the session closes will be will be automatically canceled if they were not set as good till canceled.
-		:type goodTillCanceled: boolean.
+		:rtype: A :class:`StopLimitOrder` subclass.
 		"""
 		raise NotImplementedError()
 
-	def createExecuteIfFilled(self, dependent, independent):
+	def cancelOrder(self, order):
+		"""Requests an order to be canceled. If the order is filled an Exception is raised.
+
+		:param order: The order to cancel.
+		:type order: :class:`Order`.
+		"""
 		raise NotImplementedError()
 
 # vim: noet:ci:pi:sts=0:sw=4:ts=4

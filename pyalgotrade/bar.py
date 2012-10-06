@@ -103,7 +103,6 @@ class Bar:
 			self.__barsTillSessionClose = 0
 
 	def getBarsTillSessionClose(self):
-		"""Returns the number of bars left till the session closes, or None if that information is not available."""
 		return self.__barsTillSessionClose
 
 	def setBarsTillSessionClose(self, barsTillSessionClose):
@@ -145,7 +144,7 @@ class Bars:
 		return self.__dateTime
 
 	def getBar(self, instrument):
-		"""Returns a :class:`pyalgotrade.bar.Bar`."""
+		"""Returns the :class:`pyalgotrade.bar.Bar` for the given instrument or None if the instrument is not found."""
 		ret = None
 		try:
 			ret = self.__barDict[instrument]

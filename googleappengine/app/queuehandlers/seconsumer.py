@@ -21,7 +21,9 @@ from google.appengine.api import memcache
 
 import pickle
 import zlib
+import traceback
 
+from pyalgotrade.barfeed import helpers
 from pyalgotrade import barfeed
 from pyalgotrade import bar
 import persistence
@@ -40,6 +42,7 @@ def load_pyalgotrade_daily_bars(instrument, barType, fromDateTime, toDateTime):
 	dbBars = persistence.Bar.getBars(instrument, barType, fromDateTime, toDateTime)
 	for dbBar in dbBars:
 		ret.append(ds_bar_to_pyalgotrade_bar(dbBar))
+	helpers.set_session_close_attributes(ret)
 	return ret
 
 class BarFeed(barfeed.BarFeed):
@@ -48,14 +51,27 @@ class BarFeed(barfeed.BarFeed):
 		self.__instrument = instrument
 		self.registerInstrument(instrument)
 		self.__barIter = iter(barSequence)
+		self.__stopDispatching = False
+
+	def start(self):
+		pass
+
+	def stop(self):
+		pass
+
+	def join(self):
+		pass
 
 	def fetchNextBars(self):
 		ret = None
 		try:
 			ret = {self.__instrument : self.__barIter.next()}
 		except StopIteration:
-			pass
+			self.__stopDispatching = True
 		return ret
+
+	def stopDispatching(self):
+		return self.__stopDispatching
 
 class BarsCache:
 	def __init__(self, logger):
@@ -174,6 +190,7 @@ class SEConsumerHandler(webapp.RequestHandler):
 			except Exception, e:
 				errors += 1
 				strategyExecutor.getLogger().error("Error executing strategy '%s' with parameters %s: %s" % (stratExecConfig.className, paramValues, e))
+				strategyExecutor.getLogger().error(traceback.format_exc())
 
 			executionsLeft -= 1
 			paramsIt.moveNext()

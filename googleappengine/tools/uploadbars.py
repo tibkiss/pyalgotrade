@@ -25,6 +25,7 @@ import subprocess
 uploadBarsPath = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(uploadBarsPath, "..", ".."))
 
+from pyalgotrade import barfeed
 from pyalgotrade.barfeed import csvfeed
 
 def get_md5(value):

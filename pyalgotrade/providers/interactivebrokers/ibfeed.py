@@ -40,9 +40,17 @@ class RowParser(csvfeed.RowParser):
 	def __init__(self, zone = 0):
 		self.__zone = zone
 
-	def __parseDate(self, dateString):
-		ret = datetime.datetime.strptime(dateString, "%Y-%m-%d %H:%M:%S")
-		ret += datetime.timedelta(hours= (-1 * self.__zone))
+	def __parseDate(self, dateString, simpleParser=True):
+		ret = None
+		if simpleParser:
+			(dt, tm) = dateString.split(" ")
+			(yr, mt, dt) = dt.split("-")
+			(hr, mn, sc) = tm.split(":")
+
+			ret = datetime.datetime(int(yr), int(mt), int(dt), int(hr)-int(self.__zone), int(mn), int(sc))
+		else:
+			ret = datetime.datetime.strptime(dateString, "%Y-%m-%d %H:%M:%S")
+			ret += datetime.timedelta(hours= (-1 * self.__zone))
 		return ret
 
 	def getFieldNames(self):

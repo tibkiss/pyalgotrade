@@ -120,6 +120,9 @@ class LiveFeed(BarFeed):
 		def join(self):
 			pass
 
+		def stopDispatching(self):
+			return not self.__running
+
 		def fetchNextBars(self):
 				timeout = 10 # Seconds
 

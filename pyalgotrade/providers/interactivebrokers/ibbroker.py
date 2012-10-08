@@ -58,9 +58,10 @@ class FlatRateCommission(broker.Commission):
 ## Orders
 
 class Order(broker.Order):
-	def __init__(self, ibConnection, type_, action, instrument, price, quantity, goodTillCanceled=False):
-		broker.Order.__init__(self, type_, action, instrument, price, quantity, goodTillCanceled)
+	def __init__(self, ibConnection, type_, action, instrument, quantity, goodTillCanceled=False):
+		broker.Order.__init__(self, type_, action, instrument, quantity)
 		self.__ibConnection = ibConnection
+		self.__goodTillCanceled = goodTillCanceled
 		self.__orderId = None
 
 	def setOrderId(self, orderId):
@@ -69,45 +70,69 @@ class Order(broker.Order):
 	def getOrderId(self):
 		return self.__orderId
 
-	def setCanceled(self):
-		# Just set the flag to canceled
-		broker.Order.cancel(self)
+	def getGoodTillCanceled(self):
+		return self.__goodTillCanceled
 
-	def cancel(self):
-		# Ask the broker to cancel the position
-		if self.__orderId != None:
-			self.__ibConnection.cancelOrder(self.__orderId)
-		
-		# The canceled flag will be updated through the Broker's __orderUpdate()
+	def setGoodTillCanceled(self, goodTillCanceled):
+		self.__goodTillCanceled = goodTillCanceled
 
 class MarketOrder(Order):
 	def __init__(self, ibConnection, action, instrument, quantity, goodTillCanceled=False):
-		price = 0
-		Order.__init__(self, ibConnection, Order.Type.MARKET, action, instrument, price, quantity, goodTillCanceled)
+		Order.__init__(self, ibConnection, Order.Type.MARKET, action, instrument, quantity, goodTillCanceled)
 
 class LimitOrder(Order):
-	def __init__(self, ibConnection, action, instrument, price, quantity, goodTillCanceled=False):
-		Order.__init__(self, ibConnection, Order.Type.LIMIT, action, instrument, price, quantity, goodTillCanceled)
+	def __init__(self, ibConnection, action, instrument, limitPrice, quantity, goodTillCanceled=False):
+		Order.__init__(self, ibConnection, Order.Type.LIMIT, action, instrument, quantity, goodTillCanceled)
+		self.__limitPrice = limitPrice
+	
+	def getLimitPrice(self):
+		"""Returns the limit price."""
+		return self.__limitPrice
+
+	def setLimitPrice(self, limitPrice):
+		"""Updates the limit price."""
+		self.__limitPrice = limitPrice
+		self.setDirty(True)
 	
 class StopOrder(Order):
-	def __init__(self, ibConnection, action, instrument, price, quantity, goodTillCanceled=False):
-		Order.__init__(self, ibConnection, Order.Type.STOP, action, instrument, price, quantity, goodTillCanceled)
+	def __init__(self, ibConnection, action, instrument, stopPrice, quantity, goodTillCanceled=False):
+		Order.__init__(self, ibConnection, Order.Type.STOP, action, instrument, quantity, goodTillCanceled)
+		self.__stopPrice = stopPrice
+	
+	def getStopPrice(self):
+		"""Returns the stop price."""
+		return self.__stopPrice
+
+	def setStopPrice(self, stopPrice):
+		"""Updates the stop price."""
+		self.__stopPrice = stopPrice
+		self.setDirty(True)
 
 class StopLimitOrder(Order):
 	def __init__(self, ibConnection, action, instrument, limitPrice, stopPrice, quantity, goodTillCanceled=False):
-		Order.__init__(self, ibConnection, Order.Type.STOP_LIMIT, action, instrument, limitPrice, quantity, goodTillCanceled)
-
+		Order.__init__(self, ibConnection, Order.Type.STOP_LIMIT, action, instrument, quantity, goodTillCanceled)
+		self.__limitPrice = limitPrice
 		self.__stopPrice = stopPrice
 		self.__limitOrderActive = False # Set to true when the limit order is activated (stop price is hit)
-		
+
+	def getLimitPrice(self):
+		"""Returns the limit price."""
+		return self.__limitPrice
+
+	def setLimitPrice(self, limitPrice):
+		"""Updates the limit price."""
+		self.__limitPrice = limitPrice
+		self.setDirty(True)
+
 	def getStopPrice(self):
+		"""Returns the stop price."""
 		return self.__stopPrice
 
-	def setLimitOrderActive(self, limitOrderActive):
-		self.__limitOrderActive = limitOrderActive
+	def setStopPrice(self, stopPrice):
+		"""Updates the stop price."""
+		self.__stopPrice = stopPrice
+		self.setDirty(True)
 
-	def isLimitOrderActive(self):
-		return self.__limitOrderActive
 
 ######################################################################
 ## Broker
@@ -132,7 +157,7 @@ class Broker(broker.Broker):
 		self.__orders = {}
 
 		# Call the base's constructor
-		broker.BasicBroker.__init__(self, self.__cash)
+		broker.Broker.__init__(self, self.__cash, FlatRateCommission())
 
 	def __orderUpdate(self, orderId, instrument, status, filled, remaining, avgFillPrice, lastFillPrice):
 		"""Handles order updates from IBConnection. Processes its status and notifies the strategy's __onOrderUpdate()"""
@@ -152,7 +177,11 @@ class Broker(broker.Broker):
 
 		# Check for order status and set our local order accordingly
 		if status == 'Cancelled':
-			order.setCanceled()
+			order.setState(broker.Order.State.CANCELED)
+			log.info("Order canceled: orderId: %d, instrument: %s" % (orderId, instrument))
+
+			# Notify the listeners
+			self.getOrderUpdatedEvent().emit(self, order)
 		elif status == 'PreSubmitted':
 			# Skip, we do not have the corresponding state in :class:`broker.Order`
 			return
@@ -163,7 +192,8 @@ class Broker(broker.Broker):
 					 (orderId, instrument, filled, avgFillPrice, lastFillPrice))
 
 				# Set commission to 0, the avgFillPrice returned by IB already has this number included (per share)
-				orderExecutionInfo = broker.OrderExecutionInfo(avgFillPrice, commission=0, dateTime=None)
+				commission = self.getCommission().calculate(order, avgFillPrice, filled)
+				orderExecutionInfo = broker.OrderExecutionInfo(avgFillPrice, filled, commission, dateTime=None)
 				order.setExecuted(orderExecutionInfo)
 
 				# Notify the listeners
@@ -181,61 +211,6 @@ class Broker(broker.Broker):
 	def setCash(self, cash):
 		"""Setting cash on real broker account. Quite impossible :)"""
 		raise Exception("Setting cash on a real broker account? Please visit your bank.")
-	
-	def placeOrder(self, order):
-		"""Submits an order.
-
-		:param order: The order to submit.
-		:type order: :class:`Order`.
-		"""
-
-		instrument = order.getInstrument()
-
-		# action: Identifies the side. 
-		# Valid values are: BUY, SELL, SSHORT
-		# XXX: SSHORT is not valid for some reason,
-		# and SELL seems to work well with short orders.
-		#action = "SSHORT"
-		act = order.getAction()
-		if act == broker.Order.Action.BUY:	action = "BUY"
-		elif act == broker.Order.Action.SELL:	action = "SELL"
-		elif act == broker.Order.Action.SELL_SHORT: action = "SELL"
-
-		ot = order.getType()
-		if ot == broker.Order.Type.MARKET:			orderType = "MKT"
-		elif ot == broker.Order.Type.LIMIT:			orderType = "LMT"
-		elif ot == broker.Order.Type.STOP:			orderType = "STP"
-		elif ot == broker.Order.Type.STOP_LIMIT:	orderType = "STP LMT"
-		else: raise Exception("Invalid orderType: %s!"% ot)
-
-		if ot == broker.Order.Type.MARKET:
-			lmtPrice     = 0
-			auxPrice     = 0
-		elif ot == broker.Order.Type.LIMIT:
-			lmtPrice     = order.getPrice()
-			auxPrice     = 0
-		elif ot == broker.Order.Type.STOP:
-			lmtPrice	 = 0
-			auxPrice	 = order.getPrice()
-		elif ot == broker.Order.Type.STOP_LIMIT:
-			lmtPrice	 = order.getPrice() 
-			auxPrice	 = order.getStopPrice() 
-
-		goodTillDate = ""
-		if order.getGoodTillCanceled():
-			tif		 = "GTC"
-		else:
-			tif		 = "DAY"
-		minQty		 = 0
-		totalQty	 = order.getQuantity()
-
-		orderId = self.__ibConnection.createOrder(instrument, action, lmtPrice, auxPrice, orderType, totalQty, minQty,
-												  tif, goodTillDate, trailingPct=0, trailStopPrice=0, transmit=True, whatif=False)
-
-		order.setOrderId(orderId)
-
-		self.__orders[orderId] = order
-		return orderId
 	
 	def start(self):
 		pass
@@ -255,6 +230,65 @@ class Broker(broker.Broker):
 		# All events were already emitted while handling barfeed events.
 		pass
 
+	def placeOrder(self, order):
+		"""Submits an order.
+
+		:param order: The order to submit.
+		:type order: :class:`Order`.
+		"""
+
+		instrument = order.getInstrument()
+		if order.getState() != Order.State.ACCEPTED:
+			raise Exception("The order was already processed")
+
+		# action: Identifies the side. 
+		# Valid values are: BUY, SELL, SSHORT
+		# XXX: SSHORT is not valid for some reason,
+		# and SELL seems to work well with short orders.
+		#action = "SSHORT"
+		act = order.getAction()
+		if act == broker.Order.Action.BUY:	        action = "BUY"
+		elif act == broker.Order.Action.SELL:	    action = "SELL"
+		elif act == broker.Order.Action.SELL_SHORT: action = "SELL"
+
+		ot = order.getType()
+		if ot == broker.Order.Type.MARKET:			orderType = "MKT"
+		elif ot == broker.Order.Type.LIMIT:			orderType = "LMT"
+		elif ot == broker.Order.Type.STOP:			orderType = "STP"
+		elif ot == broker.Order.Type.STOP_LIMIT:	orderType = "STP LMT"
+		else: raise Exception("Invalid orderType: %s!"% ot)
+
+		if ot == broker.Order.Type.MARKET:
+			lmtPrice     = 0
+			auxPrice     = 0
+		elif ot == broker.Order.Type.LIMIT:
+			lmtPrice     = order.getLimitPrice()
+			auxPrice     = 0
+		elif ot == broker.Order.Type.STOP:
+			lmtPrice	 = 0
+			auxPrice	 = order.getStopPrice()
+		elif ot == broker.Order.Type.STOP_LIMIT:
+			lmtPrice	 = order.getLimitPrice() 
+			auxPrice	 = order.getStopPrice() 
+
+		goodTillDate = ""
+		if order.getGoodTillCanceled():
+			tif		 = "GTC"
+		else:
+			tif		 = "DAY"
+		minQty		 = 0
+		totalQty	 = order.getQuantity()
+
+		orderId_ = order.getOrderId()
+		orderId_ = self.__ibConnection.createOrder(instrument, action, lmtPrice, auxPrice, orderType, totalQty, minQty,
+												  tif, goodTillDate, trailingPct=0, trailStopPrice=0, transmit=True, whatif=False,
+												  orderId=orderId_)
+
+		order.setOrderId(orderId_)
+
+		self.__orders[orderId_] = order
+		return orderId_
+	
 	def createMarketOrder(self, action, instrument, quantity, onClose=False, goodTillCanceled=False):
 		return MarketOrder(self.__ibConnection, action, instrument, quantity, goodTillCanceled)
 
@@ -266,5 +300,14 @@ class Broker(broker.Broker):
 
 	def createStopLimitOrder(self, action, instrument, stopPrice, limitPrice, quantity, goodTillCanceled=False):
 		return StopLimitOrder(self.__ibConnection, action, instrument, limitPrice, stopPrice, quantity, goodTillCanceled)
+
+	def cancelOrder(self, order):
+		# Ask the broker to cancel the position
+		if order.isFilled():
+			raise Exception("Can't cancel order that has already been filled")
+		if order.getOrderId() == None:
+			raise Exception("Can't cancel order which was not submitted")
+
+		self.__ibConnection.cancelOrder(order.getOrderId())
 
 # vim: noet:ci:pi:sts=0:sw=4:ts=4

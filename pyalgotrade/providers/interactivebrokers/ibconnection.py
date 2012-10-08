@@ -179,7 +179,7 @@ class Connection(EWrapper):
 		########################################################################################
 		def createOrder(self, instrument, action, lmtPrice, auxPrice, orderType, totalQty, minQty,
 						tif, goodTillDate, trailingPct, trailStopPrice, transmit, whatif, 
-						secType='STK', exchange='SMART', currency='USD' ):
+						secType='STK', exchange='SMART', currency='USD', orderId=None ):
 				"""Creates a new order and sends it to the market via TWS
 				
 				:param instrument:
@@ -233,9 +233,12 @@ class Connection(EWrapper):
 				:type exchange: str
 				:param currency: Specifies the currency for the trade.
 				:type currency: str
+				:param orderId: The order id for the request, optional.
+				:type orderId: int
 				"""
 				self.connect()
-				orderId = self.__getNextOrderId()
+				if orderId is None:
+					orderId = self.__getNextOrderId()
 
 				self.__orderIds[orderId] = instrument
 				
@@ -839,7 +842,7 @@ class Connection(EWrapper):
 				log.debug("openOrder: orderId: %s, instrument: %s", orderId, contract.m_symbol)
 				self.__orderIds[orderId] = contract.m_symbol
 
-		def openOrderEnd(self, orderId): 
+		def openOrderEnd(self, orderId=None): 
 			pass
 
 		def execDetails(self, orderId, contract, execution):

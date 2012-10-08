@@ -112,7 +112,7 @@ class StopLimitOrder(Order):
 ######################################################################
 ## Broker
 
-class Broker(broker.BasicBroker):
+class Broker(broker.Broker):
 	"""Class responsible for forwarding orders to Interactive Brokers Gateway via TWS.
 
 	:param ibConnection: Object responsible to forward requests to TWS.

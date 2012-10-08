@@ -34,9 +34,11 @@ from testcases import strategy_test
 from testcases import smacrossover_strategy_test
 from testcases import talib_test
 from testcases import observer_test
-from testcases import ibconnection_test
-from testcases import ibfeed_test
-from testcases import ibbroker_test
+from testcases import returns_analyzer_test
+from testcases import trades_analyzer_test
+from testcases import sharpe_analyzer_test
+from testcases import drawdown_analyzer_test
+from testcases import utils_test
 
 def getTestCases():
 	ret = []
@@ -55,9 +57,11 @@ def getTestCases():
 	ret += smacrossover_strategy_test.getTestCases()
 	ret += talib_test.getTestCases()
 	ret += observer_test.getTestCases()
-        ret += ibconnection_test.getTestCases()
-        ret += ibfeed_test.getTestCases()
-        ret += ibbroker_test.getTestCases()
+	ret += returns_analyzer_test.getTestCases()
+	ret += trades_analyzer_test.getTestCases()
+	ret += sharpe_analyzer_test.getTestCases()
+	ret += drawdown_analyzer_test.getTestCases()
+	ret += utils_test.getTestCases()
 	return ret
 
 def main():
@@ -66,6 +70,16 @@ def main():
 	runner = unittest.TextTestRunner(verbosity=2)
 	runner.run(suite)
 
+def profile():
+	import cProfile
+	import pstats
+	profFile = "prof"
+	cProfile.run("main()", profFile)
+	p = pstats.Stats(profFile)
+	# p.dump_stats("runtests.profile")
+	p.strip_dirs().sort_stats("time").print_stats()
+
 if __name__ == "__main__":
 	main()
+	# profile()
 

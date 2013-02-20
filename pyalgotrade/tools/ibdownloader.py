@@ -125,7 +125,7 @@ def get_historical_data(instrument, endTime, duration, barSize,
 			print 'error2'
 
 		bars.extend(b)
-			
+		
 		if (bars[0].getDateTime().time() != datetime.time(9,30,00) or
 		    bars[-1].getDateTime().time() != datetime.time(15, 59, 55) or
 			len(bars) != 4680):
@@ -172,7 +172,7 @@ if __name__ == '__main__':
 	import logging
 	logging.basicConfig(level=logging.DEBUG, format=LOGFMT)
 
-	rth=True
+	rth=False
 	bars = get_historical_data(args.instrument, " ".join(args.endtime), " ".join(args.duration), " ".join(args.barsize), useRTH=rth)
 	if bars != None:
 		bars_to_csv(bars, args.filename, rth)

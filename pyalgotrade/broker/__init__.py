@@ -323,7 +323,7 @@ class Broker:
 	"""
 
 	def __init__(self, cash, commission=None):
-		assert(cash >= 0)
+		# assert(cash >= 0)
 		self.__cash = cash
 
 		if commission is None:

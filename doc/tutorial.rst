@@ -6,27 +6,31 @@ As described in the introduction, the goal of PyAlgoTrade is to help you backtes
 Let's say you have an idea for a trading strategy and you'd like to evaluate it with historical data and see how it behaves,
 then PyAlgoTrade should allow you to do so with minimal effort.
 
-Before I move on I would like to thank Pablo Jorge who helped reviewing the design and documentation.
+Before I move on I would like to thank Pablo Jorge who helped reviewing the initial design and documentation.
 
 **This tutorial was developed on a UNIX environment, but the steps to adapt it to a Windows environment should be straightforward.**
 
-The PyAlgoTrade library has 4 main components:
+PyAlgoTrade has 5 main components:
 
  * Strategies
- * Technicals
  * Feeds
+ * DataSeries
+ * Technicals
  * Optimizer
 
 Strategies
     These are the classes that you define, that implement a certain trading strategy. When to buy, when to sell, etc.
 
-Technicals
-    These are a set of filters that you use to make calculations over a stream of values to decide what to do.
-    For example SMA (Simple Moving Average), RSI (Relative Strength Index), etc.
-
 Feeds
     These are data providing abstractions. For example, you'll use a CSV feed that loads bars from a CSV
     (Comma-separated values) formatted file to feed data to a strategy.
+
+DataSeries
+    A data series is an abstraction used to manage historical data.
+
+Technicals
+    These are a set of filters that you use to make calculations on top of DataSeries.
+    For example SMA (Simple Moving Average), RSI (Relative Strength Index), etc. These filters are modeled as DataSeries decorators.
 
 Optimizer
     These are a set of classes that allow you to distribute backtesting among different computers,
@@ -62,14 +66,9 @@ The code is doing 3 main things:
  2. Loading the feed from a CSV file.
  3. Running the strategy with the bars supplied by the feed.
 
-If you run the script you should see the closing prices in order: ::
+If you run the script you should see the closing prices in order:
 
-    2000-01-03 00:00:00: 118.12
-    2000-01-04 00:00:00: 107.69
-    .
-    .
-    2000-12-28 00:00:00: 31.06
-    2000-12-29 00:00:00: 29.06
+.. literalinclude:: ../samples/tutorial-1.output
 
 Let's move on with a strategy that prints closing SMA prices, to illustrate how technicals are used:
 
@@ -81,32 +80,13 @@ This is very similar to the previous example, except that:
  2. We're printing the current SMA value along with the closing price.
 
 If you run the script you should see the closing prices and the corresponding SMA values, but in this case the first 14 SMA values are None.
-That is because we need at least 15 values to get something out of the SMA: ::
+That is because we need at least 15 values to get something out of the SMA:
 
-    2000-01-03 00:00:00: 118.12 None
-    2000-01-04 00:00:00: 107.69 None
-    2000-01-05 00:00:00: 102.0 None
-    2000-01-06 00:00:00: 96.0 None
-    2000-01-07 00:00:00: 103.37 None
-    2000-01-10 00:00:00: 115.75 None
-    2000-01-11 00:00:00: 112.37 None
-    2000-01-12 00:00:00: 105.62 None
-    2000-01-13 00:00:00: 105.06 None
-    2000-01-14 00:00:00: 106.81 None
-    2000-01-18 00:00:00: 111.25 None
-    2000-01-19 00:00:00: 57.13 None
-    2000-01-20 00:00:00: 59.25 None
-    2000-01-21 00:00:00: 59.69 None
-    2000-01-24 00:00:00: 54.19 94.2866666667
-    2000-01-25 00:00:00: 56.44 90.1746666667
-    .
-    .
-    2000-12-28 00:00:00: 31.06 30.0446666667
-    2000-12-29 00:00:00: 29.06 30.0946666667
+.. literalinclude:: ../samples/tutorial-2.output
 
 All the technicals will return None when the value can't be calculated at a given time.
 
-One important thing about technicals is that they can be stacked. That is because they're modeled as data series too.
+One important thing about technicals is that they can be stacked. That is because they're modeled as data series as well.
 For example, getting an SMA over the RSI over the closing prices is as simple as this:
 
 .. literalinclude:: ../samples/tutorial-3.py
@@ -115,44 +95,9 @@ If you run the script you should see a bunch of values on the screen where:
 
  * The first 14 RSI values are None. That is because we need at least 15 values to get an RSI value.
  * The first 28 SMA values are None. That is because the first 14 RSI values are None, and the 15th one is the first not None value that the SMA filter receives.
-   Only when we have 15 not None values we can calculate the SMA(15).
+   We can calculate the SMA(15) only when we have 15 not None values .
 
-::
-
-    2000-01-03 00:00:00: 118.12 None None
-    2000-01-04 00:00:00: 107.69 None None
-    2000-01-05 00:00:00: 102.0 None None
-    2000-01-06 00:00:00: 96.0 None None
-    2000-01-07 00:00:00: 103.37 None None
-    2000-01-10 00:00:00: 115.75 None None
-    2000-01-11 00:00:00: 112.37 None None
-    2000-01-12 00:00:00: 105.62 None None
-    2000-01-13 00:00:00: 105.06 None None
-    2000-01-14 00:00:00: 106.81 None None
-    2000-01-18 00:00:00: 111.25 None None
-    2000-01-19 00:00:00: 57.13 None None
-    2000-01-20 00:00:00: 59.25 None None
-    2000-01-21 00:00:00: 59.69 None None
-    2000-01-24 00:00:00: 54.19 23.5673530141 None
-    2000-01-25 00:00:00: 56.44 25.0687519877 None
-    2000-01-26 00:00:00: 55.06 24.7476577095 None
-    2000-01-27 00:00:00: 51.81 23.9690136517 None
-    2000-01-28 00:00:00: 47.38 22.9108539956 None
-    2000-01-31 00:00:00: 49.95 24.980004823 None
-    2000-02-01 00:00:00: 54.0 28.2484181864 None
-    2000-02-02 00:00:00: 54.31 28.505177315 None
-    2000-02-03 00:00:00: 56.69 30.5596770599 None
-    2000-02-04 00:00:00: 57.81 31.5564353751 None
-    2000-02-07 00:00:00: 59.94 33.5111056589 None
-    2000-02-08 00:00:00: 59.56 33.3282358994 None
-    2000-02-09 00:00:00: 59.94 33.7177605915 None
-    2000-02-10 00:00:00: 62.31 36.2205441255 None
-    2000-02-11 00:00:00: 59.69 34.6623493641 29.0368892505
-    2000-02-14 00:00:00: 62.19 37.4284445543 29.9609620198
-    .
-    .
-    2000-12-28 00:00:00: 31.06 52.1646203455 49.997518354
-    2000-12-29 00:00:00: 29.06 47.3776678335 50.0790646925
+.. literalinclude:: ../samples/tutorial-3.output
 
 Trading
 -------
@@ -164,49 +109,9 @@ Let's move on with a simple strategy, this time simulating actual trading. The i
 
 .. literalinclude:: ../samples/tutorial-4.py
 
-If you run the script you should see something like this: ::
+If you run the script you should see something like this: 
 
-    Initial portfolio value: $1000.00
-    2000-02-08 00:00:00: BUY at $60.75
-    2000-02-22 00:00:00: SELL at $59.13
-    2000-02-23 00:00:00: BUY at $60.19
-    2000-03-31 00:00:00: SELL at $80.19
-    2000-04-07 00:00:00: BUY at $83.69
-    2000-04-12 00:00:00: SELL at $77.94
-    2000-04-19 00:00:00: BUY at $78.62
-    2000-04-20 00:00:00: SELL at $73.81
-    2000-04-28 00:00:00: BUY at $78.50
-    2000-05-05 00:00:00: SELL at $74.00
-    2000-05-08 00:00:00: BUY at $75.31
-    2000-05-09 00:00:00: SELL at $73.69
-    2000-05-16 00:00:00: BUY at $77.62
-    2000-05-19 00:00:00: SELL at $72.00
-    2000-05-31 00:00:00: BUY at $73.25
-    2000-06-23 00:00:00: SELL at $80.81
-    2000-06-27 00:00:00: BUY at $82.37
-    2000-06-28 00:00:00: SELL at $82.06
-    2000-06-29 00:00:00: BUY at $82.06
-    2000-06-30 00:00:00: SELL at $80.37
-    2000-07-03 00:00:00: BUY at $81.12
-    2000-07-05 00:00:00: SELL at $76.81
-    2000-07-21 00:00:00: BUY at $77.44
-    2000-07-24 00:00:00: SELL at $77.12
-    2000-07-26 00:00:00: BUY at $74.81
-    2000-07-28 00:00:00: SELL at $75.12
-    2000-08-01 00:00:00: BUY at $75.19
-    2000-08-02 00:00:00: SELL at $73.00
-    2000-08-04 00:00:00: BUY at $78.31
-    2000-09-11 00:00:00: SELL at $86.06
-    2000-09-29 00:00:00: BUY at $81.36
-    2000-10-02 00:00:00: SELL at $79.75
-    2000-11-20 00:00:00: BUY at $24.31
-    2000-11-21 00:00:00: SELL at $24.81
-    2000-12-01 00:00:00: BUY at $26.37
-    2000-12-15 00:00:00: SELL at $29.44
-    2000-12-18 00:00:00: BUY at $30.00
-    2000-12-21 00:00:00: SELL at $27.81
-    2000-12-22 00:00:00: BUY at $30.37
-    Final portfolio value: $1013.40
+.. literalinclude:: ../samples/tutorial-4.output
 
 But what if we used 30 as the SMA period instead of 15 ? Would that yield better results or worse ?
 We could certainly do something like this:

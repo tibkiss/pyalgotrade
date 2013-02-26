@@ -29,19 +29,23 @@ class TestSequenceDataSeries(unittest.TestCase):
 		ds = dataseries.SequenceDataSeries([])
 		self.assertTrue(ds.getFirstValidPos() == 0)
 		self.assertTrue(ds.getLength() == 0)
-		self.assertTrue(ds.getValue() == None)
-		self.assertTrue(ds.getValue(1) == None)
-		self.assertTrue(ds.getValueAbsolute(0) == None)
-		self.assertTrue(ds.getValueAbsolute(1) == None)
+		with self.assertRaises(IndexError):
+			ds[-1]
+		with self.assertRaises(IndexError):
+			ds[-2]
+		with self.assertRaises(IndexError):
+			ds[0]
+		with self.assertRaises(IndexError):
+			ds[1]
 
 	def testNonEmpty(self):
 		ds = dataseries.SequenceDataSeries(range(10))
 		self.assertTrue(ds.getFirstValidPos() == 0)
 		self.assertTrue(ds.getLength() == 10)
-		self.assertTrue(ds.getValue() == 9)
-		self.assertTrue(ds.getValue(1) == 8)
-		self.assertTrue(ds.getValueAbsolute(0) == 0)
-		self.assertTrue(ds.getValueAbsolute(1) == 1)
+		self.assertTrue(ds[-1] == 9)
+		self.assertTrue(ds[-2] == 8)
+		self.assertTrue(ds[0] == 0)
+		self.assertTrue(ds[1] == 1)
 
 		self.assertTrue(ds.getValues(1) == [9])
 		self.assertTrue(ds.getValues(2) == [8, 9])
@@ -53,6 +57,35 @@ class TestSequenceDataSeries(unittest.TestCase):
 		self.assertTrue(ds.getValuesAbsolute(9, 10) == None)
 		self.assertTrue(ds.getValuesAbsolute(9, 10, True) == [9, None])
 
+	def testSeqLikeOps(self):
+		seq = range(10)
+		ds = dataseries.SequenceDataSeries(seq)
+
+		# Test length and every item.
+		self.assertEqual(len(ds), len(seq))
+		for i in xrange(len(seq)):
+			self.assertEqual(ds[i], seq[i])
+
+		# Test negative indices
+		self.assertEqual(ds[-1], seq[-1])
+		self.assertEqual(ds[-2], seq[-2])
+		self.assertEqual(ds[-9], seq[-9])
+
+		# Test slices
+		sl = slice(0,1,2)
+		self.assertEqual(ds[sl], seq[sl])
+		sl = slice(0,9,2)
+		self.assertEqual(ds[sl], seq[sl])
+		sl = slice(0,-1,1)
+		self.assertEqual(ds[sl], seq[sl])
+
+		for i in xrange(-100, 100):
+			self.assertEqual(ds[i:], seq[i:])
+
+		for step in xrange(1, 10):
+			for i in xrange(-100, 100):
+				self.assertEqual(ds[i::step], seq[i::step])
+
 class TestBarDataSeries(unittest.TestCase):
 	def testEmpty(self):
 		ds = dataseries.BarDataSeries()
@@ -62,9 +95,12 @@ class TestBarDataSeries(unittest.TestCase):
 		self.assertTrue(ds.getValue(1) == None)
 		self.assertTrue(ds.getValue(2) == None)
 
-		self.assertTrue(ds.getValueAbsolute(-1) == None)
-		self.assertTrue(ds.getValueAbsolute(0) == None)
-		self.assertTrue(ds.getValueAbsolute(1000) == None)
+		with self.assertRaises(IndexError):
+			ds[-1]
+		with self.assertRaises(IndexError):
+			ds[0]
+		with self.assertRaises(IndexError):
+			ds[1000]
 
 	def testAppendInvalidDatetime(self):
 		ds = dataseries.BarDataSeries()
@@ -100,14 +136,125 @@ class TestBarDataSeries(unittest.TestCase):
 		self.__testGetValue(ds.getVolumeDataSeries(), 10, 10)
 		self.__testGetValue(ds.getAdjCloseDataSeries(), 10, 3)
 
+	def testSeqLikeOps(self):
+		ds = dataseries.BarDataSeries()
+		for i in range(10):
+			ds.appendValue( bar.Bar(datetime.datetime.now() + datetime.timedelta(seconds=i), 2, 4, 1, 3, 10, 3) )
+
+		self.assertEqual(ds[-1], ds.getValue())
+		self.assertEqual(ds[-2], ds.getValue(1))
+		self.assertEqual(ds[0], ds[0])
+		self.assertEqual(ds[1], ds[1])
+		self.assertEqual(ds[-2:][-1], ds.getValue())
+
+	def testDateTimes(self):
+		ds = dataseries.BarDataSeries()
+		firstDt = datetime.datetime.now()
+		for i in range(10):
+			ds.appendValue( bar.Bar(firstDt + datetime.timedelta(seconds=i), 2, 4, 1, 3, 10, 3) )
+
+		for i in range(10):
+			self.assertEqual(ds[i].getDateTime(), ds.getDateTimes()[i])
+			self.assertEqual(ds.getDateTimes()[i], firstDt + datetime.timedelta(seconds=i))
+
+class TestDateAlignedDataSeries(unittest.TestCase):
+	def testNotAligned(self):
+		size = 20
+		ds1 = dataseries.SequenceDataSeries()
+		ds2 = dataseries.SequenceDataSeries()
+
+		now = datetime.datetime.now()
+		for i in range(size):
+			if i % 2 == 0:
+				ds1.appendValueWithDatetime(now + datetime.timedelta(seconds=i), i)
+			else:
+				ds2.appendValueWithDatetime(now + datetime.timedelta(seconds=i), i)
+
+		self.assertEqual(len(ds1), len(ds2))
+
+		ads1, ads2 = dataseries.datetime_aligned(ds1, ds2)
+		for ads in [ads1, ads2]:
+			self.assertEqual(ads.getLength(), 0)
+			self.assertEqual(ads.getFirstValidPos(), 0)
+			self.assertEqual(ads.getValueAbsolute(0), None)
+			self.assertEqual(ads.getDateTimes(), [])
+
+	def testFullyAligned(self):
+		size = 20
+		ds1 = dataseries.SequenceDataSeries()
+		ds2 = dataseries.SequenceDataSeries()
+
+		now = datetime.datetime.now()
+		for i in range(size):
+			ds1.appendValueWithDatetime(now + datetime.timedelta(seconds=i), i)
+			ds2.appendValueWithDatetime(now + datetime.timedelta(seconds=i), i)
+
+		self.assertEqual(len(ds1), len(ds2))
+
+		ads1, ads2 = dataseries.datetime_aligned(ds1, ds2)
+		for ads in [ads1, ads2]:
+			self.assertEqual(ads.getLength(), size)
+			self.assertEqual(ads.getFirstValidPos(), 0)
+			for i in range(size):
+				self.assertEqual(ads.getValueAbsolute(i), i)
+				self.assertEqual(ads.getDateTimes()[i], now + datetime.timedelta(seconds=i))
+
+	def testPartiallyAligned(self):
+		size = 20
+		ds1 = dataseries.SequenceDataSeries()
+		ds2 = dataseries.SequenceDataSeries()
+		commonDateTimes = []
+
+		now = datetime.datetime.now()
+		for i in range(size):
+			if i % 3 == 0:
+				commonDateTimes.append(now + datetime.timedelta(seconds=i))
+				ds1.appendValueWithDatetime(now + datetime.timedelta(seconds=i), i)
+				ds2.appendValueWithDatetime(now + datetime.timedelta(seconds=i), i)
+			elif i % 2 == 0:
+				ds1.appendValueWithDatetime(now + datetime.timedelta(seconds=i), i)
+			else:
+				ds2.appendValueWithDatetime(now + datetime.timedelta(seconds=i), i)
+
+		ads1, ads2 = dataseries.datetime_aligned(ds1, ds2)
+
+		self.assertEqual(ads1.getLength(), ads2.getLength())
+		self.assertEqual(ads1[:], ads2[:])
+		self.assertEqual(ads1.getDateTimes(), commonDateTimes)
+		self.assertEqual(ads2.getDateTimes(), commonDateTimes)
+
+	def testIncremental(self):
+		size = 20
+		ds1 = dataseries.SequenceDataSeries()
+		ds2 = dataseries.SequenceDataSeries()
+		ads1, ads2 = dataseries.datetime_aligned(ds1, ds2)
+
+		now = datetime.datetime.now()
+		for i in range(size):
+			ds1.appendValueWithDatetime(now + datetime.timedelta(seconds=i), i)
+			ds2.appendValueWithDatetime(now + datetime.timedelta(seconds=i), i)
+			self.assertEqual(ads1.getLength(), ads2.getLength())
+			self.assertEqual(ads1[:], ads2[:])
+			self.assertEqual(ads1.getDateTimes()[:], ads2.getDateTimes()[:])
+
 def getTestCases():
 	ret = []
+
 	ret.append(TestSequenceDataSeries("testEmpty"))
 	ret.append(TestSequenceDataSeries("testNonEmpty"))
+	ret.append(TestSequenceDataSeries("testSeqLikeOps"))
 
 	ret.append(TestBarDataSeries("testEmpty"))
 	ret.append(TestBarDataSeries("testAppendInvalidDatetime"))
 	ret.append(TestBarDataSeries("testNonEmpty"))
 	ret.append(TestBarDataSeries("testNestedDataSeries"))
+	ret.append(TestBarDataSeries("testSeqLikeOps"))
+	ret.append(TestBarDataSeries("testDateTimes"))
+
+	ret.append(TestDateAlignedDataSeries("testNotAligned"))
+	ret.append(TestDateAlignedDataSeries("testFullyAligned"))
+	ret.append(TestDateAlignedDataSeries("testPartiallyAligned"))
+	ret.append(TestDateAlignedDataSeries("testIncremental"))
+
 	return ret
 

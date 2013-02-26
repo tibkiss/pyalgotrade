@@ -1,9 +1,25 @@
-Version 0.10 (TBD)
+Version 0.11 (TBD)
+. [NEW] DataSeries now provide the datetime associated with each value (getDateTimes), making it easier to plot using matplotlib.
+. [NEW] Function to align two DataSeries with respect to time (pyalgotrade.dataseries.datetime_aligned).
+. [NEW] VWAP technical indicator.
+. [FIX] An IndexError exception was raised in plotter.py when plotting many dataseries in the same subplot.
+
+Version 0.10 (11/Jan/2013)
 . [NEW] Sharpe Ratio analysis (pyalgotrade.stratanalyzer.sharpe.SharpeRatio).
-. [NEW] Max. drawdown and max. drawdown duration analysis (pyalgotrade.stratanalyzer.drawdown.DrawDown).
+. [NEW] Max. drawdown and max. drawdown duration analysis (pyalgotrade.stratanalyzer.drawdown.DrawDown). Thanks Sedov Anton for reporting a bug in the early implementation.
 . [NEW] Returns analysis (pyalgotrade.stratanalyzer.returns.Returns).
 . [NEW] Trades analysis (pyalgotrade.stratanalyzer.trades.Trades).
+. [NEW] Support for bar timezones (pyalgotrade.marketsession).
+. [NEW] Support for sequence like operations in DataSeries (__getitem__ and __len__. getValue and getValueAbsolute will soon get deprecated).
+. [NEW] Support for mapping like operations in bar feeds (__getitem__ and __contains__).
+. [NEW] Support for mapping like operations in bar.Bars (__getitem__ and __contains__).
+. [NEW] Google App Engine: Added support for re-executing strategies.
+. [CHANGE] broker.backtesting.Broker.getValue no longer needs the bars as a parameter. It will take those out of the feed.
+. [FIX] broker.backtesting.getActiveOrders was not returning all orders during event dispatching.
 . [FIX] Fixed returns calculations for short positions. Thanks John Fawcett for explaining this.
+. [FIX] Fixed a bug in the Strategy class and the backtesting broker when dealing with multiple instruments. Was not handling absence of bars appropriately. Thanks Fabian Braennstroem for reporting this.
+. [FIX] Additional DataSeries added to the portfolio subplot were not showing. Thanks Sedov Anton for reporting this.
+. [FIX] Additional subplots (those created using getOrCreateSubplot) are now ordered as created. Thanks Sedov Anton for reporting this and suggesting the fix.
 
 Version 0.9 (1/Sep/2012)
 . [NEW] Added a method to the strategy class to get notified when an order gets updated (onOrderUpdated). This is only called if the order was placed using the broker interface directly.

@@ -33,7 +33,7 @@ def compute_diff(values1, values2):
 		ret.append(diff)
 	return ret
 
-def possitive(value):
+def positive(value):
 	return value > 0
 
 def negative(value):
@@ -48,11 +48,16 @@ class Base(technical.TechnicalIndicatorBase):
 		self.__period = period
 		self.__signCheck = signCheck
 
+	def getDateTimes(self):
+		# I'm using self.__ds1 because this is basically a wrapper on top of the first dataseries.
+		return self.__ds1.getDateTimes()
+
 	def getFirstValidPos(self):
 		return max(self.__ds1.getFirstValidPos(), self.__ds2.getFirstValidPos())
 
 	def getLength(self):
-		return min(self.__ds1.getLength(), self.__ds2.getLength())
+		# I'm using self.__ds1 because this is basically a wrapper on top of the first dataseries.
+		return self.__ds1.getLength()
 
 	def calculateValue(self, firstPos, lastPos):
 		# Get both set of values.
@@ -84,7 +89,7 @@ class CrossAbove(Base):
 	"""
 
 	def __init__(self, ds1, ds2, period = 2):
-		Base.__init__(self, ds1, ds2, period, possitive)
+		Base.__init__(self, ds1, ds2, period, positive)
 
 class CrossBelow(Base):
 	"""Checks for a cross below conditions over the specified period between two DataSeries objects.

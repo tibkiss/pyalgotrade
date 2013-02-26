@@ -2,36 +2,14 @@ dataseries -- Basic dataseries classes
 ======================================
 
 .. automodule:: pyalgotrade.dataseries
-    :members: DataSeries, SequenceDataSeries, BarDataSeries
+    :members: DataSeries, SequenceDataSeries, BarDataSeries, datetime_aligned
+    :special-members:
 
 Example
 -------
 
-::
+.. literalinclude:: ../samples/dataseries-1.py
 
-    from pyalgotrade import dataseries
+The output should be:
 
-    # Build a sequence based DataSeries.
-    ds = dataseries.SequenceDataSeries(range(0, 50))
-
-    # Get the last value.
-    print ds.getValue()
-    print ds.getValueAbsolute(49)
-
-    # Get the previous value.
-    print ds.getValue(1)
-    print ds.getValueAbsolute(48)
-
-    # Get the first value.
-    print ds.getValue(49)
-    print ds.getValueAbsolute(0)
-
-The output should be: ::
-
-    49
-    49
-    48
-    48
-    0
-    0
-
+.. literalinclude:: ../samples/dataseries-1.output

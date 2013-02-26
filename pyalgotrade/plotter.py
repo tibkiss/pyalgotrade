@@ -18,6 +18,8 @@
 .. moduleauthor:: Gabriel Martin Becedillas Ruiz <gabriel.becedillas@gmail.com>
 """
 
+import collections
+
 import broker
 
 import matplotlib.pyplot as plt
@@ -132,6 +134,8 @@ class LineMarker(Series):
 		return " "
 
 class InstrumentMarker(Series):
+	marker = " "
+
 	def __init__(self):
 		Series.__init__(self)
 		self.__useCandleSticks = False
@@ -141,7 +145,7 @@ class InstrumentMarker(Series):
 		return self.__useCandleSticks == False
 
 	def getMarker(self):
-		return " "
+		return InstrumentMarker.marker
 
 	def setUseAdjClose(self, useAdjClose):
 		self.__useAdjClose = useAdjClose
@@ -161,7 +165,8 @@ class InstrumentMarker(Series):
 			values = []
 			for dateTime in dateTimes:
 				bar = self.getValue(dateTime)
-				values.append( (dates.date2num(dateTime), bar.getOpen(), bar.getClose(), bar.getHigh(), bar.getLow()) )
+				if bar:
+					values.append( (dates.date2num(dateTime), bar.getOpen(), bar.getClose(), bar.getHigh(), bar.getLow()) )
 			finance.candlestick(mplSubplot, values, width=0.5, colorup='g', colordown='r',)
 		else:
 			Series.plot(self, mplSubplot, dateTimes, color)
@@ -173,12 +178,12 @@ class Subplot:
 	def __init__(self):
 		self.__series = {} # Series by name.
 		self.__dataSeries = {} # Maps a pyalgotrade.dataseries.DataSeries to a Series.
-		self.__nextColor = 1
+		self.__nextColor = 0
 
 	def __getColor(self, series):
 		ret = series.getColor()
 		if ret == None:
-			ret = Subplot.colors[len(Subplot.colors) % self.__nextColor]
+			ret = Subplot.colors[self.__nextColor % len(Subplot.colors)]
 			self.__nextColor += 1
 		return ret
 
@@ -270,7 +275,7 @@ class StrategyPlotter:
 		self.__plotAllInstruments = plotAllInstruments
 		self.__plotBuySell = plotBuySell
 		self.__barSubplots = {}
-		self.__namedSubplots = {}
+		self.__namedSubplots = collections.OrderedDict()
 		self.__portfolioSubplot = None
 		if plotPortfolio:
 			self.__portfolioSubplot = Subplot()
@@ -301,7 +306,9 @@ class StrategyPlotter:
 
 		# Feed the portfolio evolution subplot.
 		if self.__portfolioSubplot:
-			self.__portfolioSubplot.getSeries("Portfolio").addValue(dateTime, strat.getBroker().getValue(bars))
+			self.__portfolioSubplot.getSeries("Portfolio").addValue(dateTime, strat.getBroker().getEquity())
+			# This is in case additional dataseries were added to the portfolio subplot.
+			self.__portfolioSubplot.addValuesFromDataSeries(dateTime)
 
 	def __onOrderUpdated(self, broker_, order):
 		# Notify BarSubplots

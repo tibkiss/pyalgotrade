@@ -55,7 +55,6 @@ class Bar:
 		self.__sessionClose = False
 		self.__barsTillSessionClose = None
 
-	# datetime in UTC.
 	def getDateTime(self):
 		"""Returns the :class:`datetime.datetime`."""
 		return self.__dateTime
@@ -93,8 +92,12 @@ class Bar:
 		"""Returns the adjusted closing price."""
 		return self.__adjClose
 
+	def getTypicalPrice(self):
+		"""Returns the typical price."""
+		return (self.__high + self.__low + self.__close) / 3.0
+
 	def getSessionClose(self):
-		"""Returns True if this is the last bar for the session, or False otherwise."""
+		# Returns True if this is the last bar for the session, or False otherwise.
 		return self.__sessionClose
 
 	def setSessionClose(self, sessionClose):
@@ -107,7 +110,6 @@ class Bar:
 
 	def setBarsTillSessionClose(self, barsTillSessionClose):
 		self.__barsTillSessionClose = barsTillSessionClose
-
 
 class Bars:
 	"""A group of :class:`Bar` objects.
@@ -135,6 +137,14 @@ class Bars:
 		self.__barDict = barDict
 		self.__dateTime = firstDateTime
 
+	def __getitem__(self, instrument):
+		"""Returns the :class:`pyalgotrade.bar.Bar` for the given instrument. If the instrument is not found an exception is raised."""
+		return self.__barDict[instrument]
+
+	def __contains__(self, instrument):
+		"""Returns True if a :class:`pyalgotrade.bar.Bar` for the given instrument is available."""
+		return instrument in self.__barDict
+
 	def getInstruments(self):
 		"""Returns the instrument symbols."""
 		return self.__barDict.keys()
@@ -145,10 +155,5 @@ class Bars:
 
 	def getBar(self, instrument):
 		"""Returns the :class:`pyalgotrade.bar.Bar` for the given instrument or None if the instrument is not found."""
-		ret = None
-		try:
-			ret = self.__barDict[instrument]
-		except KeyError:
-			pass
-		return ret
+		return self.__barDict.get(instrument, None)
 

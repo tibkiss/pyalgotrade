@@ -24,8 +24,24 @@ from pyalgotrade.utils import stats
 
 import math
 
+def sharpe_ratio(returns, riskFreeRate, tradingPeriods, annualized = True):
+	ret = 0.0
+
+	# From http://en.wikipedia.org/wiki/Sharpe_ratio: if Rf is a constant risk-free return throughout the period,
+	# then stddev(R - Rf) = stddev(R).
+	volatility = stats.stddev(returns, 1)
+
+	if volatility != 0:
+		excessReturns = [dailyRet-(riskFreeRate/float(tradingPeriods)) for dailyRet in returns]
+		avgExcessReturns = stats.mean(excessReturns)
+		ret = avgExcessReturns / volatility
+		if annualized:
+			ret = ret * math.sqrt(tradingPeriods)
+	return ret
+
 class SharpeRatio(stratanalyzer.StrategyAnalyzer):
-	"""A Sharpe Ratio :class:`pyalgotrade.stratanalyzer.StrategyAnalyzer`."""
+	"""A :class:`pyalgotrade.stratanalyzer.StrategyAnalyzer` that calculates
+	Sharpe ratio for the whole portfolio."""
 
 	def __init__(self):
 		self.__netReturns = []
@@ -35,31 +51,24 @@ class SharpeRatio(stratanalyzer.StrategyAnalyzer):
 		analyzer = returns.ReturnsAnalyzerBase.getOrCreateShared(strat)
 		analyzer.getEvent().subscribe(self.__onReturns)
 
-	def __onReturns(self, returnsAnalyzerBase, bars):
+	def __onReturns(self, returnsAnalyzerBase):
 		self.__netReturns.append(returnsAnalyzerBase.getNetReturn())
 
-	def onReturns(self, bars, netReturn, cumulativeReturn):
-		self.__netReturns.append(netReturn)
-
-	def getSharpeRatio(self, riskFreeRate, tradingPeriods):
+	def getSharpeRatio(self, riskFreeRate, tradingPeriods, annualized = True):
 		"""
 		Returns the Sharpe ratio for the strategy execution.
-		If the standard deviation of the excess returns is 0, None is returned.
+		If the volatility is 0, 0 is returned.
 
 		:param riskFreeRate: The risk free rate per annum.
 		:type riskFreeRate: int/float.
 		:param tradingPeriods: The number of trading periods per annum.
 		:type tradingPeriods: int/float.
+		:param annualized: True if the sharpe ratio should be annualized.
+		:type annualized: boolean.
 
 		.. note::
 			* If using daily bars, tradingPeriods should be set to 252.
 			* If using hourly bars (with 6.5 trading hours a day) then tradingPeriods should be set to 252 * 6.5 = 1638.
 		"""
-		ret = None
-		excessReturns = [dailyRet-(riskFreeRate/float(tradingPeriods)) for dailyRet in self.__netReturns]
-		avgExcessReturns = stats.mean(excessReturns)
-		stdDevExcessReturns = stats.stddev(excessReturns, 1)
-		if stdDevExcessReturns != 0:
-			ret = math.sqrt(tradingPeriods) * avgExcessReturns / stdDevExcessReturns
-		return ret
+		return sharpe_ratio(self.__netReturns, riskFreeRate, tradingPeriods, annualized)
 

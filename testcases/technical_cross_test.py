@@ -19,7 +19,6 @@
 """
 
 import unittest
-import copy
 
 from pyalgotrade.technical import cross
 from pyalgotrade.technical import ma
@@ -38,23 +37,28 @@ class TestCase(unittest.TestCase):
 		# Check every 2 values.
 		crs = self.__buildCrossTechnical(cross.CrossAbove, values1, values2, 2)
 		for i in range(0, 3):
-			self.assertTrue(crs.getValueAbsolute(i) == 0)
-		self.assertTrue(crs.getValueAbsolute(3) == 1)
+			self.assertTrue(crs[i] == 0)
+		self.assertTrue(crs[3] == 1)
 		for i in range(4, len(values1)):
-			self.assertTrue(crs.getValueAbsolute(i) == 0)
+			self.assertTrue(crs[i] == 0)
+
+		# Check datetimes.
+		self.assertEqual(len(crs.getDateTimes()), len(values1))
+		for i in range(len(crs)):
+			self.assertEqual(crs.getDateTimes()[i], None)
 
 		# Check every 3 values.
 		crs = self.__buildCrossTechnical(cross.CrossAbove, values1, values2, 3)
 		for i in range(0, 3):
-			self.assertTrue(crs.getValueAbsolute(i) == 0)
+			self.assertTrue(crs[i] == 0)
 		for i in range(3, 5):
-			self.assertTrue(crs.getValueAbsolute(i) == 1)
+			self.assertTrue(crs[i] == 1)
 		for i in range(5, len(values1)):
-			self.assertTrue(crs.getValueAbsolute(i) == 0)
+			self.assertTrue(crs[i] == 0)
 
 		# Check for all values.
 		crs = self.__buildCrossTechnical(cross.CrossAbove, values1, values2, 100)
-		self.assertTrue(crs.getValue() == 1)
+		self.assertTrue(crs[-1] == 1)
 
 	def testCrossAboveMany(self):
 		count = 100
@@ -63,24 +67,24 @@ class TestCase(unittest.TestCase):
 
 		# Check every 2 values.
 		crs = self.__buildCrossTechnical(cross.CrossAbove, values1, values2, 2)
-		self.assertTrue(crs.getValueAbsolute(0) == 0)
+		self.assertTrue(crs[0] == 0)
 		for i in range(1, count):
 			if i % 2 == 0:
-				self.assertTrue(crs.getValueAbsolute(i) == 0)
+				self.assertTrue(crs[i] == 0)
 			else:
-				self.assertTrue(crs.getValueAbsolute(i) == 1)
+				self.assertTrue(crs[i] == 1)
 
 		# Check every 4 values.
 		crs = self.__buildCrossTechnical(cross.CrossAbove, values1, values2, 4)
 		for i in range(3, count):
 			if i % 2 == 0:
-				self.assertTrue(crs.getValueAbsolute(i) == 1)
+				self.assertTrue(crs[i] == 1)
 			else:
-				self.assertTrue(crs.getValueAbsolute(i) == 2)
+				self.assertTrue(crs[i] == 2)
 
 		# Check for all values.
 		crs = self.__buildCrossTechnical(cross.CrossAbove, values1, values2, 100)
-		self.assertTrue(crs.getValue() == count / 2)
+		self.assertTrue(crs[-1] == count / 2)
 
 	def testCrossBelowOnce(self):
 		values1 = [1, 1, 1, 10, 1, 1, 1]
@@ -89,23 +93,28 @@ class TestCase(unittest.TestCase):
 		# Check every 2 values.
 		crs = self.__buildCrossTechnical(cross.CrossBelow, values1, values2, 2)
 		for i in range(0, 4):
-			self.assertTrue(crs.getValueAbsolute(i) == 0)
-		self.assertTrue(crs.getValueAbsolute(4) == 1)
+			self.assertTrue(crs[i] == 0)
+		self.assertTrue(crs[4] == 1)
 		for i in range(5, len(values1)):
-			self.assertTrue(crs.getValueAbsolute(i) == 0)
+			self.assertTrue(crs[i] == 0)
+
+		# Check datetimes.
+		self.assertEqual(len(crs.getDateTimes()), len(values2))
+		for i in range(len(crs)):
+			self.assertEqual(crs.getDateTimes()[i], None)
 
 		# Check every 3 values.
 		crs = self.__buildCrossTechnical(cross.CrossBelow, values1, values2, 3)
 		for i in range(0, 4):
-			self.assertTrue(crs.getValueAbsolute(i) == 0)
+			self.assertTrue(crs[i] == 0)
 		for i in range(4, 6):
-			self.assertTrue(crs.getValueAbsolute(i) == 1)
+			self.assertTrue(crs[i] == 1)
 
-		self.assertTrue(crs.getValueAbsolute(6) == 0)
+		self.assertTrue(crs[6] == 0)
 
 		# Check for all values.
 		crs = self.__buildCrossTechnical(cross.CrossBelow, values1, values2, 100)
-		self.assertTrue(crs.getValue() == 1)
+		self.assertTrue(crs[-1] == 1)
 
 	def testCrossBelowMany(self):
 		count = 100
@@ -114,24 +123,24 @@ class TestCase(unittest.TestCase):
 
 		# Check every 2 values.
 		crs = self.__buildCrossTechnical(cross.CrossBelow, values1, values2, 2)
-		self.assertTrue(crs.getValueAbsolute(1) == 0)
+		self.assertTrue(crs[1] == 0)
 		for i in range(2, count):
 			if i % 2 == 0:
-				self.assertTrue(crs.getValueAbsolute(i) == 1)
+				self.assertTrue(crs[i] == 1)
 			else:
-				self.assertTrue(crs.getValueAbsolute(i) == 0)
+				self.assertTrue(crs[i] == 0)
 
 		# Check every 4 values.
 		crs = self.__buildCrossTechnical(cross.CrossBelow, values1, values2, 4)
 		for i in range(3, count):
 			if i % 2 == 0:
-				self.assertTrue(crs.getValueAbsolute(i) == 2)
+				self.assertTrue(crs[i] == 2)
 			else:
-				self.assertTrue(crs.getValueAbsolute(i) == 1)
+				self.assertTrue(crs[i] == 1)
 
 		# Check for all values.
 		crs = self.__buildCrossTechnical(cross.CrossBelow, values1, values2, 100)
-		self.assertTrue(crs.getValue() == count / 2 - 1)
+		self.assertTrue(crs[-1] == count / 2 - 1)
 
 	def testWithSMAs(self):
 		ds1 = dataseries.SequenceDataSeries()
@@ -141,14 +150,21 @@ class TestCase(unittest.TestCase):
 			ds1.appendValue(i)
 			ds2.appendValue(50)
 			if i < 24:
-				self.assertTrue(crs.getValue() == None)
+				self.assertTrue(crs[-1] == None)
 			elif i == 58:
-				self.assertTrue(crs.getValue() == 1)
+				self.assertTrue(crs[-1] == 1)
 			else:
-				self.assertTrue(crs.getValue() == 0)
+				self.assertTrue(crs[-1] == 0)
+
+		# Check datetimes.
+		self.assertEqual(len(crs.getDateTimes()), 100)
+		self.assertEqual(crs.getDateTimes(), ds1.getDateTimes())
+		for i in range(len(crs)):
+			self.assertEqual(crs.getDateTimes()[i], None)
 
 def getTestCases():
 	ret = []
+
 	ret.append(TestCase("testCrossAboveOnce"))
 	ret.append(TestCase("testCrossAboveMany"))
 	ret.append(TestCase("testCrossBelowOnce"))

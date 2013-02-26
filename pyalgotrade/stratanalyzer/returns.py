@@ -19,7 +19,6 @@
 """
 
 from pyalgotrade import stratanalyzer
-from pyalgotrade import broker
 from pyalgotrade import observer
 from pyalgotrade import dataseries
 
@@ -98,10 +97,8 @@ class ReturnsAnalyzerBase(stratanalyzer.StrategyAnalyzer):
 	def __init__(self):
 		self.__netRet = 0
 		self.__cumRet = 0
-		self.__lastBars = {} # Last Bar per instrument.
-		self.__posTrackers = {}
-		self.__useAdjClose = False
 		self.__event = observer.Event()
+		self.__lastPortfolioValue = None
 
 	@classmethod
 	def getOrCreateShared(cls, strat):
@@ -114,12 +111,10 @@ class ReturnsAnalyzerBase(stratanalyzer.StrategyAnalyzer):
 		return ret
 
 	def attached(self, strat):
-		strat.getBroker().getOrderUpdatedEvent().subscribe(self.__onOrderUpdate)
-		self.__useAdjClose = strat.getBroker().getUseAdjustedValues()
+		self.__lastPortfolioValue = strat.getBroker().getEquity()
 
-	# An event will be notified when return are calculated at each bar. The hander should receive 2 parameters:
+	# An event will be notified when return are calculated at each bar. The hander should receive 1 parameter:
 	# 1: This analyzer's instance
-	# 2: The bars
 	def getEvent(self):
 		return self.__event
 
@@ -129,123 +124,41 @@ class ReturnsAnalyzerBase(stratanalyzer.StrategyAnalyzer):
 	def getCumulativeReturn(self):
 		return self.__cumRet
 
-	def __onOrderUpdate(self, broker_, order):
-		# Only interested in filled orders.
-		if not order.isFilled():
-			return
+	def beforeOnBars(self, strat):
+		currentPortfolioValue = strat.getBroker().getEquity()
+		netReturn = (currentPortfolioValue - self.__lastPortfolioValue) / float(self.__lastPortfolioValue)
+		self.__lastPortfolioValue = currentPortfolioValue
 
-		# Get or create the tracker for this instrument.
-		try:
-			posTracker = self.__posTrackers[order.getInstrument()]
-		except KeyError:
-			posTracker = PositionTracker()
-			self.__posTrackers[order.getInstrument()] = posTracker
-
-		# Update the tracker for this order.
-		quantity = order.getExecutionInfo().getQuantity()
-		price = order.getExecutionInfo().getPrice()
-		commission = order.getExecutionInfo().getCommission()
-		action = order.getAction()
-		if action in [broker.Order.Action.BUY, broker.Order.Action.BUY_TO_COVER]:
-			posTracker.buy(quantity, price, commission)
-		elif action in [broker.Order.Action.SELL, broker.Order.Action.SELL_SHORT]:
-			posTracker.sell(quantity, price, commission)
-		else: # Unknown action
-			assert(False)
-
-	def __getPrice(self, instrument, bars):
-		ret = None
-		bar = bars.getBar(instrument)
-		if bar == None:
-			bar = self.__lastBars.get(instrument, None)
-		if bar != None:
-			if self.__useAdjClose:
-				ret = bar.getAdjClose()
-			else:
-				ret = bar.getClose()
-		return ret
-
-	def beforeOnBars(self, strat, bars):
-		totalPL = 0
-		totalCost = 0
-
-		# Calculate net return.
-		for instrument, posTracker in self.__posTrackers.iteritems():
-			price = self.__getPrice(instrument, bars)
-			if price != None:
-				totalPL += posTracker.getNetProfit(price, True)
-				totalCost += posTracker.getCost()
-				posTracker.update(price) 
-
-		if totalCost == 0:
-			netReturn = 0
-		else:
-			netReturn = totalPL / float(totalCost)
 		self.__netRet = netReturn
 
 		# Calculate cumulative return.
 		self.__cumRet = (1 + self.__cumRet) * (1 + netReturn) - 1
 
 		# Notify that new returns are available.
-		self.__event.emit(self, bars)
-
-		# Keep track of the last bar for each instrument.
-		for instrument in bars.getInstruments():
-			self.__lastBars[instrument] = bars.getBar(instrument)
+		self.__event.emit(self)
 
 class Returns(stratanalyzer.StrategyAnalyzer):
-	"""A :class:`pyalgotrade.stratanalyzer.StrategyAnalyzer` that calculates returns and cumulative returns."""
+	"""A :class:`pyalgotrade.stratanalyzer.StrategyAnalyzer` that calculates
+	returns and cumulative returns for the whole portfolio."""
 
 	def __init__(self):
-		self.__netRet = 0
-		self.__cumRet = 0
+		self.__netReturns = dataseries.SequenceDataSeries()
+		self.__cumReturns = dataseries.SequenceDataSeries()
 
 	def beforeAttach(self, strat):
 		# Get or create a shared ReturnsAnalyzerBase
 		analyzer = ReturnsAnalyzerBase.getOrCreateShared(strat)
 		analyzer.getEvent().subscribe(self.__onReturns)
 
-	def __onReturns(self, returnsAnalyzerBase, bars):
-		self.__netRet = returnsAnalyzerBase.getNetReturn()
-		self.__cumRet = returnsAnalyzerBase.getCumulativeReturn()
+	def __onReturns(self, returnsAnalyzerBase):
+		self.__netReturns.appendValue(returnsAnalyzerBase.getNetReturn())
+		self.__cumReturns.appendValue(returnsAnalyzerBase.getCumulativeReturn())
 
-	def getNetReturn(self):
-		"""Returns the net return for the last bar."""
-		return self.__netRet
+	def getReturns(self):
+		"""Returns a :class:`pyalgotrade.dataseries.DataSeries` with the returns for each bar."""
+		return self.__netReturns
 
-	def getCumulativeReturn(self):
-		"""Returns the cumulative return up to the last bar."""
-		return self.__cumRet
-
-class ReturnsDataSeries(dataseries.SequenceDataSeries):
-	"""A :class:`pyalgotrade.dataseries.DataSeries` that holds net returns for each bar.
-
-	:param strat: The strategy to calculate returns on.
-	:type strat: :class:`pyalgotrade.strategy.Strategy`
-	"""
-
-	def __init__(self, strat):
-		dataseries.SequenceDataSeries.__init__(self)
-		# Get or create a shared ReturnsAnalyzerBase
-		analyzer = ReturnsAnalyzerBase.getOrCreateShared(strat)
-		analyzer.getEvent().subscribe(self.__onReturns)
-
-	def __onReturns(self, returnsAnalyzerBase, bars):
-		self.appendValue(returnsAnalyzerBase.getNetReturn())
-
-class CumulativeReturnsDataSeries(dataseries.SequenceDataSeries):
-	"""A :class:`pyalgotrade.dataseries.DataSeries` that holds cumulative returns for each bar.
-
-	:param strat: The strategy to calculate cumulative returns on.
-	:type strat: :class:`pyalgotrade.strategy.Strategy`
-	"""
-
-	def __init__(self, strat):
-		dataseries.SequenceDataSeries.__init__(self)
-		# Get or create a shared ReturnsAnalyzerBase
-		analyzer = ReturnsAnalyzerBase.getOrCreateShared(strat)
-		analyzer.getEvent().subscribe(self.__onReturns)
-
-	def __onReturns(self, returnsAnalyzerBase, bars):
-		self.appendValue(returnsAnalyzerBase.getCumulativeReturn())
+	def getCumulativeReturns(self):
+		"""Returns a :class:`pyalgotrade.dataseries.DataSeries` with the cumulative returns for each bar."""
+		return self.__cumReturns
 

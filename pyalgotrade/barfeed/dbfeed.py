@@ -1,6 +1,6 @@
 # PyAlgoTrade
 # 
-# Copyright 2011 Gabriel Martin Becedillas Ruiz
+# Copyright 2012 Gabriel Martin Becedillas Ruiz
 # 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,19 +18,25 @@
 .. moduleauthor:: Gabriel Martin Becedillas Ruiz <gabriel.becedillas@gmail.com>
 """
 
-class SessionCloseStrategy:
-	# Return True if this is the last bar for the session. nextBar may be None.
-	def sessionClose(self, currentBar, nextBar):
-		raise Exception("Not implemented")
+class Database:
+	def addBars(self, bars, frequency):
+		for instrument in bars.getInstruments():
+			bar = bars.getBar(instrument)
+			self.addBar(instrument, bar, frequency)
 
-# Calculates session closes based on days. When the current bar is the last bar for the day, or the last bar in the feed, the session is closed.
-class DaySessionCloseStrategy:
-	def sessionClose(self, currentBar, nextBar):
-		ret = False
-		if nextBar == None:
-			ret = True
-		elif currentBar.getDateTime().date() != nextBar.getDateTime().date():
-			ret = True
-		return ret
+	def addBarsFromFeed(self, feed):
+		feed.start()
+		try:
+			for bars in feed:
+				if bars:
+					self.addBars(bars, feed.getFrequency())
+		finally:
+			feed.stop()
+			feed.join()
 
+	def addBar(self, instrument, bar, frequency):
+		raise NotImplementedError()
+
+	def getBars(self, instrument, frequency, timezone = None, fromDateTime = None, toDateTime = None):
+		raise NotImplementedError()
 

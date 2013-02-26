@@ -8,7 +8,7 @@ from pyalgotrade.technical import rsi
 class MyStrategy(strategy.Strategy):
     def __init__(self, feed, entrySMA, exitSMA, rsiPeriod, overBoughtThreshold, overSoldThreshold):
         strategy.Strategy.__init__(self, feed, 2000)
-        ds = feed.getDataSeries("dia").getCloseDataSeries()
+        ds = feed["dia"].getCloseDataSeries()
         self.__entrySMA = ma.SMA(ds, entrySMA)
         self.__exitSMA = ma.SMA(ds, exitSMA)
         self.__rsi = rsi.RSI(ds, rsiPeriod)
@@ -42,10 +42,10 @@ class MyStrategy(strategy.Strategy):
 
     def onBars(self, bars):
         # Wait for enough bars to be available to calculate SMA and RSI.
-        if self.__exitSMA.getValue() is None or self.__entrySMA.getValue() is None or self.__rsi.getValue() is None:
+        if self.__exitSMA[-1] is None or self.__entrySMA[-1] is None or self.__rsi[-1] is None:
             return
 
-        bar = bars.getBar("dia")
+        bar = bars["dia"]
         if self.__longPos != None:
             if self.exitLongSignal(bar):
                 self.exitPosition(self.__longPos)
@@ -59,16 +59,16 @@ class MyStrategy(strategy.Strategy):
                 self.__shortPos = self.enterShort("dia", 10, True)
 
     def enterLongSignal(self, bar):
-        return bar.getClose() > self.__entrySMA.getValue() and self.__rsi.getValue() <= self.__overSoldThreshold
+        return bar.getClose() > self.__entrySMA[-1] and self.__rsi[-1] <= self.__overSoldThreshold
 
     def exitLongSignal(self, bar):
-        return bar.getClose() > self.__exitSMA.getValue()
+        return bar.getClose() > self.__exitSMA[-1]
 
     def enterShortSignal(self, bar):
-        return bar.getClose() < self.__entrySMA.getValue() and self.__rsi.getValue() >= self.__overBoughtThreshold
+        return bar.getClose() < self.__entrySMA[-1] and self.__rsi[-1] >= self.__overBoughtThreshold
 
     def exitShortSignal(self, bar):
-        return bar.getClose() < self.__exitSMA.getValue()
+        return bar.getClose() < self.__exitSMA[-1]
 
 def parameters_generator():
     entrySMA = range(150, 251)

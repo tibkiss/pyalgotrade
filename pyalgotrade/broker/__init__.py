@@ -21,24 +21,6 @@
 from pyalgotrade import observer
 
 ######################################################################
-## Commissions
-
-class Commission:
-	def calculate(self, order, price, quantity):
-		raise NotImplementedError()
-
-class NoCommission(Commission):
-	def calculate(self, order, price, quantity):
-		return 0
-
-class FixedCommission(Commission):
-	def __init__(self, cost):
-		self.__cost = cost
-
-	def calculate(self, order, price, quantity):
-		return self.__cost
-
-######################################################################
 ## Orders
 ## http://stocks.about.com/od/tradingbasics/a/markords.htm
 ## http://www.interactivebrokers.com/en/software/tws/usersguidebook/ordertypes/basic_order_types.htm
@@ -361,6 +343,18 @@ class Broker:
 	def join(self):
 		raise NotImplementedError()
 
+	def getShares(self, instrument):
+		"""Returns the number of shares for an instrument."""
+		raise NotImplementedError()
+
+	def getPositions(self):
+		"""Returns a dictionary that maps instruments to shares."""
+		raise NotImplementedError()
+
+	def getActiveOrders(self):
+		"""Returns a sequence with the orders that are still active."""
+		raise NotImplementedError()
+
 	# Return True if there are not more events to dispatch.
 	def stopDispatching(self):
 		raise NotImplementedError()
@@ -466,4 +460,3 @@ class Broker:
 		"""
 		raise NotImplementedError()
 
-# vim: noet:ci:pi:sts=0:sw=4:ts=4

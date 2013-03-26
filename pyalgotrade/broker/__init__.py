@@ -21,6 +21,24 @@
 from pyalgotrade import observer
 
 ######################################################################
+## Commissions
+
+class Commission:
+	def calculate(self, order, price, quantity):
+		raise NotImplementedError()
+
+class NoCommission(Commission):
+	def calculate(self, order, price, quantity):
+		return 0
+
+class FixedCommission(Commission):
+	def __init__(self, cost):
+		self.__cost = cost
+
+	def calculate(self, order, price, quantity):
+		return self.__cost
+
+######################################################################
 ## Orders
 ## http://stocks.about.com/od/tradingbasics/a/markords.htm
 ## http://www.interactivebrokers.com/en/software/tws/usersguidebook/ordertypes/basic_order_types.htm

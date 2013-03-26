@@ -327,7 +327,7 @@ class Broker(broker.Broker):
 	"""
 
 	def __init__(self, cash, barFeed, commission = None):
-		broker.Broker.__init__(self)
+		broker.Broker.__init__(self, commission)
 
 		assert(cash >= 0)
 		self.__cash = cash

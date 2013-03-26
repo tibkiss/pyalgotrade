@@ -18,7 +18,7 @@
 .. moduleauthor:: Tibor Kiss <tibor.kiss@gmail.com>
 """
 
-from pyalgotrade.barfeed import csvfeed, BarFeed
+from pyalgotrade.barfeed import csvfeed, BarFeed, Frequency
 from pyalgotrade.providers.interactivebrokers import ibbar
 
 import datetime
@@ -76,7 +76,7 @@ class RowParser(csvfeed.RowParser):
 class CSVFeed(csvfeed.BarFeed):
 	"""A :class:`pyalgotrade.barfeed.BarFeed` that loads bars from a CSV file downloaded from IB TWS"""
 	def __init__(self):
-		csvfeed.BarFeed.__init__(self)
+		csvfeed.BarFeed.__init__(self, Frequency.MINUTE)
 	
 	def addBarsFromCSV(self, instrument, path, timeZone = 0):
 		"""Loads bars for a given instrument from a CSV formatted file.

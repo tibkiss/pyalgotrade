@@ -18,7 +18,7 @@
 .. moduleauthor:: Gabriel Martin Becedillas Ruiz <gabriel.becedillas@gmail.com>
 """
 
-class Bar:
+class Bar(object):
 	"""An instrument's prices at a given time.
 
 	:param dateTime: The date time.
@@ -36,6 +36,8 @@ class Bar:
 	:param close: The adjusted closing price.
 	:type close: float
 	"""
+	__slots__ = ('__dateTime', '__open', '__close', '__high', '__low',
+                 '__volume', '__adjClose', '__sessionClose', '__barsTillSessionClose')
 
 	def __init__(self, dateTime, open_, high, low, close, volume, adjClose):
 		assert(high >= open_)
@@ -120,6 +122,8 @@ class Bars:
 	.. note::
 		All bars must have the same datetime.
 	"""
+	__slots__ = ('__barDict', '__dateTime')
+
 	def __init__(self, barDict):
 		if len(barDict) == 0:
 			raise Exception("No bars supplied")

@@ -24,7 +24,7 @@ from pyalgotrade import bar
 from pyalgotrade import warninghelpers
 
 class Frequency:
-	# SECOND	= 1
+	SECOND	= 1
 	MINUTE	= 2
 	# HOUR	= 3
 	DAY		= 4

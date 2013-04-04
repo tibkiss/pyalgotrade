@@ -204,9 +204,15 @@ class Broker(broker.Broker):
 					 (orderId, instrument, filled, remaining, avgFillPrice, lastFillPrice))
 
 
+	def getEquity(self):
+		return self.__ibConnection.getNetLiquidation()
+
 	def getCash(self):
 		"""Returns the amount of cash."""
 		return self.__ibConnection.getCash()
+
+	def getShares(self, instrument):
+		return self.__ibConnection.getShares(instrument)
 	
 	def setCash(self, cash):
 		"""Setting cash on real broker account. Quite impossible :)"""

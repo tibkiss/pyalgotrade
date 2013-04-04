@@ -95,7 +95,7 @@ class CSVFeed(csvfeed.BarFeed):
 
 class LiveFeed(BarFeed):
 		def __init__(self, ibConnection, timezone=0):
-				BarFeed.__init__(self)
+				BarFeed.__init__(self, Frequency.SECOND)
 
 				# The zone specifies the offset from Coordinated Universal Time (UTC, 
 				# formerly referred to as "Greenwich Mean Time") 

@@ -561,6 +561,20 @@ class Connection(EWrapper):
 
 				return(cash)
 
+		def getNetLiquidation(self):
+				self.requestAccountUpdate()
+				netLiquidation = float(self.__accountValues[self.__accountCode]['USD']['NetLiquidation'])
+				return netLiquidation
+
+		def getShares(self, instrument):
+				shares = 0
+				try:
+					shares = self.__portfolio[self.__accountCode][instrument]['position']
+				except KeyError:
+					shares = 0
+
+				return shares
+
 		def getAccountValues(self):
 				self.requestAccountUpdate()
 				return self.__accountValues
@@ -769,13 +783,13 @@ class Connection(EWrapper):
 				self.__portfolio.setdefault(accountName, {})
 				self.__portfolio[accountName].setdefault(instrument, {})
 
-				self.__portfolio[accountName][instrument][contract] = contract
-				self.__portfolio[accountName][instrument][position] = position
-				self.__portfolio[accountName][instrument][marketPrice] = marketPrice
-				self.__portfolio[accountName][instrument][marketValue] = marketValue
-				self.__portfolio[accountName][instrument][avgCost] = avgCost
-				self.__portfolio[accountName][instrument][unrealizedPNL] = unrealizedPNL
-				self.__portfolio[accountName][instrument][realizedPNL] = realizedPNL
+				self.__portfolio[accountName][instrument]['contract'] = contract
+				self.__portfolio[accountName][instrument]['position'] = position
+				self.__portfolio[accountName][instrument]['marketPrice'] = marketPrice
+				self.__portfolio[accountName][instrument]['marketValue'] = marketValue
+				self.__portfolio[accountName][instrument]['avgCost'] = avgCost
+				self.__portfolio[accountName][instrument]['unrealizedPNL'] = unrealizedPNL
+				self.__portfolio[accountName][instrument]['realizedPNL'] = realizedPNL
 				
 				self.__portfolioLock.notify()
 				self.__portfolioLock.release()

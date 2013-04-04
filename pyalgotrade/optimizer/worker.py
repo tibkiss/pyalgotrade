@@ -27,6 +27,7 @@ import multiprocessing
 
 from pyalgotrade import optimizer
 from pyalgotrade import barfeed
+from pyalgotrade.stratanalyzer import sharpe
 
 def call_function(function, *parameters):
 	if len(parameters) > 0:
@@ -118,8 +119,12 @@ def worker_process(strategyClass, address, port):
 	class MyWorker(Worker):
 		def runStrategy(self, barFeed, *parameters):
 			strat = strategyClass(barFeed, *parameters)
+			sharpeRatioAnalyzer = sharpe.SharpeRatio()
+			strat.attachAnalyzer(sharpeRatioAnalyzer)
 			strat.run()
-			return strat.getResult()
+			profit = strat.getResult()
+			sharpeRatio = sharpeRatioAnalyzer.getSharpeRatio(0.05, 252, annualized=True)
+			return sharpeRatio
 
 	# Create a worker and run it.
 	w = MyWorker(address, port)

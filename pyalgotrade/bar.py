@@ -112,6 +112,15 @@ class Bar(object):
 
 	def setBarsTillSessionClose(self, barsTillSessionClose):
 		self.__barsTillSessionClose = barsTillSessionClose
+	
+	def __getstate__(self):
+		return (self.__dateTime, self.__open, self.__close, self.__high, self.__low,
+			self.__volume, self.__adjClose, self.__sessionClose, self.__barsTillSessionClose)
+	
+	def __setstate__(self, state):
+		(self.__dateTime, self.__open, self.__close, self.__high, self.__low,
+		 self.__volume, self.__adjClose, self.__sessionClose, self.__barsTillSessionClose) = state
+
 
 class Bars:
 	"""A group of :class:`Bar` objects.

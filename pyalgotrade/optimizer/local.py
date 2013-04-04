@@ -24,6 +24,7 @@ import logging
 import socket
 import random
 from pyalgotrade import optimizer
+from pyalgotrade.stratanalyzer import sharpe
 from pyalgotrade.optimizer import server
 from pyalgotrade.optimizer import worker
 
@@ -34,8 +35,12 @@ def worker_process(strategyClass, port):
 	class Worker(worker.Worker):
 		def runStrategy(self, barFeed, *parameters):
 			strat = strategyClass(barFeed, *parameters)
+			sharpeRatioAnalyzer = sharpe.SharpeRatio()
+			strat.attachAnalyzer(sharpeRatioAnalyzer)
 			strat.run()
-			return strat.getResult()
+			profit = strat.getResult()
+			sharpeRatio = sharpeRatioAnalyzer.getSharpeRatio(0.05, 252, annualized=True)
+			return sharpeRatio
 
 	# Create a worker and run it.
 	w = Worker("localhost", port)

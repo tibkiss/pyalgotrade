@@ -80,7 +80,7 @@ class RequestHandler(SimpleXMLRPCServer.SimpleXMLRPCRequestHandler):
     rpc_paths = ('/PyAlgoTradeRPC',)
 
 class Server(SimpleXMLRPCServer.SimpleXMLRPCServer):
-	defaultBatchSize = 200
+	defaultBatchSize = 5
 
 	def __init__(self, address, port, autoStop = True):
 		SimpleXMLRPCServer.SimpleXMLRPCServer.__init__(self, (address, port), requestHandler=RequestHandler, logRequests=False, allow_none=True)

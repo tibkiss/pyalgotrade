@@ -88,9 +88,9 @@ class Worker:
 			# Wrap the bars into a feed.
 			feed = barfeed.OptimizerBarFeed(barsFreq, instruments, bars)
 			# Run the strategy.
-			self.getLogger().info("Running strategy with parameters %s" % (str(parameters)))
+			# self.getLogger().info("Running strategy with parameters %s" % (str(parameters)))
 			result = self.runStrategy(feed, *parameters)
-			self.getLogger().info("Result %s" % result)
+			self.getLogger().info("Result %s, parameters: %s" % (result, str(parameters)))
 			if result > bestResult:
 				bestResult = result
 				bestParams = parameters

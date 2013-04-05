@@ -143,6 +143,9 @@ def get_historical_data(instrument, endTime, duration, barSize,
 	# Return the loaded bars
 	return bars
 
+def get_historical_data_year(instrument, year, barSize, twsConnection=None): 
+	bars = get_historical_data(instrument, "%d1231 16:30:00", "1 Y", "1 day")
+	return bars
 
 if __name__ == '__main__':
 	import argparse
@@ -172,7 +175,7 @@ if __name__ == '__main__':
 	import logging
 	logging.basicConfig(level=logging.DEBUG, format=LOGFMT)
 
-	rth=False
+	rth=True
 	bars = get_historical_data(args.instrument, " ".join(args.endtime), " ".join(args.duration), " ".join(args.barsize), useRTH=rth)
 	if bars != None:
 		bars_to_csv(bars, args.filename, rth)

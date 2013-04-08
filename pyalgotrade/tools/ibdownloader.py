@@ -175,7 +175,7 @@ if __name__ == '__main__':
 	import logging
 	logging.basicConfig(level=logging.DEBUG, format=LOGFMT)
 
-	rth=True
+	rth=False
 	bars = get_historical_data(args.instrument, " ".join(args.endtime), " ".join(args.duration), " ".join(args.barsize), useRTH=rth)
 	if bars != None:
 		bars_to_csv(bars, args.filename, rth)

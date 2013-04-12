@@ -365,6 +365,14 @@ class Broker:
 		"""Returns the number of shares for an instrument."""
 		raise NotImplementedError()
 
+	def getTotalCost(self, instrument):
+		"""Returns the total cost of shares for an instrument."""
+		raise NotImplementedError()
+
+	def getAvgCost(self, instrument):
+		"""Returns the average cost per share for an instrument."""
+		raise NotImplementedError()
+
 	def getPositions(self):
 		"""Returns a dictionary that maps instruments to shares."""
 		raise NotImplementedError()

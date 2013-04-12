@@ -22,6 +22,7 @@ from pyalgotrade import broker
 from pyalgotrade import warninghelpers
 import pyalgotrade.logger
 import copy
+import math
 
 logger = pyalgotrade.logger.getLogger("broker.backtesting")
 
@@ -336,6 +337,7 @@ class Broker(broker.Broker):
 		else:
 			self.__commission = commission
 		self.__shares = {}
+		self.__totalCost = {}
 		self.__activeOrders = []
 		self.__useAdjustedValues = False
 		self.__fillStrategy = DefaultStrategy()
@@ -435,6 +437,13 @@ class Broker(broker.Broker):
 		self.__shares.setdefault(instrument, 0)
 		return self.__shares[instrument]
 
+	def getTotalCost(self, instrument):
+		self.__totalCost.setdefault(instrument, 0)
+		return self.__totalCost[instrument]
+
+	def getAvgCost(self, instrument):
+		return math.fabs(self.__totalCost[instrument] / float(self.__shares[instrument]))
+
 	def getPositions(self):
 		return self.__shares
 
@@ -473,6 +482,7 @@ class Broker(broker.Broker):
 			assert(False)
 
 		ret = False
+		instrument = order.getInstrument()
 		commission = self.getCommission().calculate(order, price, quantity)
 		cost -= commission
 		resultingCash = self.getCash() + cost
@@ -481,7 +491,11 @@ class Broker(broker.Broker):
 		if resultingCash >= 0 or self.__allowNegativeCash:
 			# Commit the order execution.
 			self.setCash(resultingCash)
-			self.__shares[order.getInstrument()] = self.getShares(order.getInstrument()) + sharesDelta
+			self.__shares[instrument] = self.getShares(instrument) + sharesDelta
+			if self.__shares[instrument] == 0:
+				self.__totalCost[instrument] = 0
+			else:
+				self.__totalCost[instrument] = self.getTotalCost(instrument) + cost
 			ret = True
 
 			# Update the order.

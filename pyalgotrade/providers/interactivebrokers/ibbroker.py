@@ -203,21 +203,26 @@ class Broker(broker.Broker):
 				log.info("Partial order completion: orderId: %d, instrument: %s, filled: %d, remaining: %d, avgFillPrice=%.2f, lastFillPrice=%.2f" %
 					 (orderId, instrument, filled, remaining, avgFillPrice, lastFillPrice))
 
-
-	def getEquity(self):
-		return self.__ibConnection.getNetLiquidation()
-
 	def getCash(self):
 		"""Returns the amount of cash."""
 		return self.__ibConnection.getCash()
 
-	def getShares(self, instrument):
-		return self.__ibConnection.getShares(instrument)
-	
 	def setCash(self, cash):
 		"""Setting cash on real broker account. Quite impossible :)"""
 		raise Exception("Setting cash on a real broker account? Please visit your bank.")
-	
+
+	def getShares(self, instrument):
+		return self.__ibConnection.getShares(instrument)
+
+	def getEquity(self):
+		return self.__ibConnection.getNetLiquidation()
+
+	def getAvgCost(self, instrument):
+		return self.__ibConnection.getAvgCost(instrument)
+
+	def getTotalCost(self, instrument):
+		return self.__ibConnection.getAvgCost(instrument) * self.__ibConnection.getShares(instrument)
+
 	def start(self):
 		pass
 

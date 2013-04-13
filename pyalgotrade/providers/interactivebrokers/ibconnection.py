@@ -575,6 +575,9 @@ class Connection(EWrapper):
 
 				return shares
 
+		def getAvgCost(self, instrument):
+			return self.__portfolio[self.__accountCode][instrument]['avgCost']
+
 		def getAccountValues(self):
 				self.requestAccountUpdate()
 				return self.__accountValues

@@ -57,6 +57,11 @@ class Bar(object):
 		self.__sessionClose = False
 		self.__barsTillSessionClose = None
 
+	def __repr__(self):
+		reprStr = ("%s Open: %.2f High: %.2f, Low: %.2f, Close: %.2f, Volume: %d\n" %
+		           (self.__dateTime, self.__open, self.__high, self.__low, self.__close, self.__volume))
+		return reprStr
+
 	def getDateTime(self):
 		"""Returns the :class:`datetime.datetime`."""
 		return self.__dateTime

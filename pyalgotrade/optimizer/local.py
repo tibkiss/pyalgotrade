@@ -35,12 +35,9 @@ def worker_process(strategyClass, port):
 	class Worker(worker.Worker):
 		def runStrategy(self, barFeed, *parameters):
 			strat = strategyClass(barFeed, *parameters)
-			sharpeRatioAnalyzer = sharpe.SharpeRatio()
-			strat.attachAnalyzer(sharpeRatioAnalyzer)
 			strat.run()
-			profit = strat.getResult()
-			sharpeRatio = sharpeRatioAnalyzer.getSharpeRatio(0.05, 252, annualized=True)
-			return sharpeRatio
+			result = strat.getResult()
+			return result
 
 	# Create a worker and run it.
 	w = Worker("localhost", port)
@@ -58,13 +55,11 @@ def find_port():
 		except socket.error:
 			pass
 
-def run(strategyClass, barFeed, strategyParameters, workerCount = None):
-	"""Executes many instances of a strategy in parallel and finds the parameters that yield the best results.
+def create_workers(strategyClass, port, workerCount = None):
+	"""Creates the worker processes
 
 	:param strategyClass: The strategy class.
-	:param barFeed: The bar feed to use to backtest the strategy.
-	:type barFeed: :class:`pyalgotrade.barfeed.BarFeed`.
-	:param strategyParameters: The set of parameters to use for backtesting. An iterable object where **each element is a tuple that holds parameter values**.
+	:param port: Port number to use. Use find_port() to pick one automatically.
 	:param workerCount: The number of strategies to run in parallel. If None then as many workers as CPUs are used.
 	:type workerCount: int.
 	"""
@@ -74,9 +69,22 @@ def run(strategyClass, barFeed, strategyParameters, workerCount = None):
 		workerCount = multiprocessing.cpu_count()
 
 	workers = []
-	port = find_port()
-	if port == None:
-		raise Exception("Failed to find a port to listen")
+
+	# Build the worker processes.
+	for i in range(workerCount):
+		workers.append(multiprocessing.Process(target=worker_process, args=(strategyClass, port)))
+
+	return workers
+
+def run(workers, port, barFeed, strategyParameters):
+	"""Executes many instances of a strategy in parallel and finds the parameters that yield the best results.
+
+	:param workers: The list of the worker processes created by create_workers().
+	:param port: Port number to use.
+	:param strategyParameters: The set of parameters to use for backtesting. An iterable object where **each element is a tuple that holds parameter values**.
+	:param workerCount: The number of strategies to run in parallel. If None then as many workers as CPUs are used.
+	:type workerCount: int.
+	"""
 
 	# Build and start the server thread before the worker processes. We'll manually stop the server once workers have finished.
 	srv = server.Server("localhost", port, False)
@@ -84,10 +92,6 @@ def run(strategyClass, barFeed, strategyParameters, workerCount = None):
 	serverThread.start()
 	
 	try:
-		# Build the worker processes.
-		for i in range(workerCount):
-			workers.append(multiprocessing.Process(target=worker_process, args=(strategyClass, port)))
-
 		# Start workers
 		for process in workers:
 			process.start()

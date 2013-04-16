@@ -63,7 +63,7 @@ class RowParser(csvfeed.RowParser):
 			assert(False)
 
 		# According to NinjaTrader documentation the exported data will be in UTC.
-		ret = pytz.utc.localize(ret)
+		#ret = pytz.utc.localize(ret)
 
 		# Localize bars if a market session was set.
 		if self.__timezone:

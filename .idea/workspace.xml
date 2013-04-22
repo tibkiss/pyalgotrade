@@ -6,20 +6,23 @@
     </list>
     <ignored path="pyalgotrade.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1366625010530" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/strategy/statarb.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1366620242206" ignored="false" />
-    <file path="/statarb.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1366620179213" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/strategy/brokeragent.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1366618244162" ignored="false" />
-    <file path="/brokeragent.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1366618241504" ignored="false" />
+    <file path="/Dummy.txt" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1366639915374" ignored="false" />
+    <file path="$PROJECT_DIR$/../huba/strategy/statarb.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1366630627539" ignored="false" />
+    <file path="/statarb.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1366630627539" ignored="false" />
+    <file path="$PROJECT_DIR$/../huba/strategy/brokeragent.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1366630447849" ignored="false" />
+    <file path="/brokeragent.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1366630447849" ignored="false" />
     <file path="$PROJECT_DIR$/../huba/strategy/riskmanager.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1366570589323" ignored="false" />
     <file path="/riskmanager.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1366570589323" ignored="false" />
-    <file path="/huba_statarb.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1366624578635" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/huba_statarb.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1366624710391" ignored="false" />
+    <file path="/huba_statarb.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1366639133451" ignored="false" />
+    <file path="$PROJECT_DIR$/../huba/huba_statarb.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1366639134030" ignored="false" />
     <file path="/dataseries.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1366620217555" ignored="false" />
     <file path="$PROJECT_DIR$/../huba/tools/csv_tools.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1366619820097" ignored="false" />
     <file path="/csv_tools.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1366619792615" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/matplotlibrc" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1366624724374" ignored="false" />
-    <file path="/matplotlibrc" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1366623749448" ignored="false" />
+    <file path="$PROJECT_DIR$/../huba/matplotlibrc" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1366629965404" ignored="false" />
+    <file path="/matplotlibrc" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1366629965404" ignored="false" />
+    <file path="$PROJECT_DIR$/../huba/strategy/analyzer.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1366639573294" ignored="false" />
+    <file path="/analyzer.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1366639571734" ignored="false" />
+    <file path="$PROJECT_DIR$/../huba/docs/bugs.txt" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1366639063072" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

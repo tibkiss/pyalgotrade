@@ -29,6 +29,33 @@ import datetime
 import types
 import pytz
 
+# A faster (but limited) version of csv.DictReader
+class FastDictReader:
+	def __init__(self, f, fieldnames=None, dialect="excel", *args, **kwds):
+		self.__fieldNames = fieldnames
+		self.reader = csv.reader(f, dialect, *args, **kwds)
+		if self.__fieldNames is None:
+			self.__fieldNames = self.reader.next()
+		self.__dict = {}
+
+	def __iter__(self):
+		return self
+
+	def next(self):
+		# Skip empty rows.
+		row = self.reader.next()
+		while row == []:
+			row = self.reader.next()
+
+		# Check that the row has the right number of columns.
+		assert(len(self.__fieldNames) == len(row))
+
+		# Copy the row values into the dict.
+		for i in xrange(len(self.__fieldNames)):
+			self.__dict[self.__fieldNames[i]] = row[i]
+
+		return self.__dict
+
 # Interface for csv row parsers.
 class RowParser:
 	def parseBar(self, csvRowDict):
@@ -120,7 +147,7 @@ class BarFeed(membf.Feed):
 	def addBarsFromCSV(self, instrument, path, rowParser):
 		# Load the csv file
 		loadedBars = []
-		reader = csv.DictReader(open(path, "r"), fieldnames=rowParser.getFieldNames(), delimiter=rowParser.getDelimiter())
+		reader = FastDictReader(open(path, "r"), fieldnames=rowParser.getFieldNames(), delimiter=rowParser.getDelimiter())
 		for row in reader:
 			bar_ = rowParser.parseBar(row)
 			if bar_ != None and (self.__barFilter is None or self.__barFilter.includeBar(bar_)):
@@ -137,13 +164,23 @@ class BarFeed(membf.Feed):
 #
 # The csv Date column must have the following format: YYYY-MM-DD
 
+def parse_date(date):
+	# Sample: 2005-12-30
+	# This custom parsing works faster than:
+	# datetime.datetime.strptime(date, "%Y-%m-%d")
+	year = int(date[0:4])
+	month = int(date[5:7])
+	day = int(date[8:10])
+	ret = datetime.datetime(year, month, day)
+	return ret
+
 class YahooRowParser(RowParser):
 	def __init__(self, dailyBarTime, timezone = None):
 		self.__dailyBarTime = dailyBarTime
 		self.__timezone = timezone
 
 	def __parseDate(self, dateString):
-		ret = datetime.datetime.strptime(dateString, "%Y-%m-%d")
+		ret = parse_date(dateString)
 		# Time on Yahoo! Finance CSV files is empty. If told to set one, do it.
 		if self.__dailyBarTime != None:
 			ret = datetime.datetime.combine(ret, self.__dailyBarTime)

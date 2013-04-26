@@ -22,6 +22,8 @@ import unittest
 import common
 from pyalgotrade.technical import ma
 from pyalgotrade import dataseries
+from pyalgotrade.barfeed import ninjatraderfeed
+from pyalgotrade import barfeed
 
 class SMATestCase(unittest.TestCase):
 	def __buildSMA(self, period, values):
@@ -51,10 +53,6 @@ class SMATestCase(unittest.TestCase):
 		self.assertTrue(sma[2] == (1+2) / float(2))
 		with self.assertRaises(IndexError):
 			sma[3]
-
-		self.assertTrue(sma[2] == sma.getValue())
-		self.assertTrue(sma[1] == sma.getValue(1))
-		self.assertTrue(sma[0] == sma.getValue(2) == None)
 
 		self.assertEqual(len(sma.getDateTimes()), 3)
 		for i in range(len(sma)):
@@ -153,6 +151,15 @@ class EMATestCase(unittest.TestCase):
 		# Test data from http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:moving_averages
 		common.test_from_csv(self, "sc-ema-10.csv", lambda inputDS: ma.EMA(inputDS, 10), 3, True)
 
+	def testMaxRecursion(self):
+		barFeed = ninjatraderfeed.Feed(barfeed.Frequency.MINUTE)
+		barFeed.addBarsFromCSV("any", common.get_data_file_path("nt-spy-minute-2011.csv"))
+		# Load all the feed.
+		barFeed.loadAll()
+
+		# Check that the max recursion limit bug is not hit when generating the last value first.
+		self.assertEquals(round(ma.EMA(barFeed["any"].getCloseDataSeries(), 10)[-1], 2), 128.81)
+
 def getTestCases():
 	ret = []
 
@@ -169,5 +176,6 @@ def getTestCases():
 
 	ret.append(EMATestCase("testStockChartsEMA"))
 	ret.append(EMATestCase("testStockChartsEMA_Reverse"))
+	ret.append(EMATestCase("testMaxRecursion"))
 	return ret
 

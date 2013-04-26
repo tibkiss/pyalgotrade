@@ -43,7 +43,7 @@ class BarFeedEventHandler_TestLoadOrder:
 			# Check that bars are loaded in order
 			self.__testcase.assertTrue(self.__prevDateTime < dateTime)
 			# Check that the last value in the dataseries match the current datetime.
-			self.__testcase.assertTrue(self.__barFeed.getDataSeries().getValue().getDateTime() == dateTime)
+			self.__testcase.assertTrue(self.__barFeed.getDataSeries()[-1].getDateTime() == dateTime)
 			# Check that the datetime for the last value matches that last datetime in the dataseries.
 			self.__testcase.assertEqual(self.__barFeed.getDataSeries()[-1].getDateTime(), self.__barFeed.getDataSeries().getDateTimes()[-1])
 		self.__prevDateTime = dateTime
@@ -79,22 +79,22 @@ class YahooTestCase(unittest.TestCase):
 		return parser.parseBar(row).getDateTime()
 
 	def testParseDate_1(self):
-		date = self.__parseDate("1950-1-1")
+		date = self.__parseDate("1950-01-01")
 		self.assertTrue(date.day == 1)
 		self.assertTrue(date.month == 1)
 		self.assertTrue(date.year == 1950)
 
 	def testParseDate_2(self):
-		date = self.__parseDate("2000-1-1")
+		date = self.__parseDate("2000-01-01")
 		self.assertTrue(date.day == 1)
 		self.assertTrue(date.month == 1)
 		self.assertTrue(date.year == 2000)
 
 	def testDateCompare(self):
-		self.assertTrue(self.__parseDate("2000-1-1") == self.__parseDate("2000-1-1"))
-		self.assertTrue(self.__parseDate("2000-1-1") != self.__parseDate("2001-1-1"))
-		self.assertTrue(self.__parseDate("1999-1-1") < self.__parseDate("2001-1-1"))
-		self.assertTrue(self.__parseDate("2011-1-1") > self.__parseDate("2001-2-2"))
+		self.assertTrue(self.__parseDate("2000-01-01") == self.__parseDate("2000-01-01"))
+		self.assertTrue(self.__parseDate("2000-01-01") != self.__parseDate("2001-01-01"))
+		self.assertTrue(self.__parseDate("1999-01-01") < self.__parseDate("2001-01-01"))
+		self.assertTrue(self.__parseDate("2011-01-01") > self.__parseDate("2001-02-02"))
 
 	def testCSVFeedLoadOrder(self):
 		barFeed = csvfeed.YahooFeed()

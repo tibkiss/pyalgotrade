@@ -1,7 +1,18 @@
-Version 0.11 (TBD)
+Version 0.12 (20/Apr/2013)
+. [NEW] pyalgotrade.optimizer now has worker names associated with each worker. Thanks Matthieu Locas for implementing this.
+. [NEW] StrategyPlotter now allows plotting custom functions.
+. [NEW] Optimizations in different areas.
+. [NEW] Standard deviation technical indicator (pyalgotrade.technical.stats.StdDev).
+. [NEW] Bollinger Bands technical indicator (pyalgotrade.technical.bollinger.BollingerBands).
+. [FIX] Fixed a bug in EMA technical that could lead to max. recursion limit error.
+. [FIX] Fixed a bug in the Strategy class that had a big impact on execution time. Bookkeeping for active positions and orders was not handled properly.
+
+Version 0.11 (17/Mar/2013)
 . [NEW] DataSeries now provide the datetime associated with each value (getDateTimes), making it easier to plot using matplotlib.
 . [NEW] Function to align two DataSeries with respect to time (pyalgotrade.dataseries.datetime_aligned).
-. [NEW] VWAP technical indicator.
+. [NEW] VWAP technical indicator (pyalgotrade.technical.vwap.VWAP).
+. [NEW] Line Break technical indicator (pyalgotrade.technical.linebreak.LineBreak).
+. [NEW] Methods to calculate unrealized returns and PnL in positions (getUnrealizedReturn and getUnrealizedNetProfit).
 . [FIX] An IndexError exception was raised in plotter.py when plotting many dataseries in the same subplot.
 
 Version 0.10 (11/Jan/2013)

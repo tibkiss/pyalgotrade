@@ -46,3 +46,12 @@ Other Indicators
 .. automodule:: pyalgotrade.technical.cross
     :members: CrossAbove, CrossBelow
 
+.. automodule:: pyalgotrade.technical.linebreak
+    :members: Line, LineBreak
+
+.. automodule:: pyalgotrade.technical.stats
+    :members: StdDev
+
+.. automodule:: pyalgotrade.technical.bollinger
+    :members: BollingerBands
+

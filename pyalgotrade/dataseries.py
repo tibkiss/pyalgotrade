@@ -20,6 +20,7 @@
 
 import bar
 from pyalgotrade.utils import collections
+from pyalgotrade import warninghelpers
 
 # It is important to inherit object to get __getitem__ to work properly.
 # Check http://code.activestate.com/lists/python-list/621258/
@@ -54,6 +55,7 @@ class DataSeries(object):
 	def getLength(self):
 		raise NotImplementedError()
 
+	# This is similar to __getitem__ for ints, but it shouldn't raise for invalid positions.
 	def getValueAbsolute(self, pos):
 		raise NotImplementedError()
 
@@ -83,6 +85,8 @@ class DataSeries(object):
 		return ret
 
 	def getValues(self, count, valuesAgo = 0, includeNone = False):
+		# Deprecated since 0.12
+		warninghelpers.deprecation_warning("getValues will be deprecated in the next version. Please use [] instead.", stacklevel=2)
 		if count <= 0:
 			return None
 
@@ -98,8 +102,9 @@ class DataSeries(object):
 			ret.append(value)
 		return ret
 
-	# TODO: Deprecate this.
 	def getValue(self, valuesAgo = 0):
+		# Deprecated since 0.12
+		warninghelpers.deprecation_warning("getValue will be deprecated in the next version. Please use [] instead.", stacklevel=2)
 		ret = None
 		absolutePos = self.__mapRelativeToAbsolute(valuesAgo)
 		if absolutePos != None:

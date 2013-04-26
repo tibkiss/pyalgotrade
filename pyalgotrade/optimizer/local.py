@@ -40,7 +40,7 @@ def worker_process(strategyClass, port):
 			return result
 
 	# Create a worker and run it.
-	w = Worker("localhost", port)
+	w = Worker("localhost", port, None)
 	w.setLogger(optimizer.get_logger("worker", logging.ERROR))
 	w.run()
 

@@ -50,18 +50,17 @@ class TechnicalIndicatorBase(dataseries.DataSeries):
 		if pos < self.getFirstValidPos() or pos >= self.getLength():
 			return None
  
-		# Check that we have enough values to use
-		firstPos = pos - self.__windowSize + 1
-		assert(firstPos >= 0)
- 
 		# Try to get the value from the cache.
-		if self.getCache().isCached(pos):
-			ret = self.getCache().getValue(pos)
-		else:
+		ret = self.__cache.getValue(pos, Cache.ValueNotCached)
+		if ret == Cache.ValueNotCached:
+			# Check that we have enough values to use
+			firstPos = pos - self.__windowSize + 1
+			assert(firstPos >= 0)
+
 			ret = self.calculateValue(firstPos, pos)
 			# Avoid caching None's in case a invalid pos is requested that becomes valid in the future.
 			if ret != None:
-				self.getCache().putValue(pos, ret)
+				self.__cache.putValue(pos, ret)
 		return ret
 
 class DataSeriesFilter(TechnicalIndicatorBase):
@@ -81,9 +80,10 @@ class DataSeriesFilter(TechnicalIndicatorBase):
 	def __init__(self, dataSeries, windowSize, cacheSize=512):
 		TechnicalIndicatorBase.__init__(self, windowSize, cacheSize)
 		self.__dataSeries = dataSeries
+		self.__firstValidPos = (windowSize - 1) + dataSeries.getFirstValidPos()
 
 	def getFirstValidPos(self):
-		return (self.getWindowSize() - 1) + self.__dataSeries.getFirstValidPos()
+		return self.__firstValidPos
 
 	def getDataSeries(self):
 		"""Returns the :class:`pyalgotrade.dataseries.DataSeries` being filtered."""
@@ -97,6 +97,9 @@ class DataSeriesFilter(TechnicalIndicatorBase):
 
 # Cache with FIFO replacement policy.
 class Cache:
+	class ValueNotCached:
+		pass
+
 	def __init__(self, size):
 		assert(size > 0)
 		self.__size = size
@@ -106,8 +109,8 @@ class Cache:
 	def isCached(self, pos):
 		return pos in self.__cache
 
-	def getValue(self, pos):
-		return self.__cache.get(pos)
+	def getValue(self, pos, default=None):
+		return self.__cache.get(pos, default)
 
 	def putValue(self, pos, value):
 		self.__cache[pos] = value

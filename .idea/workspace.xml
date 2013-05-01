@@ -6,7 +6,7 @@
     </list>
     <ignored path="pyalgotrade.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1367423269160" ignored="false" />
+    <file path="/Dummy.txt" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1367424009527" ignored="false" />
     <file path="$PROJECT_DIR$/../huba/strategy/statarb.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1366710604606" ignored="false" />
     <file path="/statarb.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1366710600643" ignored="false" />
     <file path="$PROJECT_DIR$/../huba/strategy/brokeragent.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1367332890116" ignored="false" />
@@ -38,6 +38,7 @@
     <file path="$PROJECT_DIR$/../huba/backtestdata/nasdaq/make_pairs.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1367323713075" ignored="false" />
     <file path="/make_pairs.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1367244138373" ignored="false" />
     <file path="$PROJECT_DIR$/../huba/logs/huba-backtest-20130430.log" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1367332990436" ignored="false" />
+    <file path="$PROJECT_DIR$/../huba/docs/yahoo_url.txt" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1367423519388" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

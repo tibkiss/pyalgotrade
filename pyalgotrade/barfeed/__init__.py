@@ -175,7 +175,8 @@ class BarFeed(BasicBarFeed):
 
 		# Check that current bar datetimes are greater than the previous one.
 		if self.__prevDateTime != None and self.__prevDateTime >= ret.getDateTime():
-			raise Exception("Bar data times are not in order. Previous datetime was %s and current datetime is %s" % (self.__prevDateTime, ret.getDateTime()))
+			# raise Exception("Bar data times are not in order. Previous datetime was %s and current datetime is %s" % (self.__prevDateTime, ret.getDateTime()))
+			print "Bar data times are not in order. Previous datetime was %s and current datetime is %s" % (self.__prevDateTime, ret.getDateTime())
 		self.__prevDateTime = ret.getDateTime()
 
 		return ret

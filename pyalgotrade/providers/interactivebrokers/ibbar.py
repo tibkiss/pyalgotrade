@@ -45,7 +45,7 @@ class Bar(bar.Bar):
 	:type tradeCount: int
 	"""
 	def __init__(self, dateTime, open_, high, low, close, volume, vwap, tradeCount):
-		bar.Bar.__init__(self, dateTime, open_, high, low, close, volume, adjClose=None)
+		bar.Bar.__init__(self, dateTime, open_, high, low, close, volume, adjClose=close)
 
 		self.__vwap = vwap
 		self.__tradeCount = tradeCount

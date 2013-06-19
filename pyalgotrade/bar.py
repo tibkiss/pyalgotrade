@@ -37,7 +37,7 @@ class Bar(object):
 	:type close: float
 	"""
 	__slots__ = ('__dateTime', '__open', '__close', '__high', '__low',
-                 '__volume', '__adjClose', '__sessionClose', '__barsTillSessionClose')
+	             '__volume', '__adjClose', '__sessionClose', '__barsTillSessionClose')
 
 	def __init__(self, dateTime, open_, high, low, close, volume, adjClose):
 		assert(high >= open_)
@@ -127,7 +127,7 @@ class Bar(object):
 		 self.__volume, self.__adjClose, self.__sessionClose, self.__barsTillSessionClose) = state
 
 
-class Bars:
+class Bars(object):
 	"""A group of :class:`Bar` objects.
 
 	:param barDict: A map of instrument to :class:`Bar` objects.

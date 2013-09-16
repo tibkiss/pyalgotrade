@@ -136,7 +136,6 @@ class Bars(object):
 	.. note::
 		All bars must have the same datetime.
 	"""
-	__slots__ = ('__barDict', '__dateTime')
 
 	def __init__(self, barDict):
 		if len(barDict) == 0:

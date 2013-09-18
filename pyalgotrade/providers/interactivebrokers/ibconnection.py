@@ -23,8 +23,10 @@
 .. moduleauthor:: Tibor Kiss <tibor.kiss@gmail.com>
 """
 
-import threading, copy, datetime
-from time import localtime, sleep 
+import threading, copy
+from time import sleep
+from datetime import datetime
+import pytz
 
 from pyalgotrade import observer
 
@@ -39,7 +41,7 @@ from ib.ext.Order import Order
 import logging
 log = logging.getLogger(__name__)
 
-TIMEOUT=15.0 # seconds
+TIMEOUT = 15.0 # seconds
 
 class Connection(EWrapper):
 		'''Wrapper class for Interactive Brokers TWS Connection.
@@ -63,9 +65,8 @@ class Connection(EWrapper):
 		:type twsClientId: int
 		'''
 
-		def __init__(self, accountCode='NONE', timezone=0, twsHost='localhost', twsPort=7496, twsClientId=27, eClientSocket=None):
+		def __init__(self, accountCode='NONE', twsHost='localhost', twsPort=7496, twsClientId=27, eClientSocket=None):
 				self.__accountCode = accountCode
-				self.__zone = timezone
 				self.__twsHost = twsHost
 				self.__twsPort = twsPort
 				self.__twsClientId = twsClientId
@@ -139,7 +140,6 @@ class Connection(EWrapper):
 				self.__connected = False
 				self.__accountUpdatesSubscribed = False
 
-
 		def __getNextTickerId(self):
 				"""Returns the next unique Ticker ID"""
 				tickerId = copy.copy(self.__tickerId)
@@ -152,12 +152,6 @@ class Connection(EWrapper):
 				self.__orderId += 1
 				return orderId
 
-		def getTimezone(self):
-				"""Returns the timezone. The zone specifies the offset from Coordinated Universal Time 
-				(UTC, formerly referred to as "Greenwich Mean Time")
-				"""
-				return self.__zone
-		
 		def connect(self):
 				"""Initiates TWS Connection"""
 				if not self.__connected:
@@ -266,7 +260,6 @@ class Connection(EWrapper):
 				
 				return orderId
 
-
 		def cancelOrder(self, orderId):
 				"""Cancels an order.
 				
@@ -364,7 +357,7 @@ class Connection(EWrapper):
 
 		def requestHistoricalData(self, instrument, endTime, duration, barSize,
 								  secType='STK', exchange='SMART', currency='USD',
-								  whatToShow='TRADES', useRTH=0, formatDate=1):
+								  whatToShow='TRADES', useRTH=0):
 				"""Requests historical data. The historical bars are returned as a list of Bar instances.
 				
 				:param instrument: Instrument's symbol
@@ -415,6 +408,10 @@ class Connection(EWrapper):
 				contract.m_exchange = exchange
 				contract.m_currency = currency
 
+				# Set up requested date format:
+				# Dates are returned as a long integer specifying the number of seconds since 1/1/1970 GMT .
+				formatDate = 2
+
 				# Request historical data
 				self.__historicalDataBuffer = []
 				self.__historicalDataReceived = False
@@ -428,7 +425,7 @@ class Connection(EWrapper):
 
 					err = self.getError()
 					self.clearError()
-					if err == None or err['tickerId'] == None or err['tickerId'] != tickerId:
+					if err is None or err['tickerId'] is None or err['tickerId'] != tickerId:
 						continue
 					else:
 						if err['errorCode'] == 162:
@@ -450,9 +447,7 @@ class Connection(EWrapper):
 				# Copy the downloaded historical data and empty the buffer
 				historicalData = copy.copy(self.__historicalDataBuffer)
 
-
 				return historicalData 
-				
 
 		def requestMarketScanner(self, numberOfRows=10, 
 								 scanCode='TOP_PERC_GAIN', stockTypeFilter='STOCK',
@@ -559,7 +554,7 @@ class Connection(EWrapper):
 
 				self.__accUpdateLock.release()
 
-				return(cash)
+				return cash
 
 		def getNetLiquidation(self):
 				self.requestAccountUpdate()
@@ -590,8 +585,6 @@ class Connection(EWrapper):
 		# EWrapper callbacks
 		########################################################################################
 		def historicalData(self, tickerId, date, open_, high, low, close, volume, tradeCount, vwap, hasGaps):
-				instrument = self.__historicalDataTickerIds[tickerId]
-
 				# EOD is signaled in the date variable, eg.:
 				# date='finished-20120628  00:00:00-20120630  00:00:00'
 				if date.find("finished") != -1:
@@ -604,9 +597,8 @@ class Connection(EWrapper):
 					
 					return
 						
-				# Convert the time to local time
-				dt = datetime.datetime.strptime(date, "%Y%m%d  %H:%M:%S")
-				dt += datetime.timedelta(hours= (-1 * self.__zone))
+				# Returned data is in Unix time, convert it to UTC with TZ info
+				dt = datetime.utcfromtimestamp(int(date)).replace(tzinfo=pytz.utc)
 
 				# Create the bar
 				bar = Bar(dt, open_, high, low, close, volume, vwap, tradeCount)
@@ -642,10 +634,8 @@ class Connection(EWrapper):
 				:type tradeCount: int
 
 				"""
-				# Convert the timezone to the destination timezone
-				lt = localtime(time_)
-				dt = datetime.datetime(lt.tm_year, lt.tm_mon, lt.tm_mday, lt.tm_hour, lt.tm_min, lt.tm_sec)
-				dt += datetime.timedelta(hours= (-1 * self.__zone))
+				# The time is returned as Unix Time, convert it to UTC with tz info
+				dt = datetime.utcfromtimestamp(time_).replace(tzinfo=pytz.utc)
 
 				# Look up the instrument's name based on its tickerId
 				instrument = None
@@ -663,7 +653,6 @@ class Connection(EWrapper):
 				else:
 					log.warning("Realtime bar received for unregistered instrument: %s" % instrument)
 
-		
 		def scannerData(self, reqId, rank, contractDetails, distance, benchmark, projection, legsStr=False):
 				"""
 				This function receives the requested market scanner data results and appends it to the
@@ -796,7 +785,6 @@ class Connection(EWrapper):
 				
 				self.__portfolioLock.notify()
 				self.__portfolioLock.release()
-
 
 		def accountDownloadEnd(self, accountName):
 				pass

@@ -66,7 +66,7 @@
       <file leaf-file-name="ibconnection.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pyalgotrade/providers/interactivebrokers/ibconnection.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="637" column="37" selection-start="25572" selection-end="25579" vertical-scroll-proportion="0.7530648" vertical-offset="9125" max-vertical-offset="14025">
+            <state line="615" column="66" selection-start="24665" selection-end="24665" vertical-scroll-proportion="0.17513135" vertical-offset="9125" max-vertical-offset="14025">
               <folding>
                 <element signature="e#821#843#0" expanded="true" />
               </folding>
@@ -522,14 +522,18 @@
       <created>1379505000765</created>
       <updated>1379505000765</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Update idea project file">
+      <created>1379505015766</created>
+      <updated>1379505015766</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1920" height="1080" extended-state="0" />
     <editor active="false" />
     <layout>
-      <window_info id="Changes" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.36585367" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.36585367" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3292683" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -562,7 +566,8 @@
     <MESSAGE value="Fix tab/space issue in ninjatraderfeed" />
     <MESSAGE value="Fix variable name typo in ibfeed" />
     <MESSAGE value="Fix timezones in IBConnection: &#10;Store the ibbar datetimes as timezone aware UTC timestamps &#10;" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix timezones in IBConnection: &#10;Store the ibbar datetimes as timezone aware UTC timestamps &#10;" />
+    <MESSAGE value="Update idea project file" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update idea project file" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -665,7 +670,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pyalgotrade/providers/interactivebrokers/ibconnection.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="637" column="37" selection-start="25572" selection-end="25579" vertical-scroll-proportion="0.7530648" vertical-offset="9125" max-vertical-offset="14025">
+        <state line="615" column="66" selection-start="24665" selection-end="24665" vertical-scroll-proportion="0.17513135" vertical-offset="9125" max-vertical-offset="14025">
           <folding>
             <element signature="e#821#843#0" expanded="true" />
           </folding>

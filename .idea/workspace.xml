@@ -1,97 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" name="Default" comment="Initialize adjusted close as close value in parent's constructor">
+    <list default="true" id="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" name="Default" comment="Fix timezones in IBConnection: &#10;Store the ibbar datetimes as timezone aware UTC timestamps &#10;">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/dictionaries/tiborkiss.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vagrant.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pyalgotrade/tools/yahoofinance.py" afterPath="$PROJECT_DIR$/pyalgotrade/tools/yahoofinance.py" />
     </list>
     <ignored path="pyalgotrade.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1375084668841" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/strategy/statarb.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1373017777619" ignored="false" />
-    <file path="/statarb.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1373015850753" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/strategy/brokeragent.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1373017777619" ignored="false" />
-    <file path="/brokeragent.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1372841773715" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/strategy/riskmanager.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1373017777619" ignored="false" />
-    <file path="/riskmanager.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1371660832277" ignored="false" />
-    <file path="/huba_statarb.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1366708494865" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/huba_statarb.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1366654650601" ignored="false" />
-    <file path="/dataseries.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1366620217555" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/tools/csv_tools.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1373017777619" ignored="false" />
-    <file path="/csv_tools.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1372849280444" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/matplotlibrc" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1367473273330" ignored="false" />
-    <file path="/matplotlibrc" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1366640314505" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/strategy/analyzer.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1373017777619" ignored="false" />
-    <file path="/analyzer.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1372794906131" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/docs/bugs.txt" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1367473273330" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/huba.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1373018071630" ignored="false" />
-    <file path="/huba.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1373017897115" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/TODO" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1367405435943" ignored="false" />
-    <file path="/TODO" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1367485189191" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/config.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1373017777619" ignored="false" />
-    <file path="/config.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1368002723792" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/logs/live.csv" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1366711186309" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/logs/results.csv" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1366711228616" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/logs/backtest.csv" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1368541474698" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/logs/results-20130417.csv" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1366711299572" ignored="false" />
-    <file path="/bugs.txt" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1367423095760" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/tools/__init__.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1370773373742" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/backtestdata/nasdaq/make_pairs.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1367473273330" ignored="false" />
-    <file path="/make_pairs.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1367244138373" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/logs/huba-backtest-20130430.log" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1367332990436" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/docs/yahoo_url.txt" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1367693463466" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/docs/TODO" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1367485189191" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/tools/socks.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1367473273330" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/docs/quantquote-list.txt" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1367473273330" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/docs/selection_criteria.txt" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1367473273330" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/logs/extract_uniq_pairs.sh" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1367473273330" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/logs/backtest-20130422.csv" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1367473273330" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/tools/generate-daterange.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1370775166252" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/tools/googlesms.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1367473273330" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/backtestdata/nasdaq/nasdaq-consumer_services.csv_pairs" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1367473273330" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/3rdparty/IBController/IBController.ini" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1367474134991" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/backtestdata/nasdaq/sort_results.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1367771377369" ignored="false" />
-    <file path="/sort_results.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1367771377369" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/backtestdata/nasdaq/Nasdaq-Results-20130501/backtest-all_pairs.1.csv" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1367769683375" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/backtestdata/nasdaq/process_results.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1367772319385" ignored="false" />
-    <file path="/process_results.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1367772170858" ignored="false" />
-    <file path="/__init__.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1370773371528" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/scripts/huba_live_start.sh" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1368002776843" ignored="false" />
-    <file path="/huba_live_start.sh" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1368002776843" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/runtests.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1372682597735" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/testcases/test_tools.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1370850288026" ignored="false" />
-    <file path="/test_tools.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1370849795852" ignored="false" />
-    <file path="/ibbar.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1370773598067" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/tools/business_days.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1370775125404" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/tools/nyse_holidays.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1370775111218" ignored="false" />
-    <file path="/generate-daterange.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1370775164489" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/testcases/test_tools_business_days.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1370777750413" ignored="false" />
-    <file path="/test_tools_business_days.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1370777657559" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/testcases/test_csv_tools.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1372103434479" ignored="false" />
-    <file path="/runtests.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1371716158161" ignored="false" />
-    <file path="/test_csv_tools.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1372103434479" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/testcases/test_brokeragent_basic.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1372682539998" ignored="false" />
-    <file path="/test_brokeragent_basic.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1372691266397" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/testcases/test_brokeragent_logic.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1372682533384" ignored="false" />
-    <file path="/test_brokeragent_logic.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1370849741143" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/testcases/test_huba.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1372085919796" ignored="false" />
-    <file path="/test_huba.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1372085918141" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/testcases/test_statarb_basic.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1373017329883" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/testcases/test_riskmanager.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1371659591952" ignored="false" />
-    <file path="/test_riskmanager.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1371659591952" ignored="false" />
-    <file path="/test_statarb_basic.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1373016463826" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/testcases/test_statarb_logic.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1370850577153" ignored="false" />
-    <file path="/test_statarb_logic.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1370850575960" ignored="false" />
-    <file path="/" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1370959200131" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/testcases/systemtest_huba.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1373016833150" ignored="false" />
-    <file path="/systemtest_huba.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1372075582097" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/testcases/test_analyzer.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1372672142045" ignored="false" />
-    <file path="/test_analyzer.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1372672132839" ignored="false" />
-    <file path="$PROJECT_DIR$/../huba/testcases/test_brokeragent.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1372795058680" ignored="false" />
-    <file path="/test_brokeragent.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1372795055931" ignored="false" />
-    <file path="$PROJECT_DIR$/../../dome/usb_shell/usb_shell.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1375087789377" ignored="false" />
-    <file path="/usb_shell.py" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1375087740110" ignored="false" />
-    <file path="/Python Console" changelist="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" time="1375088365832" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -106,30 +22,15 @@
     <disable_hints />
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
+  <component name="FavoritesManager">
+    <favorites_list name="pyalgotrade" />
+  </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="plotter.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pyalgotrade/plotter.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="69" column="8" selection-start="1653" selection-end="1653" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="bar.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pyalgotrade/bar.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="142" column="47" selection-start="4106" selection-end="4106" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="observer.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pyalgotrade/observer.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="930">
               <folding />
             </state>
           </provider>
@@ -138,7 +39,7 @@
       <file leaf-file-name="ibbroker.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pyalgotrade/providers/interactivebrokers/ibbroker.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="40" column="29" selection-start="1277" selection-end="1282" vertical-scroll-proportion="0.0">
+            <state line="40" column="29" selection-start="1277" selection-end="1282" vertical-scroll-proportion="0.0" vertical-offset="3105" max-vertical-offset="4920">
               <folding />
             </state>
           </provider>
@@ -147,7 +48,7 @@
       <file leaf-file-name="ibfeed.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pyalgotrade/providers/interactivebrokers/ibfeed.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="140" column="57" selection-start="4006" selection-end="4010" vertical-scroll-proportion="0.0">
+            <state line="157" column="68" selection-start="4703" selection-end="4703" vertical-scroll-proportion="0.0" vertical-offset="1557" max-vertical-offset="2490">
               <folding />
             </state>
           </provider>
@@ -156,7 +57,7 @@
       <file leaf-file-name="strategy_test.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/testcases/strategy_test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="463" column="14" selection-start="15907" selection-end="15907" vertical-scroll-proportion="0.0">
+            <state line="463" column="14" selection-start="15907" selection-end="15907" vertical-scroll-proportion="0.0" vertical-offset="6945" max-vertical-offset="15120">
               <folding />
             </state>
           </provider>
@@ -165,7 +66,29 @@
       <file leaf-file-name="ibconnection.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pyalgotrade/providers/interactivebrokers/ibconnection.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="586" column="39" selection-start="23382" selection-end="23382" vertical-scroll-proportion="0.33687943">
+            <state line="637" column="37" selection-start="25572" selection-end="25579" vertical-scroll-proportion="0.7530648" vertical-offset="9125" max-vertical-offset="14025">
+              <folding>
+                <element signature="e#821#843#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ninjatraderfeed.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pyalgotrade/barfeed/ninjatraderfeed.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="83" column="0" selection-start="2649" selection-end="2649" vertical-scroll-proportion="0.0" vertical-offset="690" max-vertical-offset="2265">
+              <folding>
+                <element signature="e#702#728#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="dt.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pyalgotrade/utils/dt.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="1" max-vertical-offset="915">
               <folding />
             </state>
           </provider>
@@ -174,7 +97,7 @@
       <file leaf-file-name="ibbar.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pyalgotrade/providers/interactivebrokers/ibbar.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="48" column="0" selection-start="1562" selection-end="1562" vertical-scroll-proportion="0.0">
+            <state line="48" column="0" selection-start="1562" selection-end="1562" vertical-scroll-proportion="0.0" vertical-offset="177" max-vertical-offset="1110">
               <folding />
             </state>
           </provider>
@@ -183,7 +106,7 @@
       <file leaf-file-name="yahoofinance.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pyalgotrade/tools/yahoofinance.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="43" column="16" selection-start="1374" selection-end="1374" vertical-scroll-proportion="0.0">
+            <state line="43" column="16" selection-start="1371" selection-end="1371" vertical-scroll-proportion="0.0" vertical-offset="645" max-vertical-offset="975">
               <folding />
             </state>
           </provider>
@@ -192,7 +115,7 @@
       <file leaf-file-name="yahoofeed.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pyalgotrade/barfeed/yahoofeed.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="17" column="20" selection-start="637" selection-end="637" vertical-scroll-proportion="0.0">
+            <state line="17" column="20" selection-start="637" selection-end="637" vertical-scroll-proportion="0.0" vertical-offset="255" max-vertical-offset="1095">
               <folding />
             </state>
           </provider>
@@ -219,13 +142,31 @@
         <option value="$PROJECT_DIR$/pyalgotrade/dataseries.py" />
         <option value="$PROJECT_DIR$/pyalgotrade/providers/interactivebrokers/ibbar.py" />
         <option value="$PROJECT_DIR$/pyalgotrade/bar.py" />
+        <option value="$PROJECT_DIR$/pyalgotrade/providers/interactivebrokers/ibfeed.py" />
+        <option value="$PROJECT_DIR$/pyalgotrade/barfeed/ninjatraderfeed.py" />
+        <option value="$PROJECT_DIR$/pyalgotrade/providers/interactivebrokers/ibconnection.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="y" value="22" />
-    <option name="width" value="1629" />
-    <option name="height" value="1028" />
+    <option name="width" value="1920" />
+    <option name="height" value="1080" />
+  </component>
+  <component name="ProjectInspectionProfilesVisibleTreeState">
+    <entry key="Project Default">
+      <profile-state>
+        <expanded-state>
+          <State>
+            <id />
+          </State>
+        </expanded-state>
+        <selected-state>
+          <State>
+            <id>Buildout</id>
+          </State>
+        </selected-state>
+      </profile-state>
+    </entry>
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -314,6 +255,24 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="utils" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pyalgotrade" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pyalgotrade" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pyalgotrade" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="providers" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -345,15 +304,198 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
+    <property name="GoToFile.includeJavaFiles" value="false" />
+    <property name="options.splitter.main.proportions" value="0.3" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="options.lastSelected" value="com.jetbrains.python.configuration.PyIntegratedToolsModulesConfigurable" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../../dome/usb_shell" />
-    <property name="FullScreen" value="false" />
+    <property name="FullScreen" value="true" />
+    <property name="options.searchVisible" value="true" />
+    <property name="options.splitter.details.proportions" value="0.2" />
     <property name="GoToClass.includeJavaFiles" value="false" />
   </component>
+  <component name="PyConsoleOptionsProvider">
+    <option name="myPythonConsoleState">
+      <PyConsoleSettings>
+        <option name="myUseModuleSdk" value="true" />
+        <option name="myModuleName" value="pyalgotrade" />
+      </PyConsoleSettings>
+    </option>
+    <option name="myDjangoConsoleState">
+      <PyConsoleSettings />
+    </option>
+  </component>
   <component name="RunManager">
+    <configuration default="true" type="DjangoTestsConfigurationType" factoryName="Django tests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="pyalgotrade" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="TARGET" value="" />
+      <option name="SETTINGS_FILE" value="" />
+      <option name="CUSTOM_SETTINGS" value="false" />
+      <option name="USE_OPTIONS" value="false" />
+      <option name="OPTIONS" value="" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="py.test">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="pyalgotrade" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="testToRun" value="" />
+      <option name="keywords" value="" />
+      <option name="params" value="" />
+      <option name="USE_PARAM" value="false" />
+      <option name="USE_KEYWORD" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Nosetests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="pyalgotrade" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="PARAMS" value="" />
+      <option name="USE_PARAM" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="pyalgotrade" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="PARAMETERS" value="" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Unittests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="pyalgotrade" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="PUREUNITTEST" value="true" />
+      <option name="PARAMS" value="" />
+      <option name="USE_PARAM" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug" singleton="true">
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Doctests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="pyalgotrade" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Attests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="pyalgotrade" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <method />
+    </configuration>
     <list size="0" />
   </component>
   <component name="ShelveChangesManager" show_recycled="false" />
+  <component name="SvnConfiguration" maxAnnotateRevisions="500" myUseAcceleration="nothing" myAutoUpdateAfterCommit="false" cleanupOnStartRun="false" SSL_PROTOCOLS="sslv3">
+    <option name="USER" value="" />
+    <option name="PASSWORD" value="" />
+    <option name="mySSHConnectionTimeout" value="30000" />
+    <option name="mySSHReadTimeout" value="30000" />
+    <option name="LAST_MERGED_REVISION" />
+    <option name="MERGE_DRY_RUN" value="false" />
+    <option name="MERGE_DIFF_USE_ANCESTRY" value="true" />
+    <option name="UPDATE_LOCK_ON_DEMAND" value="false" />
+    <option name="IGNORE_SPACES_IN_MERGE" value="false" />
+    <option name="CHECK_NESTED_FOR_QUICK_MERGE" value="false" />
+    <option name="IGNORE_SPACES_IN_ANNOTATE" value="true" />
+    <option name="SHOW_MERGE_SOURCES_IN_ANNOTATE" value="true" />
+    <option name="FORCE_UPDATE" value="false" />
+    <option name="IGNORE_EXTERNALS" value="false" />
+    <myIsUseDefaultProxy>false</myIsUseDefaultProxy>
+  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" name="Default" comment="" />
@@ -368,28 +510,41 @@
       <created>1371661013134</created>
       <updated>1371661013134</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Fix tab/space issue in ninjatraderfeed">
+      <created>1379504740302</created>
+      <updated>1379504740302</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Fix variable name typo in ibfeed">
+      <created>1379504777620</created>
+      <updated>1379504777620</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Fix timezones in IBConnection: &#10;Store the ibbar datetimes as timezone aware UTC timestamps &#10;">
+      <created>1379505000765</created>
+      <updated>1379505000765</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="22" width="1629" height="1028" extended-state="6" />
-    <editor active="true" />
+    <frame x="0" y="0" width="1920" height="1080" extended-state="0" />
+    <editor active="false" />
     <layout>
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.36593407" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.36585367" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.26405558" sideWeight="0.6340659" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3292683" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19156884" sideWeight="0.63414633" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3292683" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -399,162 +554,139 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <option name="OFFER_MOVE_TO_ANOTHER_CHANGELIST_ON_PARTIAL_COMMIT" value="true" />
-    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <option name="CHECK_NEW_TODO" value="true" />
     <option name="myTodoPanelSettings">
-      <value>
-        <are-packages-shown value="false" />
-        <are-modules-shown value="false" />
-        <flatten-packages value="false" />
-        <is-autoscroll-to-source value="false" />
-      </value>
+      <TodoPanelSettings />
     </option>
-    <option name="PERFORM_UPDATE_IN_BACKGROUND" value="true" />
-    <option name="PERFORM_COMMIT_IN_BACKGROUND" value="true" />
-    <option name="PERFORM_EDIT_IN_BACKGROUND" value="true" />
-    <option name="PERFORM_CHECKOUT_IN_BACKGROUND" value="true" />
-    <option name="PERFORM_ADD_REMOVE_IN_BACKGROUND" value="true" />
-    <option name="PERFORM_ROLLBACK_IN_BACKGROUND" value="false" />
-    <option name="CHECK_LOCALLY_CHANGED_CONFLICTS_IN_BACKGROUND" value="false" />
-    <option name="CHANGED_ON_SERVER_INTERVAL" value="60" />
-    <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="true" />
-    <option name="CHECK_COMMIT_MESSAGE_SPELLING" value="true" />
-    <option name="DEFAULT_PATCH_EXTENSION" value="patch" />
-    <option name="SHORT_DIFF_HORISONTALLY" value="true" />
-    <option name="SHORT_DIFF_EXTRA_LINES" value="2" />
-    <option name="SOFT_WRAPS_IN_SHORT_DIFF" value="true" />
-    <option name="INCLUDE_TEXT_INTO_PATCH" value="false" />
-    <option name="INCLUDE_TEXT_INTO_SHELF" value="false" />
-    <option name="SHOW_FILE_HISTORY_DETAILS" value="true" />
-    <option name="SHOW_VCS_ERROR_NOTIFICATIONS" value="true" />
-    <option name="SHOW_DIRTY_RECURSIVELY" value="false" />
-    <option name="LIMIT_HISTORY" value="true" />
-    <option name="MAXIMUM_HISTORY_ROWS" value="1000" />
-    <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
-    <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="Initialize adjusted close as close value in parent's constructor" />
-    <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
-    <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
-    <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
-    <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="false" />
-    <option name="REFORMAT_BEFORE_FILE_COMMIT" value="false" />
-    <option name="FILE_HISTORY_DIALOG_COMMENTS_SPLITTER_PROPORTION" value="0.8" />
-    <option name="FILE_HISTORY_DIALOG_SPLITTER_PROPORTION" value="0.5" />
-    <option name="ACTIVE_VCS_NAME" />
-    <option name="UPDATE_GROUP_BY_PACKAGES" value="false" />
-    <option name="UPDATE_GROUP_BY_CHANGELIST" value="false" />
-    <option name="SHOW_FILE_HISTORY_AS_TREE" value="false" />
-    <option name="FILE_HISTORY_SPLITTER_PROPORTION" value="0.6" />
     <MESSAGE value="Use new style classes for Bars in order to support __slots__" />
     <MESSAGE value="Initialize adjusted close as close value in parent's constructor" />
+    <MESSAGE value="Fix tab/space issue in ninjatraderfeed" />
+    <MESSAGE value="Fix variable name typo in ibfeed" />
+    <MESSAGE value="Fix timezones in IBConnection: &#10;Store the ibbar datetimes as timezone aware UTC timestamps &#10;" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix timezones in IBConnection: &#10;Store the ibbar datetimes as timezone aware UTC timestamps &#10;" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/pyalgotrade/broker/backtesting.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="271" column="0" selection-start="11098" selection-end="11098" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pyalgotrade/plotter.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="200" column="8" selection-start="4615" selection-end="4615" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pyalgotrade/dataseries.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="87" column="17" selection-start="2838" selection-end="2838" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pyalgotrade/broker/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="25" column="6" selection-start="829" selection-end="829" vertical-scroll-proportion="-0.7029361" />
+        <state line="25" column="6" selection-start="829" selection-end="829" vertical-scroll-proportion="-0.7029361" vertical-offset="0" max-vertical-offset="0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pyalgotrade/broker/backtesting.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="67" column="0" selection-start="2058" selection-end="2058" vertical-scroll-proportion="0.0" />
+        <state line="67" column="0" selection-start="2058" selection-end="2058" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pyalgotrade/barfeed/csvfeed.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="149" column="0" selection-start="3992" selection-end="3992" vertical-scroll-proportion="-1.2261484" />
+        <state line="149" column="0" selection-start="3992" selection-end="3992" vertical-scroll-proportion="-1.2261484" vertical-offset="0" max-vertical-offset="0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pyalgotrade/plotter.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="69" column="8" selection-start="1653" selection-end="1653" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="69" column="8" selection-start="1653" selection-end="1653" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pyalgotrade/bar.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="142" column="47" selection-start="4106" selection-end="4106" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="142" column="0" selection-start="4066" selection-end="4066" vertical-scroll-proportion="0.0" vertical-offset="2130" max-vertical-offset="3090" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/googleappengine/app/common/utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="903" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pyalgotrade/observer.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pyalgotrade/providers/interactivebrokers/ibbroker.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="40" column="29" selection-start="1277" selection-end="1282" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pyalgotrade/providers/interactivebrokers/ibfeed.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="140" column="57" selection-start="4006" selection-end="4010" vertical-scroll-proportion="0.0">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/testcases/strategy_test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="463" column="14" selection-start="15907" selection-end="15907" vertical-scroll-proportion="0.0">
+        <state line="463" column="14" selection-start="15907" selection-end="15907" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pyalgotrade/providers/interactivebrokers/ibbar.py">
+    <entry file="file://$PROJECT_DIR$/pyalgotrade/utils/dt.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="48" column="0" selection-start="1562" selection-end="1562" vertical-scroll-proportion="0.0">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="1" max-vertical-offset="915">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pyalgotrade/tools/yahoofinance.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="43" column="16" selection-start="1374" selection-end="1374" vertical-scroll-proportion="0.0">
+        <state line="43" column="16" selection-start="1371" selection-end="1371" vertical-scroll-proportion="0.0" vertical-offset="645" max-vertical-offset="975">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pyalgotrade/barfeed/yahoofeed.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="20" selection-start="637" selection-end="637" vertical-scroll-proportion="0.0">
+        <state line="17" column="20" selection-start="637" selection-end="637" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="0">
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pyalgotrade/providers/interactivebrokers/ibbar.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="48" column="0" selection-start="1562" selection-end="1562" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pyalgotrade/providers/interactivebrokers/ibfeed.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="157" column="68" selection-start="4703" selection-end="4703" vertical-scroll-proportion="0.0" vertical-offset="1557" max-vertical-offset="2490">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pyalgotrade/providers/interactivebrokers/ibbroker.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="40" column="29" selection-start="1277" selection-end="1282" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pyalgotrade/barfeed/ninjatraderfeed.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="83" column="0" selection-start="2649" selection-end="2649" vertical-scroll-proportion="0.0" vertical-offset="690" max-vertical-offset="2265">
+          <folding>
+            <element signature="e#702#728#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pyalgotrade/providers/interactivebrokers/ibconnection.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="586" column="39" selection-start="23382" selection-end="23382" vertical-scroll-proportion="0.33687943">
-          <folding />
+        <state line="637" column="37" selection-start="25572" selection-end="25579" vertical-scroll-proportion="0.7530648" vertical-offset="9125" max-vertical-offset="14025">
+          <folding>
+            <element signature="e#821#843#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="ScopeChooserConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
   </component>
 </project>
 

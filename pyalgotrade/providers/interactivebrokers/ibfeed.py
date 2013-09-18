@@ -151,12 +151,12 @@ class LiveFeed(BarFeed):
 		def onRealtimeBar(self, instrumentBar):
 				instrument, bar = instrumentBar # Unbox the tuple
 				if len(self.__currentBars) == 0:
-						self.__currentDatetime = bar.getDateTime()
+						self.__currentDateTime = bar.getDateTime()
 						self.__currentBars[instrument] = bar
 				elif len(self.__currentBars) > 0:
-						if self.__currentDatetime != bar.getDateTime():
+						if self.__currentDateTime != bar.getDateTime():
 								bars = copy.copy(self.__currentBars)
-								self.__currentDatetime = bar.getDateTime()
+								self.__currentDateTime = bar.getDateTime()
 								self.__currentBars = {instrument : bar} # First bar in the next set of bars.
 								self.__queue.put(bars)
 						else:

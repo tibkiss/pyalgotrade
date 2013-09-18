@@ -80,6 +80,7 @@ class RowParser(csvfeed.RowParser):
 		# Localize bars if a market session was set.
 		if self.__timezone:
 			ret = dt.localize(ret, self.__timezone)
+
 		return ret
 
 	def getFieldNames(self):
@@ -95,7 +96,8 @@ class RowParser(csvfeed.RowParser):
 		high = float(csvRowDict["High"])
 		low = float(csvRowDict["Low"])
 		volume = float(csvRowDict["Volume"])
-                adjClose = close
+		adjClose = close
+
 		return bar.Bar(dateTime, open_, high, low, close, volume, adjClose)
 
 class Feed(csvfeed.BarFeed):

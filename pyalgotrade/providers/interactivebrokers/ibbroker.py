@@ -188,7 +188,7 @@ class Broker(broker.Broker):
 		elif status == 'Filled':
 			# Wait until all the stocks are obtained
 			if remaining == 0:
-				log.info("Order complete: orderId: %d, instrument: %s, filled: %d, avgFillPrice=%.2f, lastFillPrice=%.2f" %
+				log.info("Order %d complete. Instr: %s, cnt: %d, avgFillPrice=%.2f, lastFillPrice=%.2f" %
 					 (orderId, instrument, filled, avgFillPrice, lastFillPrice))
 
 				# Set commission to 0, the avgFillPrice returned by IB already has this number included (per share)
@@ -200,7 +200,7 @@ class Broker(broker.Broker):
 				self.getOrderUpdatedEvent().emit(self, order)
 			else:
 				# And signal partial completions
-				log.info("Partial order completion: orderId: %d, instrument: %s, filled: %d, remaining: %d, avgFillPrice=%.2f, lastFillPrice=%.2f" %
+				log.info("Order %d partially complete. Instr: %s, cnt: %d, remaining: %d, avgFillPrice=%.2f, lastFillPrice=%.2f" %
 					 (orderId, instrument, filled, remaining, avgFillPrice, lastFillPrice))
 
 	def getCash(self):

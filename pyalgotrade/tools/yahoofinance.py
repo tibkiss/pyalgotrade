@@ -18,7 +18,7 @@
 .. moduleauthor:: Gabriel Martin Becedillas Ruiz <gabriel.becedillas@gmail.com>
 """
 
-import urllib
+import urllib2
 
 def __adjust_month(month):
 	if month > 12 or month < 1:
@@ -41,7 +41,7 @@ def __download_instrument_prices(instrument, fromMonth, fromYear, toMonth, toYea
 	toMonth = __adjust_month(toMonth)
 	url = "http://ichart.finance.yahoo.com/table.csv?s=%s&a=%d&b=%d&c=%d&d=%d&e=%d&f=%d&g=d&ignore=.csv" % (instrument, fromMonth, fromDay, fromYear, toMonth, toDay, toYear)
 
-	f = urllib.urlopen(url)
+	f = urllib2.urlopen(url, timeout=10)
 	if f.headers['Content-Type'] != 'text/csv':
 		raise Exception("Failed to download data")
 	buff = f.read()

@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" name="Default" comment="Fix timezones in IBConnection: &#10;Store the ibbar datetimes as timezone aware UTC timestamps &#10;" />
+    <list default="true" id="5fb5ba57-0dfc-4985-a9e8-1d591a298ed8" name="Default" comment="Fix logging in optimizer, add worst result">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pyalgotrade/optimizer/__init__.py" afterPath="$PROJECT_DIR$/pyalgotrade/optimizer/__init__.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pyalgotrade/optimizer/server.py" afterPath="$PROJECT_DIR$/pyalgotrade/optimizer/server.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+    </list>
     <ignored path="pyalgotrade.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -22,7 +26,37 @@
     <favorites_list name="pyalgotrade" />
   </component>
   <component name="FileEditorManager">
-    <leaf />
+    <leaf>
+      <file leaf-file-name="local.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pyalgotrade/optimizer/local.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="60" column="5" selection-start="1695" selection-end="1695" vertical-scroll-proportion="0.0" vertical-offset="900" max-vertical-offset="1695">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="server.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pyalgotrade/optimizer/server.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="52" column="32" selection-start="1451" selection-end="1451" vertical-scroll-proportion="0.0" vertical-offset="45" max-vertical-offset="4410">
+              <folding>
+                <element signature="e#702#727#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="__init__.py" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/pyalgotrade/optimizer/__init__.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="24" column="36" selection-start="848" selection-end="848" vertical-scroll-proportion="0.6833013" vertical-offset="4" max-vertical-offset="555">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FindManager">
     <FindUsagesManager>
@@ -46,12 +80,14 @@
         <option value="$PROJECT_DIR$/pyalgotrade/providers/interactivebrokers/ibfeed.py" />
         <option value="$PROJECT_DIR$/pyalgotrade/barfeed/ninjatraderfeed.py" />
         <option value="$PROJECT_DIR$/pyalgotrade/providers/interactivebrokers/ibconnection.py" />
+        <option value="$PROJECT_DIR$/pyalgotrade/optimizer/__init__.py" />
+        <option value="$PROJECT_DIR$/pyalgotrade/optimizer/server.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="width" value="1920" />
-    <option name="height" value="1080" />
+    <option name="width" value="1680" />
+    <option name="height" value="1050" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -113,6 +149,38 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pyalgotrade" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pyalgotrade" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pyalgotrade" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pyalgotrade" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pyalgotrade" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pyalgotrade" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="optimizer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
       <pane id="Scope" />
@@ -135,9 +203,6 @@
         <option name="myUseModuleSdk" value="true" />
         <option name="myModuleName" value="pyalgotrade" />
       </PyConsoleSettings>
-    </option>
-    <option name="myDjangoConsoleState">
-      <PyConsoleSettings />
     </option>
   </component>
   <component name="RunManager">
@@ -345,19 +410,19 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="0" width="1920" height="1080" extended-state="0" />
-    <editor active="false" />
+    <frame x="0" y="0" width="1680" height="1050" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info id="Changes" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.36585367" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.4245283" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32914045" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.12860192" sideWeight="0.63414633" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.16095471" sideWeight="0.5754717" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3292683" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32914045" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -388,21 +453,6 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/pyalgotrade/broker/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="25" column="6" selection-start="829" selection-end="829" vertical-scroll-proportion="-0.7029361" vertical-offset="0" max-vertical-offset="0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pyalgotrade/broker/backtesting.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="67" column="0" selection-start="2058" selection-end="2058" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pyalgotrade/barfeed/csvfeed.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="149" column="0" selection-start="3992" selection-end="3992" vertical-scroll-proportion="-1.2261484" vertical-offset="0" max-vertical-offset="0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pyalgotrade/plotter.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="69" column="8" selection-start="1653" selection-end="1653" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="0" />
@@ -420,72 +470,73 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pyalgotrade/observer.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="0">
-          <folding />
-        </state>
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pyalgotrade/providers/interactivebrokers/ibbroker.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="40" column="29" selection-start="1277" selection-end="1282" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="0">
-          <folding />
-        </state>
+        <state line="40" column="29" selection-start="1277" selection-end="1282" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pyalgotrade/providers/interactivebrokers/ibconnection.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="43" column="24" selection-start="1253" selection-end="1253" vertical-scroll-proportion="0.70469797" vertical-offset="225" max-vertical-offset="14025">
-          <folding>
-            <element signature="e#821#843#0" expanded="true" />
-          </folding>
-        </state>
+        <state line="43" column="24" selection-start="1253" selection-end="1253" vertical-scroll-proportion="0.70469797" vertical-offset="225" max-vertical-offset="14025" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/testcases/strategy_test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="463" column="14" selection-start="15907" selection-end="15907" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="0">
-          <folding />
-        </state>
+        <state line="463" column="14" selection-start="15907" selection-end="15907" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pyalgotrade/providers/interactivebrokers/ibfeed.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="157" column="68" selection-start="4703" selection-end="4703" vertical-scroll-proportion="0.647651" vertical-offset="1969" max-vertical-offset="2565">
-          <folding />
-        </state>
+        <state line="157" column="68" selection-start="4703" selection-end="4703" vertical-scroll-proportion="0.647651" vertical-offset="1969" max-vertical-offset="2565" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pyalgotrade/barfeed/ninjatraderfeed.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="83" column="0" selection-start="2649" selection-end="2649" vertical-scroll-proportion="0.0" vertical-offset="690" max-vertical-offset="2265">
-          <folding />
-        </state>
+        <state line="83" column="0" selection-start="2649" selection-end="2649" vertical-scroll-proportion="0.0" vertical-offset="690" max-vertical-offset="2265" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pyalgotrade/utils/dt.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="1" max-vertical-offset="915">
-          <folding />
-        </state>
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="1" max-vertical-offset="915" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pyalgotrade/providers/interactivebrokers/ibbar.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="48" column="0" selection-start="1562" selection-end="1562" vertical-scroll-proportion="0.9110738" vertical-offset="177" max-vertical-offset="1110">
-          <folding />
-        </state>
+        <state line="48" column="0" selection-start="1562" selection-end="1562" vertical-scroll-proportion="0.9110738" vertical-offset="177" max-vertical-offset="1110" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pyalgotrade/tools/yahoofinance.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="43" column="16" selection-start="1371" selection-end="1371" vertical-scroll-proportion="0.44630873" vertical-offset="379" max-vertical-offset="975">
-          <folding />
-        </state>
+        <state line="43" column="16" selection-start="1371" selection-end="1371" vertical-scroll-proportion="0.44630873" vertical-offset="379" max-vertical-offset="975" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pyalgotrade/barfeed/yahoofeed.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="20" selection-start="637" selection-end="637" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="0">
+        <state line="17" column="20" selection-start="637" selection-end="637" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pyalgotrade/optimizer/local.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="60" column="5" selection-start="1695" selection-end="1695" vertical-scroll-proportion="0.0" vertical-offset="578" max-vertical-offset="1575">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pyalgotrade/optimizer/server.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="52" column="32" selection-start="1451" selection-end="1451" vertical-scroll-proportion="0.0" vertical-offset="45" max-vertical-offset="4410">
+          <folding>
+            <element signature="e#702#727#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pyalgotrade/optimizer/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="24" column="36" selection-start="848" selection-end="848" vertical-scroll-proportion="0.6833013" vertical-offset="4" max-vertical-offset="555">
           <folding />
         </state>
       </provider>

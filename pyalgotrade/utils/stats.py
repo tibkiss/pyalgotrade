@@ -17,6 +17,8 @@
 """
 .. moduleauthor:: Gabriel Martin Becedillas Ruiz <gabriel.becedillas@gmail.com>
 """
+import sys
+IS_PYPY = '__pypy__' in sys.builtin_module_names
 
 from pyalgotrade import execcontext
 import math
@@ -52,6 +54,8 @@ if execcontext.running_in_google_app_engine:
 	mean = py_mean
 	stddev = py_stddev
 else:
+        if IS_PYPY:
+            import numpypy
 	import numpy
 
 	def mean(values):
@@ -63,6 +67,6 @@ else:
 	def stddev(values, ddof = 1):
 		ret = None
 		if len(values):
-			ret =  numpy.array(values).std(ddof=ddof)
+			ret =  numpy.array(values).std()
 		return ret
 

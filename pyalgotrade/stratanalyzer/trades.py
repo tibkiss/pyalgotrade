@@ -17,10 +17,15 @@
 """
 .. moduleauthor:: Gabriel Martin Becedillas Ruiz <gabriel.becedillas@gmail.com>
 """
+import sys
+IS_PYPY = '__pypy__' in sys.builtin_module_names
 
 from pyalgotrade import stratanalyzer
 from pyalgotrade import broker
 from pyalgotrade.stratanalyzer import returns
+
+if IS_PYPY:
+    import numpypy
 
 import numpy as np
 

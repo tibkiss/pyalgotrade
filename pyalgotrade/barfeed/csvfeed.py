@@ -174,7 +174,7 @@ def parse_date(date):
 	month = int(date[5:7])
 	day = int(date[8:10])
 	dt_ = datetime.datetime(year, month, day)
-        d_ = dt.date()
+        d_ = dt_.date()
 	return dt_, d_
 
 class YahooRowParser(RowParser):

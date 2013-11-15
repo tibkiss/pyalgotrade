@@ -29,6 +29,8 @@ import datetime
 import types
 import pytz
 
+from tools.cache import memoize
+
 # A faster (but limited) version of csv.DictReader
 class FastDictReader:
 	def __init__(self, f, fieldnames=None, dialect="excel", *args, **kwds):
@@ -163,7 +165,7 @@ class BarFeed(membf.Feed):
 # Date,Open,High,Low,Close,Volume,Adj Close
 #
 # The csv Date column must have the following format: YYYY-MM-DD
-
+@memoize
 def parse_date(date):
 	# Sample: 2005-12-30
 	# This custom parsing works faster than:
@@ -171,8 +173,9 @@ def parse_date(date):
 	year = int(date[0:4])
 	month = int(date[5:7])
 	day = int(date[8:10])
-	ret = datetime.datetime(year, month, day)
-	return ret
+	dt_ = datetime.datetime(year, month, day)
+        d_ = dt.date()
+	return dt_, d_
 
 class YahooRowParser(RowParser):
 	def __init__(self, dailyBarTime, timezone = None):
@@ -180,14 +183,14 @@ class YahooRowParser(RowParser):
 		self.__timezone = timezone
 
 	def __parseDate(self, dateString):
-		ret = parse_date(dateString)
+		dt_, d_ = parse_date(dateString)
 		# Time on Yahoo! Finance CSV files is empty. If told to set one, do it.
 		if self.__dailyBarTime != None:
-			ret = datetime.datetime.combine(ret, self.__dailyBarTime)
+			dt_ = datetime.datetime.combine(dt_, self.__dailyBarTime)
 		# Localize the datetime if a timezone was given.
 		if self.__timezone:
-			ret = dt.localize(ret, self.__timezone)
-		return ret
+			dt_ = dt.localize(dt_, self.__timezone)
+		return dt_, d_
 
 	def getFieldNames(self):
 		# It is expected for the first row to have the field names.
@@ -197,14 +200,14 @@ class YahooRowParser(RowParser):
 		return ","
 
 	def parseBar(self, csvRowDict):
-		dateTime = self.__parseDate(csvRowDict["Date"])
+		dateTime,date_ = self.__parseDate(csvRowDict["Date"])
 		close = float(csvRowDict["Close"])
 		open_ = float(csvRowDict["Open"])
 		high = float(csvRowDict["High"])
 		low = float(csvRowDict["Low"])
 		volume = float(csvRowDict["Volume"])
 		adjClose = float(csvRowDict["Adj Close"])
-		return bar.Bar(dateTime, open_, high, low, close, volume, adjClose)
+		return bar.Bar(dateTime, open_, high, low, close, volume, adjClose, date_)
 
 class YahooFeed(BarFeed):
 	def __init__(self, timezone = None, skipWarning=False):

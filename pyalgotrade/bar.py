@@ -23,6 +23,8 @@ class Bar(object):
 
 	:param dateTime: The date time.
 	:type dateTime: datetime.datetime
+	:param date_: The date. 
+	:type date_: datetime.date
 	:param open_: The opening price.
 	:type open_: float
 	:param high: The highest price.
@@ -37,9 +39,9 @@ class Bar(object):
 	:type close: float
 	"""
 	__slots__ = ('__dateTime', '__open', '__close', '__high', '__low',
-	             '__volume', '__adjClose', '__sessionClose', '__barsTillSessionClose')
+	             '__volume', '__adjClose', '__sessionClose', '__barsTillSessionClose', '__date')
 
-	def __init__(self, dateTime, open_, high, low, close, volume, adjClose):
+	def __init__(self, dateTime, open_, high, low, close, volume, adjClose, date_=None):
 		assert(high >= open_)
 		assert(high >= low)
 		assert(high >= close)
@@ -56,6 +58,7 @@ class Bar(object):
 		self.__adjClose = adjClose
 		self.__sessionClose = False
 		self.__barsTillSessionClose = None
+                self.__date = date_
 
 	def __repr__(self):
 		reprStr = ("%s Open: %.2f High: %.2f, Low: %.2f, Close: %.2f, Volume: %d\n" %
@@ -65,6 +68,10 @@ class Bar(object):
 	def getDateTime(self):
 		"""Returns the :class:`datetime.datetime`."""
 		return self.__dateTime
+	
+        def getDate(self):
+		"""Returns the :class:`datetime.datetime`."""
+		return self.__date
 
 	def getOpen(self):
 		"""Returns the opening price."""
@@ -120,11 +127,13 @@ class Bar(object):
 	
 	def __getstate__(self):
 		return (self.__dateTime, self.__open, self.__close, self.__high, self.__low,
-			self.__volume, self.__adjClose, self.__sessionClose, self.__barsTillSessionClose)
+			self.__volume, self.__adjClose, self.__sessionClose, self.__barsTillSessionClose,
+                        self.__date)
 	
 	def __setstate__(self, state):
 		(self.__dateTime, self.__open, self.__close, self.__high, self.__low,
-		 self.__volume, self.__adjClose, self.__sessionClose, self.__barsTillSessionClose) = state
+		 self.__volume, self.__adjClose, self.__sessionClose, self.__barsTillSessionClose,
+                 self.__date) = state
 
 
 class Bars(object):

@@ -49,8 +49,37 @@ class FlatRateCommission(broker.Commission):
 		commission = max(minPerOrder, flatRate)
 		commission = min(maxPerOrder, commission)
 
-		log.debug("Flat rate commission: price=%.2f, quantity=%d minPerOrder=%.2f, maxPerOrder=%.4f, flatRate=%.4f. => commission=%.2f" %
+		log.debug("FlatRate commission: price=%.2f, quantity=%d minPerOrder=%.2f, maxPerOrder=%.4f, flatRate=%.4f  => commission=%.2f" %
 				  (price, quantity, minPerOrder, maxPerOrder, flatRate, commission))
+
+		return commission
+
+class CostPlusCommission(broker.Commission):
+	"""Cost Plus Commission 
+	"""
+	def calculate(self, order, price, qty):
+		maxPerOrder=(price * qty) * 0.005 
+		
+		if qty <= 300000:
+			IB_Comm = qty * 0.0035
+			ARCA_Fee = qty * 0.003
+			NSCC_DTC_Fee = qty * 0.0002
+			US_Transaction_Fee = qty * price * 0.0000174  # Only on sales
+			NYSE_PassTru = IB_Comm * 0.000175
+			FINRA_PassTru = IB_Comm * 0.00056
+			FINRA_TradingFee = 0.000119 * qty  # Only on sales
+		else:
+			log.error("CostPlus commission for qty > 300000 is not implemented")
+			return 0
+
+		commission = IB_Comm + ARCA_Fee + NSCC_DTC_Fee +  NYSE_PassTru + FINRA_PassTru 
+		if order.getAction() in (Order.Action.SELL, Order.Action.SELL_SHORT):
+			commission += US_Transaction_Fee + FINRA_TradingFee
+
+		commission = min(maxPerOrder, commission)
+
+		log.debug("CostPlus commission: price=%.2f, quantity=%d, maxPerOrder=%.4f  => commission=%.2f" %
+				  (price, qty, maxPerOrder, commission))
 
 		return commission
 
@@ -143,7 +172,7 @@ class Broker(broker.Broker):
 	:param ibConnection: Object responsible to forward requests to TWS.
 	:type ibConnection: :class:`IBConnection`
 	"""
-	def __init__(self, barFeed, ibConnection):
+	def __init__(self, barFeed, ibConnection, commission=FlatRateCommission()):
 		self.__ibConnection = ibConnection
 		self.__barFeed		= barFeed
 
@@ -157,7 +186,7 @@ class Broker(broker.Broker):
 		self.__orders = {}
 
 		# Call the base's constructor
-		broker.Broker.__init__(self, self.__cash, FlatRateCommission())
+		broker.Broker.__init__(self, self.__cash, commission)
 
 	def __orderUpdate(self, orderId, instrument, status, filled, remaining, avgFillPrice, lastFillPrice):
 		"""Handles order updates from IBConnection. Processes its status and notifies the strategy's __onOrderUpdate()"""

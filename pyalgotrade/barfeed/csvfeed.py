@@ -29,7 +29,7 @@ import datetime
 import types
 import pytz
 
-# from tools.cache import memoize
+from tools.cache import memoize  # From HUBA
 
 # A faster (but limited) version of csv.DictReader
 class FastDictReader:
@@ -165,7 +165,7 @@ class BarFeed(membf.Feed):
 # Date,Open,High,Low,Close,Volume,Adj Close
 #
 # The csv Date column must have the following format: YYYY-MM-DD
-#@memoize(maxlen=2048)  # Approx. 8 years worth of dates
+@memoize(maxlen=2048)  # Approx. 8 years worth of dates
 def parse_date(date):
     # Sample: 2005-12-30
     # This custom parsing works faster than:

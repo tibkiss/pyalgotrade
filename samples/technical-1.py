@@ -28,5 +28,3 @@ print ds[3]
 
 # Get the last value, which should equals 49 + 48 + 47.
 print ds[-1]
-
-

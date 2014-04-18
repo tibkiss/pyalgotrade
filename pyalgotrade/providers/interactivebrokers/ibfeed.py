@@ -1,13 +1,13 @@
 # PyAlgoTrade
-# 
+#
 # Copyright 2012 Gabriel Martin Becedillas Ruiz
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
-#	http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,7 +22,7 @@ from pyalgotrade.barfeed import csvfeed, BarFeed, Frequency
 from pyalgotrade.providers.interactivebrokers import ibbar
 
 import datetime
-import copy 
+import copy
 import Queue
 
 
@@ -33,133 +33,133 @@ import Queue
 # Bars Format:
 # Date,Open,High,Low,Close,Volume,Trade Count,WAP,Has Gaps
 #
-# The csv Date column must have the following format: YYYYMMDD	hh:mm:ss
+# The csv Date column must have the following format: YYYYMMDD  hh:mm:ss
 
 
 class RowParser(csvfeed.RowParser):
-	def __init__(self, zone = 0):
-		self.__zone = zone
+    def __init__(self, zone = 0):
+        self.__zone = zone
 
-	def __parseDate(self, dateString, simpleParser=True):
-		ret = None
-		if simpleParser:
-			(dt, tm) = dateString.split(" ")
-			(yr, mt, dt) = dt.split("-")
-			(hr, mn, sc) = tm.split(":")
+    def __parseDate(self, dateString, simpleParser=True):
+        ret = None
+        if simpleParser:
+            (dt, tm) = dateString.split(" ")
+            (yr, mt, dt) = dt.split("-")
+            (hr, mn, sc) = tm.split(":")
 
-			ret = datetime.datetime(int(yr), int(mt), int(dt), int(hr)-int(self.__zone), int(mn), int(sc))
-		else:
-			ret = datetime.datetime.strptime(dateString, "%Y-%m-%d %H:%M:%S")
-			ret += datetime.timedelta(hours= (-1 * self.__zone))
-		return ret
+            ret = datetime.datetime(int(yr), int(mt), int(dt), int(hr)-int(self.__zone), int(mn), int(sc))
+        else:
+            ret = datetime.datetime.strptime(dateString, "%Y-%m-%d %H:%M:%S")
+            ret += datetime.timedelta(hours= (-1 * self.__zone))
+        return ret
 
-	def getFieldNames(self):
-		# It is expected for the first row to have the field names.
-		return None
+    def getFieldNames(self):
+        # It is expected for the first row to have the field names.
+        return None
 
-	def getDelimiter(self):
-		return ","
+    def getDelimiter(self):
+        return ","
 
-	def parseBar(self, csvRowDict):
-		date = self.__parseDate(csvRowDict["Date"])
-		close = float(csvRowDict["Close"])
-		open_ = float(csvRowDict["Open"])
-		high = float(csvRowDict["High"])
-		low = float(csvRowDict["Low"])
-		volume = int(csvRowDict["Volume"])
-		tradeCnt = int(csvRowDict["TradeCount"])
-		VWAP = float(csvRowDict["VWAP"])
-		# hasGaps = bool(csvRowDict["HasGaps"] == "True")
+    def parseBar(self, csvRowDict):
+        date = self.__parseDate(csvRowDict["Date"])
+        close = float(csvRowDict["Close"])
+        open_ = float(csvRowDict["Open"])
+        high = float(csvRowDict["High"])
+        low = float(csvRowDict["Low"])
+        volume = int(csvRowDict["Volume"])
+        tradeCnt = int(csvRowDict["TradeCount"])
+        VWAP = float(csvRowDict["VWAP"])
+        # hasGaps = bool(csvRowDict["HasGaps"] == "True")
 
-		return ibbar.Bar(date, open_, high, low, close, volume, VWAP, tradeCnt)
+        return ibbar.Bar(date, open_, high, low, close, volume, VWAP, tradeCnt)
 
 class CSVFeed(csvfeed.BarFeed):
-	"""A :class:`pyalgotrade.barfeed.BarFeed` that loads bars from a CSV file downloaded from IB TWS"""
-	def __init__(self):
-		csvfeed.BarFeed.__init__(self, Frequency.MINUTE)
-	
-	def addBarsFromCSV(self, instrument, path, timeZone = 0):
-		"""Loads bars for a given instrument from a CSV formatted file.
-		The instrument gets registered in the bar feed.
-		
-		:param instrument: Instrument identifier.
-		:type instrument: string.
-		:param path: The path to the file.
-		:type path: string.
-		:param timeZone: The timezone for bars. 0 if bar dates are in UTC.
-		:type timeZone: int.
-		"""
-		rowParser = RowParser(timeZone)
-		csvfeed.BarFeed.addBarsFromCSV(self, instrument, path, rowParser)
+    """A :class:`pyalgotrade.barfeed.BarFeed` that loads bars from a CSV file downloaded from IB TWS"""
+    def __init__(self):
+        csvfeed.BarFeed.__init__(self, Frequency.MINUTE)
+
+    def addBarsFromCSV(self, instrument, path, timeZone = 0):
+        """Loads bars for a given instrument from a CSV formatted file.
+        The instrument gets registered in the bar feed.
+
+        :param instrument: Instrument identifier.
+        :type instrument: string.
+        :param path: The path to the file.
+        :type path: string.
+        :param timeZone: The timezone for bars. 0 if bar dates are in UTC.
+        :type timeZone: int.
+        """
+        rowParser = RowParser(timeZone)
+        csvfeed.BarFeed.addBarsFromCSV(self, instrument, path, rowParser)
 
 
 class LiveFeed(BarFeed):
-		def __init__(self, ibConnection, timezone=0):
-				BarFeed.__init__(self, Frequency.SECOND)
+    def __init__(self, ibConnection, timezone=0):
+        BarFeed.__init__(self, Frequency.SECOND)
 
-				# The zone specifies the offset from Coordinated Universal Time (UTC, 
-				# formerly referred to as "Greenwich Mean Time") 
-				self.__zone = timezone
+        # The zone specifies the offset from Coordinated Universal Time (UTC,
+        # formerly referred to as "Greenwich Mean Time")
+        self.__zone = timezone
 
-				# Connection to the IB's TWS
-				self.__ibConnection = ibConnection
+        # Connection to the IB's TWS
+        self.__ibConnection = ibConnection
 
-				self.__currentDateTime = None
-				self.__currentBars = {}
-				self.__queue = Queue.Queue()
+        self.__currentDateTime = None
+        self.__currentBars = {}
+        self.__queue = Queue.Queue()
 
-				self.__running = True
+        self.__running = True
 
 
-		def start(self):
-			pass
+    def start(self):
+        pass
 
-		def stop(self):
-			self.__running = False
+    def stop(self):
+        self.__running = False
 
-		def join(self):
-			pass
+    def join(self):
+        pass
 
-		def stopDispatching(self):
-			return not self.__running
+    def stopDispatching(self):
+        return not self.__running
 
-		def fetchNextBars(self):
-				timeout = 10 # Seconds
+    def fetchNextBars(self):
+        timeout = 10 # Seconds
 
-				while self.__running:
-					try:
-						ret = self.__queue.get(True, timeout)
-						if len(ret) == 0:
-								ret = None
-						return ret
-					except Queue.Empty:
-						pass
-				else:
-					return None
+        while self.__running:
+            try:
+                ret = self.__queue.get(True, timeout)
+                if len(ret) == 0:
+                    ret = None
+                return ret
+            except Queue.Empty:
+                pass
+        else:
+            return None
 
-		def subscribeRealtimeBars(self, instrument, useRTH_=0):
-				self.__ibConnection.subscribeRealtimeBars(instrument, self.onRealtimeBar, useRTH=useRTH_)
+    def subscribeRealtimeBars(self, instrument, useRTH_=0):
+        self.__ibConnection.subscribeRealtimeBars(instrument, self.onRealtimeBar, useRTH=useRTH_)
 
-				# Register the instrument
-				self.registerInstrument(instrument)
-		
-		def unsubscribeRealtimeBars(self, instrument):
-				self.__ibConnection.unsubscribeRealtimeBars(instrument, self.onRealtimeBar)
+        # Register the instrument
+        self.registerInstrument(instrument)
 
-				# XXX: Deregistering instrument is not yet possible, missing from BarFeed
+    def unsubscribeRealtimeBars(self, instrument):
+        self.__ibConnection.unsubscribeRealtimeBars(instrument, self.onRealtimeBar)
 
-		def onRealtimeBar(self, instrumentBar):
-				instrument, bar = instrumentBar # Unbox the tuple
-				if len(self.__currentBars) == 0:
-						self.__currentDateTime = bar.getDateTime()
-						self.__currentBars[instrument] = bar
-				elif len(self.__currentBars) > 0:
-						if self.__currentDateTime != bar.getDateTime():
-								bars = copy.copy(self.__currentBars)
-								self.__currentDateTime = bar.getDateTime()
-								self.__currentBars = {instrument : bar} # First bar in the next set of bars.
-								self.__queue.put(bars)
-						else:
-								self.__currentBars[instrument] = bar
+        # XXX: Deregistering instrument is not yet possible, missing from BarFeed
+
+    def onRealtimeBar(self, instrumentBar):
+        instrument, bar = instrumentBar # Unbox the tuple
+        if len(self.__currentBars) == 0:
+            self.__currentDateTime = bar.getDateTime()
+            self.__currentBars[instrument] = bar
+        elif len(self.__currentBars) > 0:
+            if self.__currentDateTime != bar.getDateTime():
+                bars = copy.copy(self.__currentBars)
+                self.__currentDateTime = bar.getDateTime()
+                self.__currentBars = {instrument : bar} # First bar in the next set of bars.
+                self.__queue.put(bars)
+            else:
+                self.__currentBars[instrument] = bar
 
 # vim: noet:ci:pi:sts=0:sw=4:ts=4

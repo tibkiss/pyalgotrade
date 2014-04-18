@@ -87,4 +87,3 @@ if __name__ == '__main__':
     feed.addBarsFromCSV("dia", "dia-2011.csv")
 
     local.run(MyStrategy, feed, parameters_generator())
-

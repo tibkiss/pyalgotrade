@@ -41,7 +41,7 @@ class MyStrategy(strategy.Strategy):
                 self.__position = self.enterLong(self.__instrument, 10, True)
         # Check if we have to exit the position.
         elif bar.getClose() < self.__sma[-1]:
-             self.exitPosition(self.__position)
+            self.exitPosition(self.__position)
 
     def onFinish(self, bars):
         print "Final portfolio value: $%.2f" % self.getBroker().getEquity()
@@ -56,4 +56,3 @@ def run_strategy(smaPeriod):
     myStrategy.run()
 
 run_strategy(15)
-

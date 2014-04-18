@@ -71,4 +71,3 @@ class MyStrategy(strategy.Strategy):
 # The if __name__ == '__main__' part is necessary if running on Windows.
 if __name__ == '__main__':
     worker.run(MyStrategy, "localhost", 5000, workerName="localworker")
-

@@ -1,13 +1,13 @@
 # PyAlgoTrade
-# 
+#
 # Copyright 2011 Gabriel Martin Becedillas Ruiz
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #   http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,79 +29,78 @@ from pyalgotrade.optimizer import server
 from pyalgotrade.optimizer import worker
 
 def server_thread(srv, barFeed, strategyParameters, port):
-	srv.serve(barFeed, strategyParameters)
+    srv.serve(barFeed, strategyParameters)
 
 def worker_process(strategyClass, port):
-	class Worker(worker.Worker):
-		def runStrategy(self, barFeed, *parameters):
-			strat = strategyClass(barFeed, *parameters)
-			strat.run()
-			result = strat.getResult()
-			return result
+    class Worker(worker.Worker):
+        def runStrategy(self, barFeed, *parameters):
+            strat = strategyClass(barFeed, *parameters)
+            strat.run()
+            result = strat.getResult()
+            return result
 
-	# Create a worker and run it.
-	w = Worker("localhost", port, None)
-	w.setLogger(optimizer.get_logger("worker", logging.ERROR))
-	w.run()
+    # Create a worker and run it.
+    w = Worker("localhost", port, None)
+    w.setLogger(optimizer.get_logger("worker", logging.ERROR))
+    w.run()
 
 def find_port():
-	while True:
-		ret = random.randint(1025, 65536)
-		try:
-			s = socket.socket()
-			s.bind(("localhost", ret))
-			s.close()
-			return ret
-		except socket.error:
-			pass
+    while True:
+        ret = random.randint(1025, 65536)
+        try:
+            s = socket.socket()
+            s.bind(("localhost", ret))
+            s.close()
+            return ret
+        except socket.error:
+            pass
 
 def create_workers(strategyClass, port, workerCount = None):
-	"""Creates the worker processes
+    """Creates the worker processes
 
-	:param strategyClass: The strategy class.
-	:param port: Port number to use. Use find_port() to pick one automatically.
-	:param workerCount: The number of strategies to run in parallel. If None then as many workers as CPUs are used.
-	:type workerCount: int.
-	"""
+    :param strategyClass: The strategy class.
+    :param port: Port number to use. Use find_port() to pick one automatically.
+    :param workerCount: The number of strategies to run in parallel. If None then as many workers as CPUs are used.
+    :type workerCount: int.
+    """
 
-	assert(workerCount == None or workerCount > 0)
-	if workerCount == None:
-		workerCount = multiprocessing.cpu_count()
+    assert(workerCount == None or workerCount > 0)
+    if workerCount == None:
+        workerCount = multiprocessing.cpu_count()
 
-	workers = []
+    workers = []
 
-	# Build the worker processes.
-	for i in range(workerCount):
-		workers.append(multiprocessing.Process(target=worker_process, args=(strategyClass, port)))
+    # Build the worker processes.
+    for i in range(workerCount):
+        workers.append(multiprocessing.Process(target=worker_process, args=(strategyClass, port)))
 
-	return workers
+    return workers
 
 def run(workers, port, barFeed, strategyParameters):
-	"""Executes many instances of a strategy in parallel and finds the parameters that yield the best results.
+    """Executes many instances of a strategy in parallel and finds the parameters that yield the best results.
 
-	:param workers: The list of the worker processes created by create_workers().
-	:param port: Port number to use.
-	:param strategyParameters: The set of parameters to use for backtesting. An iterable object where **each element is a tuple that holds parameter values**.
-	:param workerCount: The number of strategies to run in parallel. If None then as many workers as CPUs are used.
-	:type workerCount: int.
-	"""
+    :param workers: The list of the worker processes created by create_workers().
+    :param port: Port number to use.
+    :param strategyParameters: The set of parameters to use for backtesting. An iterable object where **each element is a tuple that holds parameter values**.
+    :param workerCount: The number of strategies to run in parallel. If None then as many workers as CPUs are used.
+    :type workerCount: int.
+    """
 
-	# Build and start the server thread before the worker processes. We'll manually stop the server once workers have finished.
-	srv = server.Server("localhost", port, False)
-	serverThread = threading.Thread(target=server_thread, args=(srv, barFeed, strategyParameters, port))
-	serverThread.start()
-	
-	try:
-		# Start workers
-		for process in workers:
-			process.start()
+    # Build and start the server thread before the worker processes. We'll manually stop the server once workers have finished.
+    srv = server.Server("localhost", port, False)
+    serverThread = threading.Thread(target=server_thread, args=(srv, barFeed, strategyParameters, port))
+    serverThread.start()
 
-		# Wait workers
-		for process in workers:
-			process.join()
+    try:
+        # Start workers
+        for process in workers:
+            process.start()
 
-	finally:
-		# Stop and wait the server to finish.
-		srv.stop()
-		serverThread.join()
+        # Wait workers
+        for process in workers:
+            process.join()
 
+    finally:
+        # Stop and wait the server to finish.
+        srv.stop()
+        serverThread.join()

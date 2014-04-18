@@ -35,4 +35,3 @@ def memoize(func=None, maxlen=None):
         def memoize_factory(func):
             return memoize(func, maxlen=maxlen)
         return memoize_factory
-

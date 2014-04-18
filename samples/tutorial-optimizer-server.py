@@ -20,4 +20,3 @@ if __name__ == '__main__':
 
     # Run the server.
     server.serve(feed, parameters_generator(), "localhost", 5000)
-

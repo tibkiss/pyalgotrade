@@ -21,4 +21,3 @@ feed.addBarsFromCSV("orcl", "orcl-2000.csv")
 # Evaluate the strategy with the feed's bars.
 myStrategy = MyStrategy(feed, "orcl")
 myStrategy.run()
-

@@ -97,8 +97,9 @@ class RowParser(csvfeed.RowParser):
         low = float(csvRowDict["Low"])
         volume = float(csvRowDict["Volume"])
         adjClose = close
+        date_ = dateTime.date()
 
-        return bar.Bar(dateTime, open_, high, low, close, volume, adjClose)
+        return bar.Bar(dateTime, open_, high, low, close, volume, adjClose, date_)
 
 class Feed(csvfeed.BarFeed):
     """A :class:`pyalgotrade.barfeed.csvfeed.BarFeed` that loads bars from CSV files exported from NinjaTrader.

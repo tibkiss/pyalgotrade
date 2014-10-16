@@ -561,6 +561,11 @@ class Connection(EWrapper):
         netLiquidation = float(self.__accountValues[self.__accountCode]['USD']['NetLiquidation'])
         return netLiquidation
 
+    def getLeverage(self):
+        self.requestAccountUpdate()
+        leverage = float(self.__accountValues[self.__accountCode]['']['Leverage-S'])
+        return leverage
+
     def getShares(self, instrument):
         shares = 0
         try:

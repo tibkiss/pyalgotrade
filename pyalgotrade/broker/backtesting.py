@@ -441,6 +441,10 @@ class Broker(broker.Broker):
         """Returns the portfolio value (cash + shares)."""
         return self.getEquityWithBars(self.__barFeed.getCurrentBars())
 
+    def getLeverage(self):
+        """ Leverage is fixed to 1.0"""
+        return 1.0
+
     # Tries to commit an order execution. Returns True if the order was commited, or False is there is not enough cash.
     def commitOrderExecution(self, order, price, quantity, dateTime):
         if order.getAction() in [broker.Order.Action.BUY, broker.Order.Action.BUY_TO_COVER]:

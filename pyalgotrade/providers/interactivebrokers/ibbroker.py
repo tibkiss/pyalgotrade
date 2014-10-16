@@ -252,6 +252,9 @@ class Broker(broker.Broker):
     def getTotalCost(self, instrument):
         return self.__ibConnection.getAvgCost(instrument) * self.__ibConnection.getShares(instrument)
 
+    def getLeverage(self):
+        return self.__ibConnection.getLeverage()
+
     def start(self):
         pass
 

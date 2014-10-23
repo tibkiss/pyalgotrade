@@ -39,6 +39,37 @@ def sharpe_ratio(returns, riskFreeRate, tradingPeriods, annualized = True):
             ret = ret * math.sqrt(tradingPeriods)
     return ret
 
+def days_traded(begin, end):
+    delta = end - begin
+    ret = delta.days + 1
+    return ret
+
+# :param returns: The returns.
+# :param riskFreeRate: The risk free rate per annum.
+# :param firstDateTime: The first datetime in the period.
+# :param lastDateTime: The last datetime in the period.
+# :param annualized: True if the sharpe ratio should be annualized.
+def sharpe_ratio_2(returns, riskFreeRate, firstDateTime, lastDateTime, annualized=True):
+    ret = 0.0
+
+    # From http://en.wikipedia.org/wiki/Sharpe_ratio:
+    # if Rf is a constant risk-free return throughout the period, then stddev(R - Rf) = stddev(R).
+    volatility = stats.stddev(returns, 1)
+
+    if volatility != 0:
+        # We use 365 instead of 252 becuase we wan't the diff from 1/1/xxxx to 12/31/xxxx to be 1 year.
+        yearsTraded = days_traded(firstDateTime, lastDateTime) / 365.0
+
+        riskFreeRateForPeriod = riskFreeRate * yearsTraded
+        rfPerReturn = riskFreeRateForPeriod / float(len(returns))
+
+        avgExcessReturns = stats.mean(returns) - rfPerReturn
+        ret = avgExcessReturns / volatility
+        if annualized:
+            ret = ret * math.sqrt(len(returns) / yearsTraded)
+    return ret
+
+
 class SharpeRatio(stratanalyzer.StrategyAnalyzer):
     """A :class:`pyalgotrade.stratanalyzer.StrategyAnalyzer` that calculates
     Sharpe ratio for the whole portfolio."""

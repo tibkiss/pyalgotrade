@@ -180,7 +180,7 @@ class BarFeed(BasicBarFeed):
 
             # Check that current bar datetimes are greater than the previous one.
             if self.__prevDateTime != None and self.__prevDateTime >= ret.getDateTime():
-                log.warning("Ignoring OoO Bar. Previous bar's datetime was %s and current bar's datetime is %s." %
+                log.debug("Ignoring OoO Bar. Previous bar's datetime was %s and current bar's datetime is %s." %
                             (self.__prevDateTime, ret.getDateTime()))
                 validBarFound = False
             else:

@@ -18,6 +18,9 @@
 .. moduleauthor:: Gabriel Martin Becedillas Ruiz <gabriel.becedillas@gmail.com>
 """
 
+import logging
+log = logging.getLogger(__name__)
+
 from pyalgotrade import dataseries
 from pyalgotrade import observer
 from pyalgotrade import bar
@@ -27,7 +30,7 @@ class Frequency:
     SECOND  = 1
     MINUTE  = 2
     # HOUR  = 3
-    DAY             = 4
+    DAY     = 4
 
 # This class is responsible for:
 # - Managing and upating BarDataSeries instances.
@@ -165,19 +168,24 @@ class BarFeed(BasicBarFeed):
 
     def getNextBars(self):
         """Returns the next :class:`pyalgotrade.bar.Bars` in the feed or None if there are no bars."""
+        validBarFound = False
 
-        barDict = self.fetchNextBars()
-        if barDict == None:
-            return None
+        while not validBarFound:
+            barDict = self.fetchNextBars()
+            if barDict == None:
+                return None
 
-        # This will check for incosistent datetimes between bars.
-        ret = bar.Bars(barDict)
+            # This will check for incosistent datetimes between bars.
+            ret = bar.Bars(barDict)
 
-        # Check that current bar datetimes are greater than the previous one.
-        if self.__prevDateTime != None and self.__prevDateTime >= ret.getDateTime():
-            # raise Exception("Bar data times are not in order. Previous datetime was %s and current datetime is %s" % (self.__prevDateTime, ret.getDateTime()))
-            print "Bar data times are not in order. Previous datetime was %s and current datetime is %s" % (self.__prevDateTime, ret.getDateTime())
-        self.__prevDateTime = ret.getDateTime()
+            # Check that current bar datetimes are greater than the previous one.
+            if self.__prevDateTime != None and self.__prevDateTime >= ret.getDateTime():
+                log.warning("Ignoring OoO Bar. Previous bar's datetime was %s and current bar's datetime is %s." %
+                            (self.__prevDateTime, ret.getDateTime()))
+                validBarFound = False
+            else:
+                self.__prevDateTime = ret.getDateTime()
+                validBarFound = True
 
         return ret
 

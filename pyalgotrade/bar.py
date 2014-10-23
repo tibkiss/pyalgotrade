@@ -98,13 +98,25 @@ class Bar(object):
         return self.__volume
 
     def getAdjOpen(self):
-        return self.__adjClose * self.__open / float(self.__close)
+        """Returns the adjusted opening price."""
+        if self.__close == 0:
+            return 0
+        else:
+            return self.__adjClose * self.__open / float(self.__close)
 
     def getAdjHigh(self):
-        return self.__adjClose * self.__high / float(self.__close)
+        """Returns the adjusted highest price."""
+        if self.__close == 0:
+            return 0
+        else:
+            return self.__adjClose * self.__high / float(self.__close)
 
     def getAdjLow(self):
-        return self.__adjClose * self.__low / float(self.__close)
+        """Returns the adjusted lowest price."""
+        if self.__close == 0:
+            return 0
+        else:
+            return self.__adjClose * self.__low / float(self.__close)
 
     def getAdjClose(self):
         """Returns the adjusted closing price."""

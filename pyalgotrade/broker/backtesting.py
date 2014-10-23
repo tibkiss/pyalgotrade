@@ -427,8 +427,9 @@ class Broker(broker.Broker):
         ret = self.getCash()
         if bars != None:
             for instrument, shares in self.__shares.iteritems():
-                instrumentPrice = pyalgotrade.bar.get_close(self.__getBar(bars, instrument), self.getUseAdjustedValues())
-                ret += instrumentPrice * shares
+                if shares != 0:
+                    instrumentPrice = pyalgotrade.bar.get_close(self.__getBar(bars, instrument), self.getUseAdjustedValues())
+                    ret += instrumentPrice * shares
         return ret
 
     def getValue(self, deprecated = None):

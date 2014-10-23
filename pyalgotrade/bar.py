@@ -69,6 +69,10 @@ class Bar(object):
         """Returns the :class:`datetime.datetime`."""
         return self.__dateTime
 
+    def setDateTime(self, dateTime):
+        """Sets the :class:`datetime.datetime`."""
+        self.__dateTime = dateTime
+
     def getDate(self):
         """Returns the :class:`datetime.datetime`."""
         return self.__date

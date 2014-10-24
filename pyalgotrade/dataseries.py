@@ -18,6 +18,9 @@
 .. moduleauthor:: Gabriel Martin Becedillas Ruiz <gabriel.becedillas@gmail.com>
 """
 
+import logging
+log = logging.getLogger(__name__)
+
 import bar
 from pyalgotrade.utils import collections
 from pyalgotrade import warninghelpers
@@ -165,7 +168,9 @@ class SequenceDataSeries(DataSeries):
                 If dateTime is not None, it must be greater than the last one.
         """
         if dateTime != None and len(self.__dateTimes) != 0 and self.__dateTimes[-1] >= dateTime:
-            raise Exception("Invalid datetime. It must be bigger than that last one")
+            log.warning("Invalid datetime. It must be bigger than that last one. Ignoring.")
+            return
+
         self.__dateTimes.append(dateTime)
         self.__values.append(value)
         assert(len(self.__values) == len(self.__dateTimes))

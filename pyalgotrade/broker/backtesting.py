@@ -24,8 +24,8 @@ import pyalgotrade.logger
 import pyalgotrade.bar
 import copy
 import math
-
-logger = pyalgotrade.logger.getLogger("broker.backtesting")
+import logging
+logger = logging.getLogger("broker.backtesting")
 
 ######################################################################
 ## Commissions
@@ -480,7 +480,8 @@ class Broker(broker.Broker):
             orderExecutionInfo = broker.OrderExecutionInfo(price, quantity, commission, dateTime)
             order.setExecuted(orderExecutionInfo)
         else:
-            logger.debug("Not enough money to fill order %s" % (order))
+            logger.info("Not enough cash to fill the order for %s @ %.2f. Avail: %.2f, Req: %.2f" %
+                        (instrument, price, self.getCash(), cost * -1))
 
         return ret
 

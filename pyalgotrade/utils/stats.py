@@ -54,8 +54,6 @@ if execcontext.running_in_google_app_engine:
     mean = py_mean
     stddev = py_stddev
 else:
-    if IS_PYPY:
-        import numpypy
     import numpy
 
     def mean(values):

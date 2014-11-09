@@ -24,9 +24,6 @@ from pyalgotrade import stratanalyzer
 from pyalgotrade import broker
 from pyalgotrade.stratanalyzer import returns
 
-if IS_PYPY:
-    import numpypy
-
 import numpy as np
 
 class Trades(stratanalyzer.StrategyAnalyzer):

@@ -19,7 +19,7 @@
 """
 
 from pyalgotrade.utils import stats
-from pyalgotrade.utils import collections
+from pyalgotrade.utils import intersect
 
 import unittest
 import math
@@ -76,32 +76,32 @@ class StatsTestCase(unittest.TestCase):
 
 class CollectionsTestCase(unittest.TestCase):
     def testEmptyIntersection(self):
-        values, ix1, ix2 = collections.intersect([1, 2, 3], [4, 5, 6])
+        values, ix1, ix2 = intersect([1, 2, 3], [4, 5, 6])
         self.assertEqual(len(values), 0)
         self.assertEqual(len(ix1), 0)
         self.assertEqual(len(ix2), 0)
 
-        values, ix1, ix2 = collections.intersect([], [])
+        values, ix1, ix2 = intersect([], [])
         self.assertEqual(len(values), 0)
         self.assertEqual(len(ix1), 0)
         self.assertEqual(len(ix2), 0)
 
     def testFullIntersection(self):
-        values, ix1, ix2 = collections.intersect([1, 2, 3], [1, 2, 3])
+        values, ix1, ix2 = intersect([1, 2, 3], [1, 2, 3])
         self.assertEqual(len(values), 3)
         self.assertEqual(len(ix1), 3)
         self.assertEqual(len(ix2), 3)
         self.assertEqual(ix1, ix2)
 
     def testPartialIntersection1(self):
-        values, ix1, ix2 = collections.intersect([0, 2, 4], [1, 2, 3])
+        values, ix1, ix2 = intersect([0, 2, 4], [1, 2, 3])
         self.assertEqual(len(values), 1)
         self.assertEqual(values[0], 2)
         self.assertEqual(ix1[0], 1)
         self.assertEqual(ix2[0], 1)
 
     def testPartialIntersection2(self):
-        values, ix1, ix2 = collections.intersect([1, 2, 4], [1, 2, 3])
+        values, ix1, ix2 = intersect([1, 2, 4], [1, 2, 3])
         self.assertEqual(len(values), 2)
         self.assertEqual(values[0], 1)
         self.assertEqual(values[1], 2)
@@ -111,7 +111,7 @@ class CollectionsTestCase(unittest.TestCase):
         self.assertEqual(ix2[1], 1)
 
     def testPartialIntersection3(self):
-        values, ix1, ix2 = collections.intersect([1, 2, 5], [1, 3, 5])
+        values, ix1, ix2 = intersect([1, 2, 5], [1, 3, 5])
         self.assertEqual(len(values), 2)
         self.assertEqual(values[0], 1)
         self.assertEqual(values[1], 5)
@@ -121,14 +121,14 @@ class CollectionsTestCase(unittest.TestCase):
         self.assertEqual(ix2[1], 2)
 
     def testPartialIntersection4(self):
-        values, ix1, ix2 = collections.intersect([1, 2, 3], [2, 4, 6])
+        values, ix1, ix2 = intersect([1, 2, 3], [2, 4, 6])
         self.assertEqual(len(values), 1)
         self.assertEqual(values[0], 2)
         self.assertEqual(ix1[0], 1)
         self.assertEqual(ix2[0], 0)
 
     def testPartialIntersection5(self):
-        values, ix1, ix2 = collections.intersect([1, 2, 3], [3, 6])
+        values, ix1, ix2 = intersect([1, 2, 3], [3, 6])
         self.assertEqual(len(values), 1)
         self.assertEqual(values[0], 3)
         self.assertEqual(ix1[0], 2)
@@ -138,12 +138,12 @@ class CollectionsTestCase(unittest.TestCase):
         v1 = [1, 1, 2, 2, 3, 3]
         v2 = [1, 2, 3]
 
-        values, ix1, ix2 = collections.intersect(v1, v2)
+        values, ix1, ix2 = intersect(v1, v2)
         self.assertEqual(values, [1, 2, 3])
         self.assertEqual(ix1, [0, 2, 4])
         self.assertEqual(ix2, [0, 1, 2])
 
-        values, ix2, ix1 = collections.intersect(v2, v1)
+        values, ix2, ix1 = intersect(v2, v1)
         self.assertEqual(values, [1, 2, 3])
         self.assertEqual(ix1, [0, 2, 4])
         self.assertEqual(ix2, [0, 1, 2])
@@ -152,12 +152,12 @@ class CollectionsTestCase(unittest.TestCase):
         v1 = [None, 1, None, None, 2, None, 3, None, 4]
         v2 = [1, None, 2, None, 3, 4]
 
-        values, ix1, ix2 = collections.intersect(v1, v2)
+        values, ix1, ix2 = intersect(v1, v2)
         self.assertEqual(values, [1, None, 2, None, 3, 4])
         self.assertEqual(ix1, [1, 2, 4, 5, 6, 8])
         self.assertEqual(ix2, [0, 1, 2, 3, 4, 5])
 
-        values, ix2, ix1 = collections.intersect(v2, v1)
+        values, ix2, ix1 = intersect(v2, v1)
         self.assertEqual(values, [1, None, 2, None, 3, 4])
         self.assertEqual(ix1, [1, 2, 4, 5, 6, 8])
         self.assertEqual(ix2, [0, 1, 2, 3, 4, 5])
@@ -166,12 +166,12 @@ class CollectionsTestCase(unittest.TestCase):
         v1 = [None, 1, None, None, 2, None, 3, None, 4]
         v2 = [1, None, 2, None, 3, 4]
 
-        values, ix1, ix2 = collections.intersect(v1, v2, True)
+        values, ix1, ix2 = intersect(v1, v2, True)
         self.assertEqual(values, [1, 2, 3, 4])
         self.assertEqual(ix1, [1, 4, 6, 8])
         self.assertEqual(ix2, [0, 2, 4, 5])
 
-        values, ix2, ix1 = collections.intersect(v2, v1, True)
+        values, ix2, ix1 = intersect(v2, v1, True)
         self.assertEqual(values, [1, 2, 3, 4])
         self.assertEqual(ix1, [1, 4, 6, 8])
         self.assertEqual(ix2, [0, 2, 4, 5])
@@ -187,7 +187,7 @@ class CollectionsTestCase(unittest.TestCase):
 
         self.assertEqual(dateTimes1, dateTimes2)
 
-        values, ix1, ix2 = collections.intersect(dateTimes1, dateTimes2)
+        values, ix1, ix2 = intersect(dateTimes1, dateTimes2)
         self.assertEqual(values, dateTimes1)
         self.assertEqual(values, dateTimes2)
         self.assertEqual(ix1, range(size))

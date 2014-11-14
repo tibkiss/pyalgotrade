@@ -22,11 +22,13 @@ import pyalgotrade.barfeed
 from pyalgotrade.barfeed import csvfeed
 from pyalgotrade import bar
 from pyalgotrade.utils import dt
+from pyalgotrade.utils.cache import memoize
 
 import pytz
 
 import types
 import datetime
+
 
 ######################################################################
 ## NinjaTrader CSV parser
@@ -39,8 +41,9 @@ import datetime
 # yyyyMMdd;open price;high price;low price;close price;volume
 #
 # The exported data will be in the UTC time zone.
-
-def parse_datetime(dateTime):
+ # 10 years (252 business days) worth of 1 minute dates for a 6.5 hour long trading day
+@memoize(size=6.5 * 60 * 252 * 10, lru=False)
+def parse_datetime(dateTime, timezone):
     # Sample: 20081231 230600
     # This custom parsing works faster than:
     # datetime.datetime.strptime(dateTime, "%Y%m%d %H%M%S")
@@ -50,7 +53,10 @@ def parse_datetime(dateTime):
     hour = int(dateTime[9:11])
     minute = int(dateTime[11:13])
     sec = int(dateTime[13:15])
-    return datetime.datetime(year, month, day, hour, minute, sec)
+
+    dt = datetime.datetime(year, month, day, hour, minute, sec, tzinfo=timezone)
+
+    return dt
 
 class Frequency:
     MINUTE = pyalgotrade.barfeed.Frequency.MINUTE
@@ -65,21 +71,20 @@ class RowParser(csvfeed.RowParser):
     def __parseDateTime(self, dateTime):
         ret = None
         if self.__frequency == pyalgotrade.barfeed.Frequency.MINUTE:
-            ret = parse_datetime(dateTime)
+            # The returned dates are localized if timezone was given
+            ret = parse_datetime(dateTime, self.__timezone)
         elif self.__frequency == pyalgotrade.barfeed.Frequency.DAY:
             ret = datetime.datetime.strptime(dateTime, "%Y%m%d")
             # Time on CSV files is empty. If told to set one, do it.
             if self.__dailyBarTime != None:
                 ret = datetime.datetime.combine(ret, self.__dailyBarTime)
+
+            # Localize bars if a market session was set.
+            if self.__timezone:
+                ret = dt.localize(ret, self.__timezone)
+
         else:
             assert(False)
-
-        # According to NinjaTrader documentation the exported data will be in UTC.
-        #ret = pytz.utc.localize(ret)
-
-        # Localize bars if a market session was set.
-        if self.__timezone:
-            ret = dt.localize(ret, self.__timezone)
 
         return ret
 

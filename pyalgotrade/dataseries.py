@@ -22,7 +22,7 @@ import logging
 log = logging.getLogger(__name__)
 
 import bar
-from pyalgotrade.utils import collections
+from pyalgotrade.utils import intersect
 from pyalgotrade import warninghelpers
 
 # It is important to inherit object to get __getitem__ to work properly.
@@ -283,7 +283,7 @@ class AlignedDataSeriesSharedState:
                 ds2DateTimes = ds2DateTimes[self.__lastPos2+1:]
 
             # Calculate the intersections.
-            dateTimes, pos1, pos2 = collections.intersect(ds1DateTimes, ds2DateTimes)
+            dateTimes, pos1, pos2 = intersect(ds1DateTimes, ds2DateTimes)
 
             # Update each array's relative position to make them absolute positions.
             if self.__lastPos1 != None and len(pos1):

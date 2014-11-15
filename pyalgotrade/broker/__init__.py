@@ -197,6 +197,7 @@ class MarketOrder(Order):
     def __init__(self, action, instrument, quantity, onClose):
         Order.__init__(self, Order.Type.MARKET, action, instrument, quantity)
         self.__onClose = onClose
+        self.setGoodTillCanceled(False)
 
     def getFillOnClose(self):
         """Returns True if the order should be filled as close to the closing price as possible (Market-On-Close order)."""

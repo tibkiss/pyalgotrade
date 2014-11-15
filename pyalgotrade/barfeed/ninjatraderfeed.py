@@ -41,8 +41,8 @@ import datetime
 # yyyyMMdd;open price;high price;low price;close price;volume
 #
 # The exported data will be in the UTC time zone.
- # 10 years (252 business days) worth of 1 minute dates for a 6.5 hour long trading day
-@memoize(size=6.5 * 60 * 252 * 10, lru=False)
+# 5 years (252 business days) worth of 1 minute dates for a 6.5 hour long trading day
+@memoize(size=6.5 * 60 * 252 * 5, lru=False)
 def parse_datetime(dateTime, timezone):
     # Sample: 20081231 230600
     # This custom parsing works faster than:

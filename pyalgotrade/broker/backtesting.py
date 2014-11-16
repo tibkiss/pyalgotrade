@@ -342,6 +342,7 @@ class Broker(broker.Broker):
         self.__activeOrders = []
         self.__useAdjustedValues = False
         self.__fillStrategy = DefaultStrategy()
+        self.__lastBarDT = None
 
         # It is VERY important that the broker subscribes to barfeed events before the strategy.
         barFeed.getNewBarsEvent().subscribe(self.onBars)
@@ -494,8 +495,18 @@ class Broker(broker.Broker):
             raise Exception("The order was already processed")
 
     def onBars(self, bars):
-        activeOrders = copy.copy(self.__activeOrders)
+        # Process day end & start first
+        barDT = bars.getDateTime().date()
+        if not self.__lastBarDT:
+            self.__lastBarDT = barDT
+            self.onDayStart()
+        elif barDT > self.__lastBarDT:
+            self.onDayEnd()
+            self.__lastBarDT = barDT
+            self.onDayStart()
 
+        # Process accepted orders
+        activeOrders = copy.copy(self.__activeOrders)
         for order in activeOrders:
             if order.isAccepted():
                 order.tryExecute(self, bars)
@@ -503,6 +514,19 @@ class Broker(broker.Broker):
                     self.__activeOrders.remove(order)
                     self.getOrderUpdatedEvent().emit(self, order)
             else:
+                self.__activeOrders.remove(order)
+                self.getOrderUpdatedEvent().emit(self, order)
+
+    def onDayStart(self):
+        pass
+
+    def onDayEnd(self):
+        # Cancel non-GTC orders on day end
+        activeOrders = copy.copy(self.__activeOrders)
+
+        for order in activeOrders:
+            if order.isAccepted() and not order.getGoodTillCanceled():
+                logger.debug("Cancelling non-GTC order: %s" % order)
                 self.__activeOrders.remove(order)
                 self.getOrderUpdatedEvent().emit(self, order)
 

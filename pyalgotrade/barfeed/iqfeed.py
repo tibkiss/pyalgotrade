@@ -21,28 +21,19 @@
 import pyalgotrade.barfeed
 from pyalgotrade.barfeed import csvfeed
 from pyalgotrade import bar
-from pyalgotrade.utils import dt
-from pyalgotrade.utils.cache import memoize
-
-import pytz
 
 import types
 import datetime
 
 
 ######################################################################
-## NinjaTrader CSV parser
-# Each bar must be on its own line and fields must be separated by semicolon (;).
+## IQFeed CSV parser - Based on ninjatraderfeed.py
+# Each bar must be on its own line and fields must be separated by semicolon (,).
 #
 # Minute Bars Format:
-# yyyyMMdd HHmmss;open price;high price;low price;close price;volume
+# yyyyMMdd HHmmss,open price,high price,low price,close price,volume
 #
-# Daily Bars Format:
-# yyyyMMdd;open price;high price;low price;close price;volume
-#
-# The exported data will be in the UTC time zone.
-# 5 years (252 business days) worth of 1 minute dates for a 6.5 hour long trading day
-#@memoize(size=6.5 * 60 * 252 * 5, lru=False)
+# It is expected to have a header row in the file
 def parse_datetime(dateTime, timezone):
     # Sample: 20081231 230600
     # This custom parsing works faster than:
@@ -60,7 +51,6 @@ def parse_datetime(dateTime, timezone):
 
 class Frequency:
     MINUTE = pyalgotrade.barfeed.Frequency.MINUTE
-    DAY = pyalgotrade.barfeed.Frequency.DAY
 
 class RowParser(csvfeed.RowParser):
     def __init__(self, frequency, dailyBarTime, timezone = None):
@@ -73,26 +63,17 @@ class RowParser(csvfeed.RowParser):
         if self.__frequency == pyalgotrade.barfeed.Frequency.MINUTE:
             # The returned dates are localized if timezone was given
             ret = parse_datetime(dateTime, self.__timezone)
-        elif self.__frequency == pyalgotrade.barfeed.Frequency.DAY:
-            ret = datetime.datetime.strptime(dateTime, "%Y%m%d")
-            # Time on CSV files is empty. If told to set one, do it.
-            if self.__dailyBarTime != None:
-                ret = datetime.datetime.combine(ret, self.__dailyBarTime)
-
-            # Localize bars if a market session was set.
-            if self.__timezone:
-                ret = dt.localize(ret, self.__timezone)
-
         else:
             assert(False)
 
         return ret
 
     def getFieldNames(self):
-        return ["Date Time", "Open", "High", "Low", "Close", "Volume"]
+        # It is expected for the first row to have the field names.
+        return None
 
     def getDelimiter(self):
-        return ";"
+        return ","
 
     def parseBar(self, csvRowDict):
         dateTime = self.__parseDateTime(csvRowDict["Date Time"])
@@ -118,7 +99,6 @@ class Feed(csvfeed.BarFeed):
             Valid **frequency** parameter values are:
 
              * pyalgotrade.barfeed.Frequency.MINUTE
-             * pyalgotrade.barfeed.Frequency.DAY
     """
 
     def __init__(self, frequency, timezone = None):

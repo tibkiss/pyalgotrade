@@ -45,6 +45,7 @@ def __download_instrument_prices(instrument, fromMonth, fromYear, toMonth, toYea
     if f.headers['Content-Type'] != 'text/csv':
         raise Exception("Failed to download data")
     buff = f.read()
+    f.close()
 
     # Remove the BOM
     while not buff[0].isalnum():

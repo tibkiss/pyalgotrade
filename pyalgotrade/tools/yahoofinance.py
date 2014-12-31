@@ -43,6 +43,7 @@ def __download_instrument_prices(instrument, fromMonth, fromYear, toMonth, toYea
 
     f = urllib2.urlopen(url, timeout=10)
     if f.headers['Content-Type'] != 'text/csv':
+        f.close()
         raise Exception("Failed to download data")
     buff = f.read()
     f.close()

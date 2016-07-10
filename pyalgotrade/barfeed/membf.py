@@ -32,7 +32,6 @@ class Feed(barfeed.BarFeed):
     def __init__(self, frequency):
         barfeed.BarFeed.__init__(self, frequency)
         self.__bars = {}
-        self.__nextBarIdx = {}
         self.__started = False
         self.__barsLeft = 0
 
@@ -54,7 +53,6 @@ class Feed(barfeed.BarFeed):
             raise Exception("Can't add more bars once you started consuming bars")
 
         self.__bars.setdefault(instrument, [])
-        self.__nextBarIdx.setdefault(instrument, 0)
 
         # Add and sort the bars
         self.__bars[instrument].extend(bars)
@@ -67,8 +65,7 @@ class Feed(barfeed.BarFeed):
         ret = True
         # Check if there is at least one more bar to return.
         for instrument, bars in self.__bars.iteritems():
-            nextIdx = self.__nextBarIdx[instrument]
-            if nextIdx < len(bars):
+            if len(bars):
                 ret = False
                 break
         return ret
@@ -79,10 +76,8 @@ class Feed(barfeed.BarFeed):
 
         # Make a first pass to get the smallest datetime.
         for instrument, bars in self.__bars.iteritems():
-            nextIdx = self.__nextBarIdx[instrument]
-            if nextIdx < len(bars):
-                if smallestDateTime == None or bars[nextIdx].getDateTime() < smallestDateTime:
-                    smallestDateTime = bars[nextIdx].getDateTime()
+            if len(bars) > 0 and bars[0].getDateTime() < smallestDateTime or smallestDateTime is None:
+                smallestDateTime = bars[0].getDateTime()
 
         if smallestDateTime == None:
             assert(self.__barsLeft == 0)
@@ -91,10 +86,8 @@ class Feed(barfeed.BarFeed):
         # Make a second pass to get all the bars that had the smallest datetime.
         ret = {}
         for instrument, bars in self.__bars.iteritems():
-            nextIdx = self.__nextBarIdx[instrument]
-            if nextIdx < len(bars) and bars[nextIdx].getDateTime() == smallestDateTime:
-                ret[instrument] = bars[nextIdx]
-                self.__nextBarIdx[instrument] += 1
+            if len(bars) > 0 and bars[0].getDateTime() == smallestDateTime:
+                ret[instrument] = bars.pop(0)
 
         self.__barsLeft -= 1
         return ret
@@ -104,7 +97,5 @@ class Feed(barfeed.BarFeed):
 
     def loadAll(self):
         self.start()
-        for b in self:
-            pass
         self.stop()
         self.join()

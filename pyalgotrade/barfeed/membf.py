@@ -57,7 +57,7 @@ class Feed(barfeed.BarFeed):
         # Add and sort the bars
         self.__bars[instrument].extend(bars)
         barCmp = lambda x, y: cmp(x.getDateTime(), y.getDateTime())
-        self.__bars[instrument].sort(barCmp)
+        self.__bars[instrument].sort(barCmp, reverse=True)
 
         self.registerInstrument(instrument)
 
@@ -76,8 +76,8 @@ class Feed(barfeed.BarFeed):
 
         # Make a first pass to get the smallest datetime.
         for instrument, bars in self.__bars.iteritems():
-            if len(bars) > 0 and smallestDateTime is None or bars[0].getDateTime() < smallestDateTime:
-                smallestDateTime = bars[0].getDateTime()
+            if len(bars) > 0 and smallestDateTime is None or bars[-1].getDateTime() < smallestDateTime:
+                smallestDateTime = bars[-1].getDateTime()
 
         if smallestDateTime == None:
             assert(self.__barsLeft == 0)
@@ -86,8 +86,8 @@ class Feed(barfeed.BarFeed):
         # Make a second pass to get all the bars that had the smallest datetime.
         ret = {}
         for instrument, bars in self.__bars.iteritems():
-            if len(bars) > 0 and bars[0].getDateTime() == smallestDateTime:
-                ret[instrument] = bars.pop(0)
+            if len(bars) > 0 and bars[-1].getDateTime() == smallestDateTime:
+                ret[instrument] = bars.pop()
 
         self.__barsLeft -= 1
         return ret

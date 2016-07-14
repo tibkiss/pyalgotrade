@@ -76,7 +76,7 @@ class Feed(barfeed.BarFeed):
 
         # Make a first pass to get the smallest datetime.
         for instrument, bars in self.__bars.iteritems():
-            if len(bars) > 0 and smallestDateTime is None or bars[-1].getDateTime() < smallestDateTime:
+            if len(bars) > 0 and (smallestDateTime is None or bars[-1].getDateTime() < smallestDateTime):
                 smallestDateTime = bars[-1].getDateTime()
 
         if smallestDateTime == None:

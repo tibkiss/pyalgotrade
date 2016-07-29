@@ -138,17 +138,22 @@ class LiveFeed(BarFeed):
             return None
 
     def subscribeRealtimeBars(self, instrument, useRTH_=0):
-        self.__ibConnection.subscribeRealtimeBars(instrument, self.onRealtimeBar, useRTH=useRTH_)
-
-        # Register the instrument
+        self.__ibConnection.subscribeRealtimeBars(instrument, self.onIBBar, useRTH=useRTH_)
         self.registerInstrument(instrument)
 
     def unsubscribeRealtimeBars(self, instrument):
-        self.__ibConnection.unsubscribeRealtimeBars(instrument, self.onRealtimeBar)
+        self.__ibConnection.unsubscribeRealtimeBars(instrument, self.onIBBar)
 
         # XXX: Deregistering instrument is not yet possible, missing from BarFeed
 
-    def onRealtimeBar(self, instrumentBar):
+    def subscribeMarketBars(self, instrument):
+        self.__ibConnection.subscribeMarketBars(instrument, self.onIBBar)
+        self.registerInstrument(instrument)
+
+    def unsubscribeMarketBars(self, instrument):
+        self.__ibConnection.unsubscribeMarketBars(instrument, self.onIBBar)
+
+    def onIBBar(self, instrumentBar):
         instrument, bar = instrumentBar # Unbox the tuple
         if len(self.__currentBars) == 0:
             self.__currentDateTime = bar.getDateTime()

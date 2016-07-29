@@ -28,6 +28,8 @@ from time import sleep
 from datetime import datetime
 import pytz
 
+from collections import defaultdict
+
 from pyalgotrade import observer
 
 from ibbar import Bar
@@ -37,11 +39,30 @@ from ib.ext.EClientSocket import EClientSocket
 from ib.ext.ScannerSubscription import ScannerSubscription
 from ib.ext.Contract import Contract
 from ib.ext.Order import Order
+from ib.ext.TickType import TickType
 
 import logging
 log = logging.getLogger(__name__)
 
 TIMEOUT = 15.0 # seconds
+
+class FieldStore(object):
+    __slots__ = ()  # Override this to create a custom field store
+    def __init__(self):
+        for v in self.__slots__:
+            setattr(self, v, None)
+
+    def __repr__(self):
+        ret = ""
+        for v in self.__slots__:
+            ret += "%s=%s " % (v, getattr(self, v))
+        return ret
+
+class IBTicks(FieldStore):
+    __slots__ = ['dt', 'price', 'open', 'high', 'low', 'close', 'volume', 'shortable', 'tradeCount', 'vwap']
+
+class RTVolume(FieldStore):
+    __slots__ = ['lastTradePrice', 'lastTradeSize', 'lastTradeTime', 'totalVolume', 'vwap', 'singleTradeFlag']
 
 class Connection(EWrapper):
     '''Wrapper class for Interactive Brokers TWS Connection.
@@ -85,6 +106,13 @@ class Connection(EWrapper):
 
         # Dictionary to map instruments to orderIds
         self.__orderIds = {}
+
+        self.__currentTicks = defaultdict(IBTicks)
+        self.__marketDataTickerIDs = {}
+        self.__marketData = defaultdict(list)
+        self.__marketDataEmitFrequency = 5 # in seconds
+        self.__marketDataEvents = {}
+        self.__marketDataListeners = {}
 
         # Dictionary to map instruments to realtime bar tickerIds
         self.__realtimeBarIDs = {}
@@ -355,6 +383,57 @@ class Connection(EWrapper):
             # Instrument was not subscribed, ignore
             pass
 
+    def subscribeMarketBars(self, instrument, handler, secType='STK', exchange='SMART', currency='USD', ):
+        self.connect()
+
+        found = False
+        for value in self.__marketDataTickerIDs.values():
+            if instrument == value:
+                found = True
+                break
+
+        if not found:
+            tickerId = self.__getNextTickerId()
+            self.__marketDataTickerIDs[tickerId] = instrument
+
+            contract = Contract()
+            contract.m_symbol   = instrument
+            contract.m_secType  = secType
+            contract.m_exchange = exchange
+            contract.m_currency = currency
+
+            self.__tws.reqMktData(tickerId, contract, '236,293,233', False)  # 236: Shortable, 293: Tradecount, 233: RTVolume
+
+            # Register handler for the market data bar event observer
+            self.__marketDataEvents[instrument] = observer.Event()
+            self.__marketDataEvents[instrument].subscribe(handler)
+            self.__marketDataListeners[instrument] = 1
+        else:
+            # Instrument already subscribed, add handler to the event observer
+            self.__marketDataEvents[instrument].subscribe(handler)
+            self.__marketDataListeners[instrument] += 1
+
+    def unsubscribeMarketData(self, instrument, handler):
+        """Cancels market data feed for the given instrument and handler.
+
+        :param instrument: Instrument's symbol
+        :type instrument: str
+        :param handler: The function which will be called on new market data
+        :type handler: Function
+        """
+        self.connect()
+        if instrument in self.__marketDataTickerIDs:
+            self.__marketDataEvents[instrument].unsubscribe(handler)
+            self.__marketDataListeners[instrument] -= 1
+
+            if self.__marketDataListeners[instrument] == 0:
+                tickerId = self.__marketDataTickerIDs[instrument]
+                self.__tws.cancelMktData(tickerId)
+                del self.__marketDataTickerIDs[instrument]
+        else:
+            # Instrument was not subscribed, ignore
+            pass
+
     def requestHistoricalData(self, instrument, endTime, duration, barSize,
                                                       secType='STK', exchange='SMART', currency='USD',
                                                       whatToShow='TRADES', useRTH=0):
@@ -403,8 +482,8 @@ class Connection(EWrapper):
 
         # Prepare the Contract for the historical data order
         contract = Contract()
-        contract.m_symbol       = instrument
-        contract.m_secType      = secType
+        contract.m_symbol = instrument
+        contract.m_secType = secType
         contract.m_exchange = exchange
         contract.m_currency = currency
 
@@ -704,17 +783,17 @@ class Connection(EWrapper):
         :param key: A string that indicates one type of account value.
         :type key:      str
                                 Valid keys:
-                                CashBalance                             - Account cash balance
-                                Currency                                - Currency string
-                                DayTradesRemaining              - Number of day trades left
-                                EquityWithLoanValue             - Equity with Loan Value
-                                InitMarginReq                   - Current initial margin requirement
-                                LongOptionValue                 - Long option value
-                                MaintMarginReq                  - Current maintenance margin
-                                NetLiquidation                  - Net liquidation value
-                                OptionMarketValue               - Option market value
-                                ShortOptionValue                - Short option value
-                                StockMarketValue                - Stock market value
+                                CashBalance             - Account cash balance
+                                Currency                - Currency string
+                                DayTradesRemaining      - Number of day trades left
+                                EquityWithLoanValue     - Equity with Loan Value
+                                InitMarginReq           - Current initial margin requirement
+                                LongOptionValue         - Long option value
+                                MaintMarginReq          - Current maintenance margin
+                                NetLiquidation          - Net liquidation value
+                                OptionMarketValue       - Option market value
+                                ShortOptionValue        - Short option value
+                                StockMarketValue        - Stock market value
                                 UnalteredInitMarginReq  - Overnight initial margin requirement
                                 UnalteredMaintMarginReq - Overnight maintenance margin requirement
         :param value: The value associated with the key.
@@ -813,7 +892,7 @@ class Connection(EWrapper):
         :param orderId: The order ID that was specified previously in the call to placeOrder()
         :type orderId: int
         :param status: The order status. Possible values include:
-                                   PendingSubmit, PendingCancel, PreSubmitted, Submitted, Cancelled, Filled, Inactive
+                       PendingSubmit, PendingCancel, PreSubmitted, Submitted, Cancelled, Filled, Inactive
         :type status: str
         :param filled: Specifies the number of shares that have been executed.
         :type filled: int
@@ -828,19 +907,20 @@ class Connection(EWrapper):
         :param parentId: The order ID of the parent order, used for bracket and auto trailing stop orders.
         :type parentId: int
         :param lastFillPrice: The last price of the shares that have been executed.
-                                                  This parameter is valid only if the filled parameter value is greater than zero.
-                                                  Otherwise, the price parameter will be zero.
+                              This parameter is valid only if the filled parameter value is greater than zero.
+                              Otherwise, the price parameter will be zero.
         :type lastFillPrice: float
         :param clientId: The ID of the client (or TWS) that placed the order. Note that TWS orders have a fixed
                                          clientId and orderId of 0 that distinguishes them from API orders.
         :type clientId: int
-        :param whyHeld: This field is used to identify an order held when TWS is trying to locate shares for a short sell.
-                                        The value used to indicate this is 'locate'.
+        :param whyHeld: This field is used to identify an order held when TWS is trying to locate shares for a
+                        short sell. The value used to indicate this is 'locate'.
         :type whyHeld: str
         """
         log.debug("Order status: orderId: %s, status: %s, filled: %d, remaining: %d, avgFillPrice: %.2f, permId: %s, "
                          "parentId:%s, lastFillPrice: %.2f, clientId:%d, whyHeld: %s" %
-                         (orderId, status, filled, remaining, avgFillPrice, permId, parentId, lastFillPrice, clientId,  whyHeld))
+                         (orderId, status, filled, remaining, avgFillPrice, permId, parentId, lastFillPrice, clientId,
+                          whyHeld))
         try:
             instrument = self.__orderIds[orderId]
         except KeyError:
@@ -930,5 +1010,83 @@ class Connection(EWrapper):
     def connectionClosed(self):
         """Connection closed handler for the IB Connection."""
         log.error("Connection closed")
+
+    def tickPrice(self, tickerId, field, price, canAutoExecute):
+        self.__processTick(int(tickerId), tickType=field, value=price)
+
+    def tickSize(self, tickerId, field, size):
+        self.__processTick(int(tickerId), tickType=field, value=size)
+
+    def tickString(self, tickerId, tickType, value):
+        self.__processTick(int(tickerId), tickType=tickType, value=value)
+
+    def tickGeneric(self, tickerId, field, value):
+        self.__processTick(int(tickerId), tickType=field, value=value)
+
+    def __processTick(self, tickerId, tickType, value):
+        #log.debug("processTick: tickerId=%s tickType=%s/%s %s", tickerId, tickType, TickType.getField(tickType), value)
+        if tickType not in (4, 8, 45, 46, 48, 54):
+            return
+
+        instr = self.__marketDataTickerIDs[tickerId]
+
+        if tickType == 45:  # LAST_TIMESTAMP
+            dt = datetime.utcfromtimestamp(int(value))
+            self.__currentTicks[instr].dt = dt
+        elif tickType == 4:  # LAST_PRICE
+            self.__currentTicks[instr].price = float(value)
+        elif tickType == 8:  # VOLUME
+            self.__currentTicks[instr].volume = int(value)
+        elif tickType == 54:  # TRADE_COUNT
+            self.__currentTicks[instr].tradeCount = int(value)
+        elif tickType == 46:  # SHORTABLE
+            self.__currentTicks[instr].shortable = float(value)
+        elif tickType == 48:
+            # Format:
+            # Last trade price; Last trade size;Last trade time;Total volume;VWAP;Single trade flag
+            # e.g.: 701.28;1;1348075471534;67854;701.46918464;true
+            (lastTradePrice, lastTradeSize, lastTradeTime, totalVolume, VWAP, singleTradeFlag) = value.split(';')
+
+            # Ignore if lastTradePrice is empty:
+            # tickString: tickerId=0 tickType=48/RTVolume ;0;1469805548873;240304;216.648653;true
+            if len(lastTradePrice) == 0:
+                return
+
+            rtVolume = RTVolume()
+            rtVolume.lastTradePrice = float(lastTradePrice)
+            rtVolume.lastTradeSize = int(lastTradeSize)
+            rtVolume.lastTradeTime = float(lastTradeTime) / 1000  # Convert to microsecond based utc
+            rtVolume.totalVolume = int(totalVolume)
+            rtVolume.vwap = float(VWAP)
+            rtVolume.singleTradeFlag = singleTradeFlag
+
+            self.__marketData[instr].append(rtVolume)
+
+            if len(self.__marketData[instr]) > 2:
+                timeRange = self.__marketData[instr][-1].lastTradeTime - self.__marketData[instr][0].lastTradeTime
+                if timeRange >= self.__marketDataEmitFrequency:
+                    self.__emitTicks(instr)
+
+    def __emitTicks(self, instr):
+        if len(self.__marketData[instr]) > 2:
+            dt = datetime.utcfromtimestamp(self.__marketData[instr][0].lastTradeTime).replace(tzinfo=pytz.utc)
+            open_ = self.__marketData[instr][0].lastTradePrice
+            high = max([e.lastTradePrice for e in self.__marketData[instr]])
+            low = min([e.lastTradePrice for e in self.__marketData[instr]])
+            close = self.__marketData[instr][0].lastTradePrice
+            volume = self.__marketData[instr][-1].totalVolume - self.__marketData[instr][0].totalVolume
+            vwap = sum([e.vwap for e in self.__marketData[instr]]) / len(self.__marketData[instr])
+            tradeCount = sum([e.lastTradeSize for e in self.__marketData[instr]])
+            shortable = self.__currentTicks[instr].shortable
+
+            self.__marketData[instr] = []
+
+            bar = Bar(dt, open_, high, low, close, volume, vwap, tradeCount, shortable)
+
+            log.debug("Market Data: %s", bar)
+
+            instrumentBar = (instr, bar)
+            self.__marketDataEvents[instr].emit(instrumentBar)
+
 
 # vim: noet:ci:pi:sts=0:sw=4:ts=4

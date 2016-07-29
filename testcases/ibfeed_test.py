@@ -188,13 +188,13 @@ class IBLiveFeedTestCase(unittest.TestCase):
         # Add bar1 and test the presence using fetchNextBars
         # Bar1 should not be present until the timestamp is increased
         # on the nex onRealtimeBar call
-        self.__feed.onRealtimeBar((instrument1, bar1))
+        self.__feed.onIBBar((instrument1, bar1))
 
         # Add bar2 with the same timestamp. No bars should be present
-        self.__feed.onRealtimeBar((instrument2, bar2))
+        self.__feed.onIBBar((instrument2, bar2))
 
         # Add bar3 with the next timestamp to trigger transfer between onRealtimeBar and fetchNextBars
-        self.__feed.onRealtimeBar((instrument3, bar3))
+        self.__feed.onIBBar((instrument3, bar3))
         bars = self.__feed.fetchNextBars()
         self.assertIn(instrument1, bars.keys())
         self.assertIn(instrument2, bars.keys())
@@ -204,7 +204,7 @@ class IBLiveFeedTestCase(unittest.TestCase):
         self.assertEqual(bars[instrument2], bar2)
 
         # Add bar4, only bar3 should return
-        self.__feed.onRealtimeBar((instrument4, bar4))
+        self.__feed.onIBBar((instrument4, bar4))
         bars = self.__feed.fetchNextBars()
         self.assertNotIn(instrument1, bars.keys())
         self.assertNotIn(instrument2, bars.keys())

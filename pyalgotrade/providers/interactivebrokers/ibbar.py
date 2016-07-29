@@ -43,12 +43,14 @@ class Bar(bar.Bar):
     :type vwap: float
     :param tradeCount: Number of trades (IB specific)
     :type tradeCount: int
+    :param shortable: The shortability of stock: > 0.5: Not available for short; > 1.5: available for short; > 2.5: at least 1000 shares available
     """
-    def __init__(self, dateTime, open_, high, low, close, volume, vwap, tradeCount):
+    def __init__(self, dateTime, open_, high, low, close, volume, vwap, tradeCount, shortable=3.0):
         bar.Bar.__init__(self, dateTime, open_, high, low, close, volume, adjClose=close)
 
         self.__vwap = vwap
         self.__tradeCount = tradeCount
+        self.__shortable = shortable
 
     def getVWAP(self):
         """Returns the Volume Weighted Average Price."""
@@ -58,11 +60,14 @@ class Bar(bar.Bar):
         """Returns the trade count."""
         return self.__tradeCount
 
+    def getShortable(self):
+        return self.__shortable
+
 
     def __repr__(self):
-        return str("%s: open=%.2f, high=%.2f, low=%.2f, close=%.2f, volume=%d, vwap=%.2f, tradeCount=%d" %
-                        (self.getDateTime(), self.getOpen(), self.getHigh(), self.getLow(), self.getClose(),
-                         self.getVolume(), self.getVWAP(), self.getTradeCount()))
+        return str("%s: open=%.2f, high=%.2f, low=%.2f, close=%.2f, volume=%d, vwap=%.2f, tradeCount=%d shortable=%.2f"
+                   % (self.getDateTime(), self.getOpen(), self.getHigh(), self.getLow(), self.getClose(),
+                      self.getVolume(), self.getVWAP(), self.getTradeCount(), self.getShortable()))
 
 
 # vim: noet:ci:pi:sts=0:sw=4:ts=4

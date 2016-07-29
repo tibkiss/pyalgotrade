@@ -179,13 +179,14 @@ class BarFeed(BasicBarFeed):
             ret = bar.Bars(barDict)
 
             # Check that current bar datetimes are greater than the previous one.
-            if self.__prevDateTime != None and self.__prevDateTime >= ret.getDateTime():
-                log.debug("Ignoring OoO Bar. Previous bar's datetime was %s and current bar's datetime is %s." %
-                            (self.__prevDateTime, ret.getDateTime()))
-                validBarFound = False
-            else:
-                self.__prevDateTime = ret.getDateTime()
-                validBarFound = True
+            # if self.__prevDateTime != None and self.__prevDateTime >= ret.getDateTime():
+            #     log.debug("Ignoring OoO Bar. Previous bar's datetime was %s and current bar's datetime is %s." %
+            #                 (self.__prevDateTime, ret.getDateTime()))
+            #     validBarFound = False
+            # else:
+            #     self.__prevDateTime = ret.getDateTime()
+            #     validBarFound = True
+            validBarFound = True
 
         return ret
 

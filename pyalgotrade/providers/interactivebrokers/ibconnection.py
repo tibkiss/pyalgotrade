@@ -978,9 +978,15 @@ class Connection(EWrapper):
         self.__error['errorCode'] = errorCode
         self.__error['errorString'] = errorString
 
+        # Try to find stock for tickerID
+        if tickerId in self.__marketDataTickerIDs:
+            instr = self.__marketDataTickerIDs[tickerId]
+        else:
+            instr = 'UNKNOWN'
+
         if 0 <= errorCode < 1000:
-                # Errors
-            log.error( '%s, %s, %s' %(tickerId, errorCode, errorString))
+            # Errors
+            log.error( '%s (%s), %s, %s' %(tickerId, instr, errorCode, errorString))
         elif 1000 <= errorCode < 2000:
             # System messages
             log.info( 'System message: %s, %s, %s' %(tickerId, errorCode, errorString))
@@ -1083,7 +1089,7 @@ class Connection(EWrapper):
 
             bar = Bar(dt, open_, high, low, close, volume, vwap, tradeCount, shortable)
 
-            log.debug("Market Data: %s", bar)
+            log.debug("Market Data %s: %s", instr, bar)
 
             instrumentBar = (instr, bar)
             self.__marketDataEvents[instr].emit(instrumentBar)

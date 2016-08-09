@@ -167,9 +167,9 @@ class SequenceDataSeries(DataSeries):
         .. note::
                 If dateTime is not None, it must be greater than the last one.
         """
-        if dateTime != None and len(self.__dateTimes) != 0 and self.__dateTimes[-1] >= dateTime:
-            log.warning("Invalid datetime. It must be bigger than that last one. Ignoring.")
-            return
+        #if dateTime != None and len(self.__dateTimes) != 0 and self.__dateTimes[-1] >= dateTime:
+        #    log.info("Invalid datetime. It must be bigger than that last one. Ignoring.")
+        #    return
 
         self.__dateTimes.append(dateTime)
         self.__values.append(value)

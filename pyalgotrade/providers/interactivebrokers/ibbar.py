@@ -65,7 +65,7 @@ class Bar(bar.Bar):
 
 
     def __repr__(self):
-        return str("%s: open=%.2f, high=%.2f, low=%.2f, close=%.2f, volume=%d, vwap=%.2f, tradeCount=%d shortable=%.2f"
+        return str("%s: open=%s, high=%s, low=%s, close=%s, volume=%s, vwap=%s, tradeCount=%s shortable=%s"
                    % (self.getDateTime(), self.getOpen(), self.getHigh(), self.getLow(), self.getClose(),
                       self.getVolume(), self.getVWAP(), self.getTradeCount(), self.getShortable()))
 

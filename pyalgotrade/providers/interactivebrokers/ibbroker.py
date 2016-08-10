@@ -207,7 +207,7 @@ class Broker(broker.Broker):
         # Check for order status and set our local order accordingly
         if status == 'Cancelled':
             order.setState(broker.Order.State.CANCELED)
-            log.info("Order canceled: orderId: %d, instrument: %s" % (orderId, instrument))
+            log.debug("Order canceled: orderId: %d, instrument: %s" % (orderId, instrument))
 
             # Notify the listeners
             self.getOrderUpdatedEvent().emit(self, order)
@@ -217,7 +217,7 @@ class Broker(broker.Broker):
         elif status == 'Filled':
             # Wait until all the stocks are obtained
             if remaining == 0:
-                log.info("Order %d complete. Instr: %s, cnt: %d, avgFillPrice=%.2f, lastFillPrice=%.2f" %
+                log.debug("Order %d complete. Instr: %s, cnt: %d, avgFillPrice=%.2f, lastFillPrice=%.2f" %
                          (orderId, instrument, filled, avgFillPrice, lastFillPrice))
 
                 # Set commission to 0, the avgFillPrice returned by IB already has this number included (per share)
@@ -229,7 +229,7 @@ class Broker(broker.Broker):
                 self.getOrderUpdatedEvent().emit(self, order)
             else:
                 # And signal partial completions
-                log.info("Order %d partially complete. Instr: %s, cnt: %d, remaining: %d, avgFillPrice=%.2f, lastFillPrice=%.2f" %
+                log.debug("Order %d partially complete. Instr: %s, cnt: %d, remaining: %d, avgFillPrice=%.2f, lastFillPrice=%.2f" %
                          (orderId, instrument, filled, remaining, avgFillPrice, lastFillPrice))
 
     def getCash(self):

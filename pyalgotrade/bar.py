@@ -61,7 +61,7 @@ class Bar(object):
         self.__date = date_
 
     def __repr__(self):
-        reprStr = ("%s Open: %.2f High: %.2f, Low: %.2f, Close: %.2f, Volume: %d\n" %
+        reprStr = ("%s Open: %s High: %s, Low: %s, Close: %s, Volume: %s\n" %
                    (self.__dateTime, self.__open, self.__high, self.__low, self.__close, self.__volume))
         return reprStr
 

@@ -17,14 +17,12 @@
 """
 .. moduleauthor:: Tibor Kiss <tibor.kiss@gmail.com>
 """
-
+from pyalgotrade.bar import Bars
 from pyalgotrade.barfeed import csvfeed, BarFeed, Frequency
 from pyalgotrade.providers.interactivebrokers import ibbar
 
 import datetime
-import copy
-import Queue
-
+from threading import Lock
 
 ######################################################################
 ## Interactive Brokers CSV parser
@@ -94,22 +92,19 @@ class CSVFeed(csvfeed.BarFeed):
 
 
 class LiveFeed(BarFeed):
-    def __init__(self, ibConnection, timezone=0):
+    def __init__(self, ibConnection, timezone=0, barsToInject=None):
         BarFeed.__init__(self, Frequency.SECOND)
 
-        # The zone specifies the offset from Coordinated Universal Time (UTC,
-        # formerly referred to as "Greenwich Mean Time")
+        # The zone specifies the offset from Coordinated Universal Time (UTC)
         self.__zone = timezone
 
         # Connection to the IB's TWS
         self.__ibConnection = ibConnection
 
-        self.__currentDateTime = None
-        self.__currentBars = {}
-        self.__queue = Queue.Queue()
-
+        self.__newBarsEventLock = Lock()
         self.__running = True
 
+        self.__barsToInject = barsToInject
 
     def start(self):
         pass
@@ -123,19 +118,20 @@ class LiveFeed(BarFeed):
     def stopDispatching(self):
         return not self.__running
 
-    def fetchNextBars(self):
-        timeout = 10 # Seconds
+    def dispatch(self):
+        # IB Live feed's dispatch functionality is implemented in onIBBar() method.
+        # Here we only deal with the injectable bars defined by the user
+        while self.__barsToInject:
+            barDict = self.__barsToInject[0]
+            for instr in barDict:
+                barDict_dt = self.__barsToInject[0][instr].getDateTime()
 
-        while self.__running:
-            try:
-                ret = self.__queue.get(True, timeout)
-                if len(ret) == 0:
-                    ret = None
-                return ret
-            except Queue.Empty:
-                pass
-        else:
-            return None
+                if barDict_dt <= datetime.datetime.now(tz=barDict_dt.tzinfo):
+                    barDictToEmit = self.__barsToInject.pop(0)
+                    with self.__newBarsEventLock:
+                        barsToEmit = Bars(barDictToEmit)
+                        self.getNewBarsEvent().emit(barsToEmit)
+        return
 
     def subscribeRealtimeBars(self, instrument, useRTH_=0):
         self.__ibConnection.subscribeRealtimeBars(instrument, self.onIBBar, useRTH=useRTH_)
@@ -143,7 +139,6 @@ class LiveFeed(BarFeed):
 
     def unsubscribeRealtimeBars(self, instrument):
         self.__ibConnection.unsubscribeRealtimeBars(instrument, self.onIBBar)
-
         # XXX: Deregistering instrument is not yet possible, missing from BarFeed
 
     def subscribeMarketBars(self, instrument):
@@ -154,17 +149,9 @@ class LiveFeed(BarFeed):
         self.__ibConnection.unsubscribeMarketBars(instrument, self.onIBBar)
 
     def onIBBar(self, instrumentBar):
-        instrument, bar = instrumentBar # Unbox the tuple
-        if len(self.__currentBars) == 0:
-            self.__currentDateTime = bar.getDateTime()
-            self.__currentBars[instrument] = bar
-        elif len(self.__currentBars) > 0:
-            if self.__currentDateTime != bar.getDateTime():
-                bars = copy.copy(self.__currentBars)
-                self.__currentDateTime = bar.getDateTime()
-                self.__currentBars = {instrument : bar} # First bar in the next set of bars.
-                self.__queue.put(bars)
-            else:
-                self.__currentBars[instrument] = bar
+        instrument, bar = instrumentBar
+        with self.__newBarsEventLock:
+            bars = Bars({instrument: bar})
+            self.getNewBarsEvent().emit(bars)
 
 # vim: noet:ci:pi:sts=0:sw=4:ts=4

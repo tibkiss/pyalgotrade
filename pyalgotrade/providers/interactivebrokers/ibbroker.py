@@ -265,8 +265,7 @@ class Broker(broker.Broker):
         pass
 
     def stopDispatching(self):
-        # If there are no more events in the barfeed, then there is nothing left for us to do since all processing took
-        # place while processing barfeed events.
+        # If there are no more events in the barfeed, then there is nothing left for us to do
         return self.__barFeed.stopDispatching()
 
     def dispatch(self):
@@ -290,42 +289,39 @@ class Broker(broker.Broker):
         # and SELL seems to work well with short orders.
         #action = "SSHORT"
         act = order.getAction()
-        if act == broker.Order.Action.BUY:              action = "BUY"
+        if act == broker.Order.Action.BUY:          action = "BUY"
         elif act == broker.Order.Action.SELL:       action = "SELL"
         elif act == broker.Order.Action.SELL_SHORT: action = "SELL"
 
         ot = order.getType()
-        if ot == broker.Order.Type.MARKET:                      orderType = "MKT"
-        elif ot == broker.Order.Type.LIMIT:                     orderType = "LMT"
-        elif ot == broker.Order.Type.STOP:                      orderType = "STP"
-        elif ot == broker.Order.Type.STOP_LIMIT:        orderType = "STP LMT"
+        if ot == broker.Order.Type.MARKET:          orderType = "MKT"
+        elif ot == broker.Order.Type.LIMIT:         orderType = "LMT"
+        elif ot == broker.Order.Type.STOP:          orderType = "STP"
+        elif ot == broker.Order.Type.STOP_LIMIT:    orderType = "STP LMT"
         else: raise Exception("Invalid orderType: %s!"% ot)
 
         if ot == broker.Order.Type.MARKET:
-            lmtPrice     = 0
-            auxPrice     = 0
+            lmtPrice = 0
+            auxPrice = 0
         elif ot == broker.Order.Type.LIMIT:
-            lmtPrice     = order.getLimitPrice()
-            auxPrice     = 0
+            lmtPrice = order.getLimitPrice()
+            auxPrice = 0
         elif ot == broker.Order.Type.STOP:
-            lmtPrice         = 0
-            auxPrice         = order.getStopPrice()
+            lmtPrice = 0
+            auxPrice = order.getStopPrice()
         elif ot == broker.Order.Type.STOP_LIMIT:
-            lmtPrice         = order.getLimitPrice()
-            auxPrice         = order.getStopPrice()
+            lmtPrice = order.getLimitPrice()
+            auxPrice = order.getStopPrice()
 
         goodTillDate = ""
-        if order.getGoodTillCanceled():
-            tif              = "GTC"
-        else:
-            tif              = "DAY"
-        minQty           = 0
-        totalQty         = order.getQuantity()
+        tif = "GTC" if order.getGoodTillCanceled() else "DAY"
+        minQty = 0
+        totalQty = order.getQuantity()
 
         orderId_ = order.getOrderId()
         orderId_ = self.__ibConnection.createOrder(instrument, action, lmtPrice, auxPrice, orderType, totalQty, minQty,
-                                                                                          tif, goodTillDate, trailingPct=0, trailStopPrice=0, transmit=True, whatif=False,
-                                                                                          orderId=orderId_)
+                                                   tif, goodTillDate, trailingPct=0, trailStopPrice=0, transmit=True,
+                                                   whatif=False, orderId=orderId_)
 
         order.setOrderId(orderId_)
 
@@ -348,7 +344,7 @@ class Broker(broker.Broker):
         # Ask the broker to cancel the position
         if order.isFilled():
             raise Exception("Can't cancel order that has already been filled")
-        if order.getOrderId() == None:
+        if order.getOrderId() is None:
             raise Exception("Can't cancel order which was not submitted")
 
         self.__ibConnection.cancelOrder(order.getOrderId())

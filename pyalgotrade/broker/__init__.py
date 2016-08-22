@@ -68,21 +68,21 @@ class Order:
     """
 
     class Action:
-        BUY                             = 1
-        BUY_TO_COVER    = 2
-        SELL                    = 3
-        SELL_SHORT              = 4
+        BUY          = 1
+        BUY_TO_COVER = 2
+        SELL         = 3
+        SELL_SHORT   = 4
 
     class State:
-        ACCEPTED                = 1
-        CANCELED                = 2
-        FILLED                  = 3
+        ACCEPTED     = 1
+        CANCELED     = 2
+        FILLED       = 3
 
     class Type:
-        MARKET                          = 1
-        LIMIT                           = 2
-        STOP                            = 3
-        STOP_LIMIT                      = 4
+        MARKET       = 1
+        LIMIT        = 2
+        STOP         = 3
+        STOP_LIMIT   = 4
 
     def __init__(self, type_, action, instrument, quantity):
         self.__type = type_
@@ -186,6 +186,40 @@ class Order:
         """
         return self.__executionInfo
 
+    def __repr__(self):
+        if self.__type == Order.Type.LIMIT:
+            orderType = 'Limit'
+        elif self.__type == Order.Type.MARKET:
+            orderType = 'Market'
+            limitPrice = None
+            stopPrice = None
+        elif self.__type == Order.Type.STOP:
+            orderType = 'Stop'
+        elif self.__type == Order.Type.STOP_LIMIT:
+            orderType = 'StopLimit'
+        else:
+            orderType = 'UNKNOWN'
+
+        if self.__action == Order.Action.BUY:
+            orderAction = 'Buy'
+        elif self.__action == Order.Action.BUY_TO_COVER:
+            orderAction = 'BuyToCover'
+        elif self.__action == Order.Action.SELL:
+            orderAction = 'Sell'
+        elif self.__action == Order.Action.SELL_SHORT:
+            orderAction = 'SellShort'
+
+        if self.__state == Order.State.ACCEPTED:
+            orderState = 'Accepted'
+        elif self.__state == Order.State.CANCELED:
+            orderState = 'Cancelled'
+        elif self.__state == Order.State.FILLED:
+            orderState = 'Filled'
+
+        repr = '%s %s order %s GTC=%s ' % (orderAction, orderType, orderState, self.__goodTillCanceled)
+
+        return repr
+
 class MarketOrder(Order):
     """Base class for market orders.
 
@@ -208,6 +242,9 @@ class MarketOrder(Order):
         self.__onClose = onClose
         self.setDirty(True)
 
+    def __repr__(self):
+        return Order.__repr__(self)
+
 class LimitOrder(Order):
     """Base class for limit orders.
 
@@ -229,6 +266,9 @@ class LimitOrder(Order):
         self.__limitPrice = limitPrice
         self.setDirty(True)
 
+    def __repr__(self):
+        return Order.__repr__(self) + 'limitPrice=%s' % self.__limitPrice
+
 class StopOrder(Order):
     """Base class for stop orders.
 
@@ -249,6 +289,10 @@ class StopOrder(Order):
         """Updates the stop price."""
         self.__stopPrice = stopPrice
         self.setDirty(True)
+
+    def __repr__(self):
+        return Order.__repr__(self) + 'stopPrice=%s' % self.__stopPrice
+
 
 class StopLimitOrder(Order):
     """Base class for stop limit orders.
@@ -288,6 +332,10 @@ class StopLimitOrder(Order):
     def isLimitOrderActive(self):
         """Returns True if the limit order is active."""
         return self.__limitOrderActive
+
+    def __repr__(self):
+        return Order.__repr__(self) + 'stopPrice=%s limitPrice=%s' % (self.__stopPrice, self.__limitPrice)
+
 
 class OrderExecutionInfo:
     """Execution information for a filled order."""

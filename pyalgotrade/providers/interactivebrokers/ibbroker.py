@@ -105,9 +105,16 @@ class Order(broker.Order):
     def setGoodTillCanceled(self, goodTillCanceled):
         self.__goodTillCanceled = goodTillCanceled
 
+    def __repr__(self):
+        return 'IB ' + Order.__repr__(self)
+
 class MarketOrder(Order):
     def __init__(self, ibConnection, action, instrument, quantity, goodTillCanceled=False):
         Order.__init__(self, ibConnection, Order.Type.MARKET, action, instrument, quantity, goodTillCanceled)
+
+
+    def __repr__(self):
+        return Order.__repr__(self)
 
 class LimitOrder(Order):
     def __init__(self, ibConnection, action, instrument, limitPrice, quantity, goodTillCanceled=False):
@@ -123,6 +130,10 @@ class LimitOrder(Order):
         self.__limitPrice = limitPrice
         self.setDirty(True)
 
+    def __repr__(self):
+        return Order.__repr__(self) + 'limitPrice=%s' % self.__limitPrice
+
+
 class StopOrder(Order):
     def __init__(self, ibConnection, action, instrument, stopPrice, quantity, goodTillCanceled=False):
         Order.__init__(self, ibConnection, Order.Type.STOP, action, instrument, quantity, goodTillCanceled)
@@ -136,6 +147,9 @@ class StopOrder(Order):
         """Updates the stop price."""
         self.__stopPrice = stopPrice
         self.setDirty(True)
+
+    def __repr__(self):
+        return Order.__repr__(self) + 'stopPrice=%s' % self.__stopPrice
 
 class StopLimitOrder(Order):
     def __init__(self, ibConnection, action, instrument, limitPrice, stopPrice, quantity, goodTillCanceled=False):
@@ -162,6 +176,8 @@ class StopLimitOrder(Order):
         self.__stopPrice = stopPrice
         self.setDirty(True)
 
+    def __repr__(self):
+        return Order.__repr__(self) + 'stopPrice=%s limitPrice=%s' % (self.__stopPrice, self.__limitPrice)
 
 ######################################################################
 ## Broker

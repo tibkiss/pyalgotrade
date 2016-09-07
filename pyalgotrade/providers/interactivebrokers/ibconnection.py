@@ -64,6 +64,9 @@ class IBTicks(FieldStore):
 class RTVolume(FieldStore):
     __slots__ = ['lastTradePrice', 'lastTradeSize', 'lastTradeTime', 'totalVolume', 'vwap', 'singleTradeFlag']
 
+class IBConnectionException(Exception):
+    pass
+
 class Connection(EWrapper):
     '''Wrapper class for Interactive Brokers TWS Connection.
 
@@ -987,6 +990,12 @@ class Connection(EWrapper):
         if 0 <= errorCode < 1000:
             # Errors
             log.error( '%s (%s), %s, %s' %(tickerId, instr, errorCode, errorString))
+
+            if errorCode == 502:
+                # 502, Couldn't connect to TWS.  Confirm that "Enable ActiveX and Socket Clients" is enabled on the TWS
+                self.__connected = False
+
+                raise IBConnectionException("Unable to connect to TWS")
         elif 1000 <= errorCode < 2000:
             # System messages
             log.info( 'System message: %s, %s, %s' %(tickerId, errorCode, errorString))

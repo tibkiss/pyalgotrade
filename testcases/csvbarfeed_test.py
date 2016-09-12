@@ -215,17 +215,20 @@ class NinjaTraderTestCase(unittest.TestCase):
         for i in xrange(ds.getLength()):
             currentBar = ds[i]
             assert not dt.datetime_is_naive(currentBar.getDateTime())
-            self.assertEqual(ds[i].getDateTime(), ds.getDateTimes()[i])
+            assert ds[i].getDateTime() == ds.getDateTimes()[i]
 
-    def testWithoutTimezone(self):
-        barFeed = self.__loadIntradayBarFeed(None)
-        ds = barFeed.getDataSeries()
-
-        for i in xrange(ds.getLength()):
-            currentBar = ds[i]
-            # Datetime must be set to UTC.
-            assert not dt.datetime_is_naive(currentBar.getDateTime())
-            self.assertEqual(ds[i].getDateTime(), ds.getDateTimes()[i])
+    # Disabling this testcase as naive datetimes in bars makes it error prone to
+    # deal with mixed data (real and daily). As of 2014 all the datetimes are tz aware.
+    #def testWithoutTimezone(self):
+    #    barFeed = self.__loadIntradayBarFeed(None)
+    #    ds = barFeed.getDataSeries()
+    #
+    #    for i in xrange(ds.getLength()):
+    #        currentBar = ds[i]
+    #        # Datetime must be set to UTC.
+    #        currentBarDT = currentBar.getDateTime()
+    #        assert not dt.datetime_is_naive(currentBarDT)
+    #        assert ds[i].getDateTime() == ds.getDateTimes()[i]
 
     def testWithIntegerTimezone(self):
         try:

@@ -527,6 +527,7 @@ class Broker(broker.Broker):
         for order in activeOrders:
             if order.isAccepted() and not order.getGoodTillCanceled():
                 logger.debug("Cancelling non-GTC order: %s" % order)
+                order.setState(broker.Order.State.CANCELED)
                 self.__activeOrders.remove(order)
                 self.getOrderUpdatedEvent().emit(self, order)
 

@@ -245,18 +245,19 @@ class NinjaTraderTestCase(unittest.TestCase):
         # The prices come from NinjaTrader interface when set to use 'US Equities RTH' session template.
         prices = {
                 dt.localize(datetime.datetime(2011, 3, 9, 9, 31), timezone) : 132.35,
-                dt.localize(datetime.datetime(2011, 3, 9, 16), timezone) : 132.39,
+                dt.localize(datetime.datetime(2011, 3, 9, 16), timezone) : 131.82,
                 dt.localize(datetime.datetime(2011, 3, 10, 9, 31), timezone) : 130.81,
-                dt.localize(datetime.datetime(2011, 3, 10, 16), timezone) : 129.92,
+                dt.localize(datetime.datetime(2011, 3, 10, 16), timezone) : 130.47,
                 dt.localize(datetime.datetime(2011, 3, 11, 9, 31), timezone) : 129.72,
-                dt.localize(datetime.datetime(2011, 3, 11, 16), timezone) : 130.84,
+                dt.localize(datetime.datetime(2011, 3, 11, 16), timezone) : 130.07,
         }
         barFeed = ninjatraderfeed.Feed(ninjatraderfeed.Frequency.MINUTE, timezone)
         barFeed.addBarsFromCSV("spy", common.get_data_file_path("nt-spy-minute-2011-03.csv"))
         for bars in barFeed:
             price = prices.get(bars.getDateTime(), None)
             if price != None:
-                self.assertTrue(price == bars.getBar("spy").getClose())
+                closingPrice = bars.getBar("spy").getClose()
+                assert price == closingPrice
 
 def getTestCases():
     ret = []

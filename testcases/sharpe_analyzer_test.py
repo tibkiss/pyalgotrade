@@ -18,6 +18,9 @@
 .. moduleauthor:: Gabriel Martin Becedillas Ruiz <gabriel.becedillas@gmail.com>
 """
 
+import pytest
+import unittest
+
 from pyalgotrade.barfeed import yahoofeed
 from pyalgotrade.stratanalyzer import sharpe
 from pyalgotrade.broker import backtesting
@@ -25,8 +28,6 @@ from pyalgotrade import broker
 
 import strategy_test
 import common
-
-import unittest
 
 class SharpeRatioTestCase(unittest.TestCase):
     def testNoTrades(self):
@@ -37,10 +38,10 @@ class SharpeRatioTestCase(unittest.TestCase):
         strat.attachAnalyzer(stratAnalyzer)
 
         strat.run()
-        self.assertTrue(strat.getBroker().getCash() == 1000)
-        self.assertTrue(stratAnalyzer.getSharpeRatio(0.04, 252, annualized=True) == 0)
-        self.assertTrue(stratAnalyzer.getSharpeRatio(0, 252) == 0)
-        self.assertTrue(stratAnalyzer.getSharpeRatio(0, 252, annualized=True) == 0)
+        assert strat.getBroker().getCash() == 1000
+        assert stratAnalyzer.getSharpeRatio(0.04, 252, annualized=True) == 0
+        assert stratAnalyzer.getSharpeRatio(0, 252) == 0
+        assert stratAnalyzer.getSharpeRatio(0, 252, annualized=True) == 0
 
     def __testIGE_BrokerImpl(self, quantity):
         initialCash = 42.09 * quantity
@@ -60,10 +61,10 @@ class SharpeRatioTestCase(unittest.TestCase):
         strat.getBroker().placeOrder(order)
         strat.addOrder(strategy_test.datetime_from_date(2007, 11, 13), strat.getBroker().createMarketOrder, broker.Order.Action.SELL, "ige", quantity, True) # Adj. Close: 127.64
         strat.run()
-        self.assertTrue(round(strat.getBroker().getCash(), 2) == initialCash + (127.64 - 42.09) * quantity)
-        self.assertTrue(strat.getOrderUpdatedEvents() == 2)
+        assert round(strat.getBroker().getCash(), 2) == initialCash + (127.64 - 42.09) * quantity
+        assert strat.getOrderUpdatedEvents() == 2
         # The results are slightly different only because I'm taking into account the first bar as well.
-        self.assertTrue(round(stratAnalyzer.getSharpeRatio(0.04, 252, annualized=True), 4) == 0.7889)
+        assert round(stratAnalyzer.getSharpeRatio(0.04, 252, annualized=True), 4) == 0.7889
 
     def testIGE_Broker(self):
         self.__testIGE_BrokerImpl(1)
@@ -91,8 +92,8 @@ class SharpeRatioTestCase(unittest.TestCase):
         strat.getBroker().placeOrder(order)
         strat.addOrder(strategy_test.datetime_from_date(2007, 11, 13), strat.getBroker().createMarketOrder, broker.Order.Action.SELL, "ige", 1, True) # Adj. Close: 127.64
         strat.run()
-        self.assertTrue(round(strat.getBroker().getCash(), 2) == initialCash + (127.64 - 42.09 - commision*2))
-        self.assertTrue(strat.getOrderUpdatedEvents() == 2)
+        assert round(strat.getBroker().getCash(), 2) == initialCash + (127.64 - 42.09 - commision*2)
+        assert strat.getOrderUpdatedEvents() == 2
         # The results are slightly different only because I'm taking into account the first bar as well,
         # and I'm also adding commissions.
         self.assertEqual(round(stratAnalyzer.getSharpeRatio(0.04, 252, annualized=True), 6), 0.776443)
@@ -124,10 +125,10 @@ class SharpeRatioTestCase(unittest.TestCase):
         strat.addOrder(strategy_test.datetime_from_date(2007, 11, 13), strat.getBroker().createMarketOrder, broker.Order.Action.BUY_TO_COVER, "spy", 1, True) # Adj. Close: 147.67
 
         strat.run()
-        self.assertTrue(strat.getOrderUpdatedEvents() == 4)
-        self.assertTrue(round(strat.getBroker().getCash(), 2) == round(initialCash + (127.64 - 42.09) + (105.52 - 147.67), 2))
+        assert strat.getOrderUpdatedEvents() == 4
+        assert round(strat.getBroker().getCash(), 2) == round(initialCash + (127.64 - 42.09) + (105.52 - 147.67), 2)
         # TODO: The results are different from the ones in the book. Analyze why.
-        # self.assertTrue(round(stratAnalyzer.getSharpeRatio(0, 252), 5) == 0.92742)
+        # assert round(stratAnalyzer.getSharpeRatio(0, 252), 5) == 0.92742
 
 def getTestCases():
     ret = []

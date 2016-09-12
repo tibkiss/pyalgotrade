@@ -18,6 +18,7 @@
 .. moduleauthor:: Gabriel Martin Becedillas Ruiz <gabriel.becedillas@gmail.com>
 """
 
+import pytest
 import unittest
 import common
 from pyalgotrade.technical import rsi
@@ -29,23 +30,23 @@ class TestCase(unittest.TestCase):
 
         # Gain only
         avgGain, avgLoss = rsi.avg_gain_loss([1, 2, 3])
-        self.assertTrue(avgGain == 2 / float(2))
-        self.assertTrue(avgLoss == 0)
+        assert avgGain == 2 / float(2)
+        assert avgLoss == 0
 
         # Loss only
         avgGain, avgLoss = rsi.avg_gain_loss([3, 2, 1])
-        self.assertTrue(avgGain == 0)
-        self.assertTrue(avgLoss == 2 / float(2))
+        assert avgGain == 0
+        assert avgLoss == 2 / float(2)
 
         # Gain and Loss equal
         avgGain, avgLoss = rsi.avg_gain_loss([1, 0, 1])
-        self.assertTrue(avgGain == 1 / float(2))
-        self.assertTrue(avgLoss == 1 / float(2))
+        assert avgGain == 1 / float(2)
+        assert avgLoss == 1 / float(2)
 
         # Gain and Loss different
         avgGain, avgLoss = rsi.avg_gain_loss([1, 3, 2])
-        self.assertTrue(avgGain == 2 / float(2))
-        self.assertTrue(avgLoss == 1 / float(2))
+        assert avgGain == 2 / float(2)
+        assert avgLoss == 1 / float(2)
 
     def __buildRSI(self, values, period):
         return rsi.RSI(dataseries.SequenceDataSeries(values), period)

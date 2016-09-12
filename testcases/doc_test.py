@@ -18,6 +18,7 @@
 .. moduleauthor:: Gabriel Martin Becedillas Ruiz <gabriel.becedillas@gmail.com>
 """
 
+import pytest
 import unittest
 import subprocess
 import os
@@ -65,25 +66,25 @@ class TutorialTestCase(unittest.TestCase):
     def testTutorial1(self):
         run_python_code("from pyalgotrade.tools import yahoofinance; print yahoofinance.get_daily_csv('orcl', 2000)", "orcl-2000.csv")
         lines = run_sample_script("tutorial-1.py").split("\n")
-        self.assertTrue(compare_head("tutorial-1.output", lines[:3]))
-        self.assertTrue(compare_tail("tutorial-1.output", lines[-4:-1]))
+        assert compare_head("tutorial-1.output", lines[:3])
+        assert compare_tail("tutorial-1.output", lines[-4:-1])
 
     def testTutorial2(self):
         # run_python_code("from pyalgotrade.tools import yahoofinance; print yahoofinance.get_daily_csv('orcl', 2000)", "orcl-2000.csv")
         lines = run_sample_script("tutorial-2.py").split("\n")
-        self.assertTrue(compare_head("tutorial-2.output", lines[:15]))
-        self.assertTrue(compare_tail("tutorial-2.output", lines[-4:-1]))
+        assert compare_head("tutorial-2.output", lines[:15])
+        assert compare_tail("tutorial-2.output", lines[-4:-1])
 
     def testTutorial3(self):
         # run_python_code("from pyalgotrade.tools import yahoofinance; print yahoofinance.get_daily_csv('orcl', 2000)", "orcl-2000.csv")
         lines = run_sample_script("tutorial-3.py").split("\n")
-        self.assertTrue(compare_head("tutorial-3.output", lines[:30]))
-        self.assertTrue(compare_tail("tutorial-3.output", lines[-4:-1]))
+        assert compare_head("tutorial-3.output", lines[:30])
+        assert compare_tail("tutorial-3.output", lines[-4:-1])
 
     def testTutorial4(self):
         # run_python_code("from pyalgotrade.tools import yahoofinance; print yahoofinance.get_daily_csv('orcl', 2000)", "orcl-2000.csv")
         lines = run_sample_script("tutorial-4.py").split("\n")
-        self.assertTrue(compare_head("tutorial-4.output", lines[:-1]))
+        assert compare_head("tutorial-4.output", lines[:-1])
 
 class CompInvTestCase(unittest.TestCase):
     def testCompInv_1(self):
@@ -92,22 +93,22 @@ class CompInvTestCase(unittest.TestCase):
         shutil.copy2(os.path.join("samples", "simo-2011-yahoofinance.csv"), ".")
         shutil.copy2(os.path.join("samples", "glng-2011-yahoofinance.csv"), ".")
         lines = run_sample_script("compinv-1.py").split("\n")
-        self.assertTrue(compare_head("compinv-1.output", lines[:-1]))
+        assert compare_head("compinv-1.output", lines[:-1])
 
 class DataSeriesTestCase(unittest.TestCase):
     def testDataSeries_1(self):
         lines = run_sample_script("dataseries-1.py").split("\n")
-        self.assertTrue(compare_head("dataseries-1.output", lines[:-1]))
+        assert compare_head("dataseries-1.output", lines[:-1])
 
 class StratAnalyzerTestCase(unittest.TestCase):
     def testSampleStrategyAnalyzer(self):
         lines = run_sample_script("sample-strategy-analyzer.py").split("\n")
-        self.assertTrue(compare_head("sample-strategy-analyzer.output", lines[:-1]))
+        assert compare_head("sample-strategy-analyzer.output", lines[:-1])
 
 class TechnicalTestCase(unittest.TestCase):
     def testTechnical_1(self):
         lines = run_sample_script("technical-1.py").split("\n")
-        self.assertTrue(compare_head("technical-1.output", lines[:-1]))
+        assert compare_head("technical-1.output", lines[:-1])
 
 class SampleStratTestCase(unittest.TestCase):
     def testErnieChanGldVsGdx(self):
@@ -123,7 +124,7 @@ import statarb_erniechan
 statarb_erniechan.main(False)
 """
         lines = run_python_code(code).split("\n")
-        self.assertTrue(compare_tail("statarb_erniechan.output", lines[-2:-1]))
+        assert compare_tail("statarb_erniechan.output", lines[-2:-1])
 
     def testVWAPMomentum(self):
         # Get the files that generated the result that we're checking for.
@@ -138,7 +139,7 @@ import vwap_momentum
 vwap_momentum.main(False)
 """
         lines = run_python_code(code).split("\n")
-        self.assertTrue(compare_tail("vwap_momentum.output", lines[-2:-1]))
+        assert compare_tail("vwap_momentum.output", lines[-2:-1])
 
     def testBBands(self):
         # Get the files that generated the result that we're checking for.
@@ -153,7 +154,7 @@ import bbands
 bbands.main(False)
 """
         lines = run_python_code(code).split("\n")
-        self.assertTrue(compare_tail("bbands.output", lines[-2:-1]))
+        assert compare_tail("bbands.output", lines[-2:-1])
 
 def getTestCases():
     ret = []

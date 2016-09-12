@@ -18,6 +18,7 @@
 .. moduleauthor:: Gabriel Martin Becedillas Ruiz <gabriel.becedillas@gmail.com>
 """
 
+import pytest
 import unittest
 from pyalgotrade.technical import roc
 from pyalgotrade import dataseries
@@ -33,7 +34,7 @@ class ROCTestCase(unittest.TestCase):
         outputValues = [-3.85, -4.85, -4.52, -6.34, -7.86, -6.21, -4.31, -3.24]
         for i in range(len(outputValues)):
             outputValue = roc_[12 + i]
-            self.assertTrue(round(outputValue, 2) == outputValues[i])
+            assert round(outputValue, 2) == outputValues[i]
 
         self.assertEqual(len(roc_.getDateTimes()), len(inputValues))
         for i in range(len(roc_)):
@@ -43,10 +44,10 @@ class ROCTestCase(unittest.TestCase):
         def simple_roc(value1, value2):
             return self.__buildROC([value1, value2], 1)[1]
 
-        self.assertTrue(simple_roc(1, 2) == 100)
-        self.assertTrue(simple_roc(1, 2) == simple_roc(50, 100))
-        self.assertTrue(simple_roc(2, 1) == -50)
-        self.assertTrue(simple_roc(2, 1) == simple_roc(100, 50))
+        assert simple_roc(1, 2) == 100
+        assert simple_roc(1, 2) == simple_roc(50, 100)
+        assert simple_roc(2, 1) == -50
+        assert simple_roc(2, 1) == simple_roc(100, 50)
 
 def getTestCases():
     ret = []

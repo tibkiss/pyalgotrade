@@ -18,6 +18,10 @@
 .. moduleauthor:: Gabriel Martin Becedillas Ruiz <gabriel.becedillas@gmail.com>
 """
 
+import pytest
+import unittest
+import datetime
+
 from pyalgotrade import barfeed
 from pyalgotrade.barfeed import yahoofeed
 from pyalgotrade.barfeed import membf
@@ -27,9 +31,6 @@ from pyalgotrade import bar
 
 import strategy_test
 import common
-
-import unittest
-import datetime
 
 def build_bars_from_closing_prices(closingPrices):
     ret = []
@@ -143,10 +144,10 @@ class AnalyzerTestCase(unittest.TestCase):
         strat.attachAnalyzer(stratAnalyzer)
 
         strat.run()
-        self.assertTrue(strat.getBroker().getCash() == 1000)
-        self.assertTrue(strat.getOrderUpdatedEvents() == 0)
-        self.assertTrue(stratAnalyzer.getMaxDrawDown() == 0)
-        self.assertTrue(stratAnalyzer.getLongestDrawDownDuration()== 0)
+        assert strat.getBroker().getCash() == 1000
+        assert strat.getOrderUpdatedEvents() == 0
+        assert stratAnalyzer.getMaxDrawDown() == 0
+        assert stratAnalyzer.getLongestDrawDownDuration()== 0
 
     def __testIGE_BrokerImpl(self, quantity):
         initialCash = 42.09*quantity
@@ -167,10 +168,10 @@ class AnalyzerTestCase(unittest.TestCase):
         strat.addOrder(strategy_test.datetime_from_date(2007, 11, 13), strat.getBroker().createMarketOrder, broker.Order.Action.SELL, "ige", quantity, True) # Adj. Close: 127.64
         strat.run()
 
-        self.assertTrue(round(strat.getBroker().getCash(), 2) == initialCash + (127.64 - 42.09) * quantity)
-        self.assertTrue(strat.getOrderUpdatedEvents() == 2)
-        self.assertTrue(round(stratAnalyzer.getMaxDrawDown(), 5) == 0.31178)
-        self.assertTrue(stratAnalyzer.getLongestDrawDownDuration()== 432)
+        assert round(strat.getBroker().getCash(), 2) == initialCash + (127.64 - 42.09) * quantity
+        assert strat.getOrderUpdatedEvents() == 2
+        assert round(stratAnalyzer.getMaxDrawDown(), 5) == 0.31178
+        assert stratAnalyzer.getLongestDrawDownDuration()== 432
 
     def testIGE_Broker(self):
         self.__testIGE_BrokerImpl(1)

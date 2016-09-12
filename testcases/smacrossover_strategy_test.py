@@ -18,6 +18,7 @@
 .. moduleauthor:: Gabriel Martin Becedillas Ruiz <gabriel.becedillas@gmail.com>
 """
 
+import pytest
 import unittest
 
 from pyalgotrade import strategy
@@ -154,7 +155,7 @@ class TestSMACrossOver(unittest.TestCase):
         myStrategy = strategyClass(feed, 10, 25)
         myStrategy.run()
         myStrategy.printDebug("Final result:", round(myStrategy.getFinalValue(), 2))
-        self.assertTrue(round(myStrategy.getFinalValue(), 2) == finalValue)
+        assert round(myStrategy.getFinalValue(), 2) == finalValue
 
     def testWithMarketOrder(self):
         # This is the exact same result that we get using NinjaTrader.

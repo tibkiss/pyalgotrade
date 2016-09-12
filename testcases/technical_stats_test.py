@@ -18,6 +18,7 @@
 .. moduleauthor:: Gabriel Martin Becedillas Ruiz <gabriel.becedillas@gmail.com>
 """
 
+import pytest
 import unittest
 from pyalgotrade.technical import stats
 from pyalgotrade import dataseries

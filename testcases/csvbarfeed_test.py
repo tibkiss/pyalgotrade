@@ -18,6 +18,7 @@
 .. moduleauthor:: Gabriel Martin Becedillas Ruiz <gabriel.becedillas@gmail.com>
 """
 
+import pytest
 import unittest
 import datetime
 
@@ -80,21 +81,21 @@ class YahooTestCase(unittest.TestCase):
 
     def testParseDate_1(self):
         date = self.__parseDate("1950-01-01")
-        self.assertTrue(date.day == 1)
-        self.assertTrue(date.month == 1)
-        self.assertTrue(date.year == 1950)
+        assert date.day == 1
+        assert date.month == 1
+        assert date.year == 1950
 
     def testParseDate_2(self):
         date = self.__parseDate("2000-01-01")
-        self.assertTrue(date.day == 1)
-        self.assertTrue(date.month == 1)
-        self.assertTrue(date.year == 2000)
+        assert date.day == 1
+        assert date.month == 1
+        assert date.year == 2000
 
     def testDateCompare(self):
-        self.assertTrue(self.__parseDate("2000-01-01") == self.__parseDate("2000-01-01"))
-        self.assertTrue(self.__parseDate("2000-01-01") != self.__parseDate("2001-01-01"))
-        self.assertTrue(self.__parseDate("1999-01-01") < self.__parseDate("2001-01-01"))
-        self.assertTrue(self.__parseDate("2011-01-01") > self.__parseDate("2001-02-02"))
+        assert self.__parseDate("2000-01-01") == self.__parseDate("2000-01-01")
+        assert self.__parseDate("2000-01-01") != self.__parseDate("2001-01-01")
+        assert self.__parseDate("1999-01-01") < self.__parseDate("2001-01-01")
+        assert self.__parseDate("2011-01-01") > self.__parseDate("2001-02-02")
 
     def testCSVFeedLoadOrder(self):
         barFeed = csvfeed.YahooFeed()
@@ -106,7 +107,7 @@ class YahooTestCase(unittest.TestCase):
         barFeed.getNewBarsEvent().subscribe(handler.onBars)
         while not barFeed.stopDispatching():
             barFeed.dispatch()
-        self.assertTrue(handler.getEventCount() > 0)
+        assert handler.getEventCount() > 0
 
     def __testFilteredRangeImpl(self, fromDate, toDate):
         barFeed = csvfeed.YahooFeed()
@@ -119,7 +120,7 @@ class YahooTestCase(unittest.TestCase):
         barFeed.getNewBarsEvent().subscribe(handler.onBars)
         while not barFeed.stopDispatching():
             barFeed.dispatch()
-        self.assertTrue(handler.getEventCount() > 0)
+        assert handler.getEventCount() > 0
 
     def testFilteredRangeFrom(self):
         # Only load bars from year 2001.
@@ -140,7 +141,7 @@ class YahooTestCase(unittest.TestCase):
         barFeed.start()
         for bars in barFeed:
             bar = bars.getBar(YahooTestCase.TestInstrument)
-            self.assertTrue(dt.datetime_is_naive(bar.getDateTime()))
+            assert dt.datetime_is_naive(bar.getDateTime())
         barFeed.stop()
         barFeed.join()
 
@@ -151,7 +152,7 @@ class YahooTestCase(unittest.TestCase):
         barFeed.start()
         for bars in barFeed:
             bar = bars.getBar(YahooTestCase.TestInstrument)
-            self.assertFalse(dt.datetime_is_naive(bar.getDateTime()))
+            assert not dt.datetime_is_naive(bar.getDateTime())
         barFeed.stop()
         barFeed.join()
 
@@ -162,31 +163,31 @@ class YahooTestCase(unittest.TestCase):
         barFeed.start()
         for bars in barFeed:
             bar = bars.getBar(YahooTestCase.TestInstrument)
-            self.assertFalse(dt.datetime_is_naive(bar.getDateTime()))
+            assert not dt.datetime_is_naive(bar.getDateTime())
         barFeed.stop()
         barFeed.join()
 
     def testWithIntegerTimezone(self):
         try:
             barFeed = yahoofeed.Feed(-5)
-            self.assertTrue(False, "Exception expected")
+            assert False, "Exception expected"
         except Exception, e:
-            self.assertTrue(str(e).find("timezone as an int parameter is not supported anymore") == 0)
+            assert str(e).find("timezone as an int parameter is not supported anymore") == 0
 
         try:
             barFeed = yahoofeed.Feed()
             barFeed.addBarsFromCSV(YahooTestCase.TestInstrument, common.get_data_file_path("orcl-2000-yahoofinance.csv"), -3)
-            self.assertTrue(False, "Exception expected")
+            assert False, "Exception expected"
         except Exception, e:
-            self.assertTrue(str(e).find("timezone as an int parameter is not supported anymore") == 0)
+            assert str(e).find("timezone as an int parameter is not supported anymore") == 0
 
     def testMapTypeOperations(self):
         barFeed = yahoofeed.Feed()
         barFeed.addBarsFromCSV(YahooTestCase.TestInstrument, common.get_data_file_path("orcl-2000-yahoofinance.csv"), marketsession.USEquities.getTimezone())
         barFeed.start()
         for bars in barFeed:
-            self.assertTrue(YahooTestCase.TestInstrument in bars)
-            self.assertFalse(YahooTestCase.TestInstrument not in bars)
+            assert YahooTestCase.TestInstrument in bars
+            assert not YahooTestCase.TestInstrument not in bars
             bars[YahooTestCase.TestInstrument]
             with self.assertRaises(KeyError):
                 bars["pirulo"]
@@ -213,7 +214,7 @@ class NinjaTraderTestCase(unittest.TestCase):
 
         for i in xrange(ds.getLength()):
             currentBar = ds[i]
-            self.assertFalse(dt.datetime_is_naive(currentBar.getDateTime()))
+            assert not dt.datetime_is_naive(currentBar.getDateTime())
             self.assertEqual(ds[i].getDateTime(), ds.getDateTimes()[i])
 
     def testWithoutTimezone(self):
@@ -223,22 +224,22 @@ class NinjaTraderTestCase(unittest.TestCase):
         for i in xrange(ds.getLength()):
             currentBar = ds[i]
             # Datetime must be set to UTC.
-            self.assertFalse(dt.datetime_is_naive(currentBar.getDateTime()))
+            assert not dt.datetime_is_naive(currentBar.getDateTime())
             self.assertEqual(ds[i].getDateTime(), ds.getDateTimes()[i])
 
     def testWithIntegerTimezone(self):
         try:
             barFeed = ninjatraderfeed.Feed(ninjatraderfeed.Frequency.MINUTE, -3)
-            self.assertTrue(False, "Exception expected")
+            assert False, "Exception expected"
         except Exception, e:
-            self.assertTrue(str(e).find("timezone as an int parameter is not supported anymore") == 0)
+            assert str(e).find("timezone as an int parameter is not supported anymore") == 0
 
         try:
             barFeed = ninjatraderfeed.Feed(ninjatraderfeed.Frequency.MINUTE)
             barFeed.addBarsFromCSV("spy", common.get_data_file_path("nt-spy-minute-2011.csv"), -5)
-            self.assertTrue(False, "Exception expected")
+            assert False, "Exception expected"
         except Exception, e:
-            self.assertTrue(str(e).find("timezone as an int parameter is not supported anymore") == 0)
+            assert str(e).find("timezone as an int parameter is not supported anymore") == 0
 
     def testLocalizeAndFilter(self):
         timezone = marketsession.USEquities.getTimezone()

@@ -28,11 +28,11 @@ class TestCase(unittest.TestCase):
 
     def testTrend(self):
         trend = self.__buildTrend([1, 2, 3, 2, 1], 3, 0, 0)
-        self.assertTrue(trend[0] == None)
-        self.assertTrue(trend[1] == None)
-        self.assertTrue(trend[2] == True)
-        self.assertTrue(trend[3] == None)
-        self.assertTrue(trend[4] == False)
+        assert trend[0] == None
+        assert trend[1] == None
+        assert trend[2] == True
+        assert trend[3] == None
+        assert trend[4] == False
 
         self.assertEqual(len(trend.getDateTimes()), 5)
         for i in range(len(trend)):
@@ -40,11 +40,11 @@ class TestCase(unittest.TestCase):
 
     def testTrendWithCustomThresholds(self):
         trend = self.__buildTrend([1, 2, 3, 5, -10], 3, 1, -1)
-        self.assertTrue(trend[0] == None)
-        self.assertTrue(trend[1] == None)
-        self.assertTrue(trend[2] == None)
-        self.assertTrue(trend[3] == True)
-        self.assertTrue(trend[4] == False)
+        assert trend[0] == None
+        assert trend[1] == None
+        assert trend[2] == None
+        assert trend[3] == True
+        assert trend[4] == False
 
         self.assertEqual(len(trend.getDateTimes()), 5)
         for i in range(len(trend)):

@@ -18,6 +18,7 @@
 .. moduleauthor:: Gabriel Martin Becedillas Ruiz <gabriel.becedillas@gmail.com>
 """
 
+import pytest
 import unittest
 import datetime
 from pyalgotrade.technical import stoch
@@ -53,13 +54,13 @@ class TestCase(unittest.TestCase):
         closePrices = [2, 2, 3]
 
         stochFilter = stoch.StochasticOscillator(self.__buildBarDataSeries(closePrices, highPrices, lowPrices), 2, 2)
-        self.assertTrue( values_equal(stochFilter[0], None) )
-        self.assertTrue( values_equal(stochFilter[1], 50) )
-        self.assertTrue( values_equal(stochFilter[2], 100) )
+        assert  values_equal(stochFilter[0], None) 
+        assert  values_equal(stochFilter[1], 50) 
+        assert  values_equal(stochFilter[2], 100) 
 
-        self.assertTrue( values_equal(stochFilter.getD()[0], None) )
-        self.assertTrue( values_equal(stochFilter.getD()[1], None) )
-        self.assertTrue( values_equal(stochFilter.getD()[2], 75) )
+        assert  values_equal(stochFilter.getD()[0], None) 
+        assert  values_equal(stochFilter.getD()[1], None) 
+        assert  values_equal(stochFilter.getD()[2], 75) 
 
         self.assertEqual(len(stochFilter.getDateTimes()), len(closePrices))
         for i in range(len(stochFilter)):
@@ -76,8 +77,8 @@ class TestCase(unittest.TestCase):
 
         stochFilter = stoch.StochasticOscillator(self.__buildBarDataSeries(closePrices, highPrices, lowPrices), 14)
         for i in range(len(kValues)):
-            self.assertTrue( values_equal(stochFilter[i], kValues[i]) )
-            self.assertTrue( values_equal(stochFilter.getD()[i], dValues[i]) )
+            assert  values_equal(stochFilter[i], kValues[i]) 
+            assert  values_equal(stochFilter.getD()[i], dValues[i]) 
 
         self.assertEqual(len(stochFilter.getDateTimes()), len(closePrices))
         for i in range(len(stochFilter)):

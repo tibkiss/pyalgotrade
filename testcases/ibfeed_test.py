@@ -18,6 +18,7 @@
 .. moduleauthor:: Gabriel Martin Becedillas Ruiz <gabriel.becedillas@gmail.com>
 """
 
+import pytest
 import unittest
 import datetime
 
@@ -79,18 +80,18 @@ class IBCSVFeedTestCase(unittest.TestCase):
 
     def testParseDate_1(self):
         date = self.__parseDate("2012-06-29 01:55:00")
-        self.assertTrue(date.day == 29)
-        self.assertTrue(date.month == 06)
-        self.assertTrue(date.year == 2012)
+        assert date.day == 29
+        assert date.month == 06
+        assert date.year == 2012
 
-        self.assertTrue(date.hour == 01)
-        self.assertTrue(date.minute == 55)
-        self.assertTrue(date.second == 00)
+        assert date.hour == 01
+        assert date.minute == 55
+        assert date.second == 00
 
     def testDateCompare(self):
-        self.assertTrue(self.__parseDate("2012-06-29 00:55:00") != self.__parseDate("2012-06-29 01:55:00"))
-        self.assertTrue(self.__parseDate("2011-06-29 00:55:00") < self.__parseDate("2012-06-29 01:55:00"))
-        self.assertTrue(self.__parseDate("2012-06-29 00:55:00") < self.__parseDate("2012-06-29 01:55:00"))
+        assert self.__parseDate("2012-06-29 00:55:00") != self.__parseDate("2012-06-29 01:55:00")
+        assert self.__parseDate("2011-06-29 00:55:00") < self.__parseDate("2012-06-29 01:55:00")
+        assert self.__parseDate("2012-06-29 00:55:00") < self.__parseDate("2012-06-29 01:55:00")
 
     def testCSVFeedLoadOrder(self):
         barFeed = CSVFeed()
@@ -102,7 +103,7 @@ class IBCSVFeedTestCase(unittest.TestCase):
         barFeed.getNewBarsEvent().subscribe(handler.onBars)
         while not barFeed.stopDispatching():
             barFeed.dispatch()
-        self.assertTrue(handler.getEventCount() > 0)
+        assert handler.getEventCount() > 0
 
     def __testFilteredRangeImpl(self, fromDate, toDate):
         barFeed = CSVFeed()
@@ -116,7 +117,7 @@ class IBCSVFeedTestCase(unittest.TestCase):
         barFeed.getNewBarsEvent().subscribe(handler.onBars)
         while not barFeed.stopDispatching():
             barFeed.dispatch()
-        self.assertTrue(handler.getEventCount() > 0)
+        assert handler.getEventCount() > 0
 
     def testFilteredRangeFrom(self):
         self.__testFilteredRangeImpl(datetime.datetime(2012, 06, 28, 00, 00), None)

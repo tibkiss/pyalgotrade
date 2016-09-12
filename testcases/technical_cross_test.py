@@ -18,6 +18,7 @@
 .. moduleauthor:: Gabriel Martin Becedillas Ruiz <gabriel.becedillas@gmail.com>
 """
 
+import pytest
 import unittest
 
 from pyalgotrade.technical import cross
@@ -37,7 +38,7 @@ class TestCase(unittest.TestCase):
         # Check every 2 values.
         crs = self.__buildCrossTechnical(cross.CrossAbove, values1, values2, 2)
         for i in range(0, 3):
-            self.assertTrue(crs[i] == 0)
+            assert crs[i] == 0
         self.assertTrue(crs[3] == 1)
         for i in range(4, len(values1)):
             self.assertTrue(crs[i] == 0)

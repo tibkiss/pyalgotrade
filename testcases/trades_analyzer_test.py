@@ -27,6 +27,7 @@ from pyalgotrade.broker import backtesting
 import strategy_test
 import common
 
+import pytest
 import unittest
 import datetime
 import math
@@ -56,7 +57,7 @@ class TradesAnalyzerTestCase(unittest.TestCase):
 
         strat.run()
 
-        self.assertTrue(strat.getBroker().getCash() == 1000)
+        assert strat.getBroker().getCash() == 1000
 
         self.assertTrue(stratAnalyzer.getCount() == 0)
         self.assertTrue(stratAnalyzer.getEvenCount() == 0)

@@ -18,6 +18,7 @@
 .. moduleauthor:: Gabriel Martin Becedillas Ruiz <gabriel.becedillas@gmail.com>
 """
 
+import pytest
 import unittest
 
 from pyalgotrade import observer
@@ -40,7 +41,7 @@ class ObserverTestCase(unittest.TestCase):
         event.subscribe(handler2)
         event.subscribe(handler3)
         event.emit()
-        self.assertTrue(handlersData == [1, 2, 3])
+        assert handlersData == [1, 2, 3]
 
         handlersData = []
         event = observer.Event()
@@ -48,7 +49,7 @@ class ObserverTestCase(unittest.TestCase):
         event.subscribe(handler2)
         event.subscribe(handler1)
         event.emit()
-        self.assertTrue(handlersData == [3, 2, 1])
+        assert handlersData == [3, 2, 1]
 
     def testDuplicateHandlers(self):
         def handler1():
@@ -59,7 +60,7 @@ class ObserverTestCase(unittest.TestCase):
         event.subscribe(handler1)
         event.subscribe(handler1)
         event.emit()
-        self.assertTrue(handlersData == [1])
+        assert handlersData == [1]
 
     def testReentrancy(self):
         handlersData = []
@@ -75,15 +76,15 @@ class ObserverTestCase(unittest.TestCase):
 
         event.subscribe(handler1)
         event.emit()
-        self.assertTrue(handlersData == [1])
+        assert handlersData == [1]
         event.emit()
-        self.assertTrue(handlersData == [1, 1, 2])
+        assert handlersData == [1, 1, 2]
         event.unsubscribe(handler1)
         event.emit()
-        self.assertTrue(handlersData == [1, 1, 2, 2])
+        assert handlersData == [1, 1, 2, 2]
         event.unsubscribe(handler2)
         event.emit()
-        self.assertTrue(handlersData == [1, 1, 2, 2])
+        assert handlersData == [1, 1, 2, 2]
 
 def getTestCases():
     ret = []

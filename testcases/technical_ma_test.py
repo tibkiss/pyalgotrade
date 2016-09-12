@@ -18,6 +18,7 @@
 .. moduleauthor:: Gabriel Martin Becedillas Ruiz <gabriel.becedillas@gmail.com>
 """
 
+import pytest
 import unittest
 import common
 from pyalgotrade.technical import ma
@@ -32,10 +33,10 @@ class SMATestCase(unittest.TestCase):
     def testPeriod1(self):
         sma = self.__buildSMA(1, [10, 20])
 
-        self.assertTrue(sma[0] == 10)
-        self.assertTrue(sma[1] == 20)
-        self.assertTrue(sma[-1] == 20)
-        self.assertTrue(sma[-2] == 10)
+        assert sma[0] == 10
+        assert sma[1] == 20
+        assert sma[-1] == 20
+        assert sma[-2] == 10
         with self.assertRaises(IndexError):
             sma[2]
 
@@ -48,9 +49,9 @@ class SMATestCase(unittest.TestCase):
 
     def testPeriod2(self):
         sma = self.__buildSMA(2, [0, 1, 2])
-        self.assertTrue(sma[0] == None)
-        self.assertTrue(sma[1] == (0+1) / float(2))
-        self.assertTrue(sma[2] == (1+2) / float(2))
+        assert sma[0] == None
+        assert sma[1] == (0+1) / float(2)
+        assert sma[2] == (1+2) / float(2)
         with self.assertRaises(IndexError):
             sma[3]
 
@@ -64,7 +65,7 @@ class SMATestCase(unittest.TestCase):
         sma = self.__buildSMA(period, values)
         for i in xrange(period-1, len(values)):
             expected = sum(values[i-(period-1):i+1]) / float(period)
-            self.assertTrue(sma[i] == expected)
+            assert sma[i] == expected
 
     def testMultipleValuesSkippingOne(self):
         # Test SMA invalidating fast sma calculation.
@@ -73,7 +74,7 @@ class SMATestCase(unittest.TestCase):
         sma = self.__buildSMA(period, values)
         for i in xrange(period-1, len(values), 2):
             expected = sum(values[i-(period-1):i+1]) / float(period)
-            self.assertTrue(sma[i] == expected)
+            assert sma[i] == expected
 
     def testStockChartsSMA(self):
         # Test data from http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:moving_averages
@@ -120,8 +121,8 @@ class WMATestCase(unittest.TestCase):
 
     def testPeriod1(self):
         wma = self.__buildWMA([2], [10, 20])
-        self.assertTrue(wma[0] == 10)
-        self.assertTrue(wma[1] == 20)
+        assert wma[0] == 10
+        assert wma[1] == 20
 
         self.assertEqual(len(wma.getDateTimes()), 2)
         for i in range(len(wma)):
@@ -132,9 +133,9 @@ class WMATestCase(unittest.TestCase):
         values = [1, 2, 3]
 
         wma = self.__buildWMA(weights, values)
-        self.assertTrue(wma[0] == None)
-        self.assertTrue(wma[1] == None)
-        self.assertTrue(wma[2] == (1*3 + 2*2 + 3*1) / float(3+2+1))
+        assert wma[0] == None
+        assert wma[1] == None
+        assert wma[2] == (1*3 + 2*2 + 3*1) / float(3+2+1)
 
         self.assertEqual(len(wma.getDateTimes()), 3)
         for i in range(len(wma)):

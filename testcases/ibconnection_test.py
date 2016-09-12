@@ -18,6 +18,7 @@
 .. moduleauthor:: Tibor Kiss <tibor.kiss@gmail.com>
 """
 
+import pytest
 import unittest
 import time, datetime
 
@@ -86,9 +87,9 @@ class IBConnectionTestCase(unittest.TestCase):
 
                             self.__conn.cancelOrder(orderId)
 
-                            self.assertTrue(self.__testTWS.order == None)
-                            self.assertTrue(self.__testTWS.orderId == None)
-                            self.assertTrue(self.__testTWS.orderContract == None)
+                            assert self.__testTWS.order == None
+                            assert self.__testTWS.orderId == None
+                            assert self.__testTWS.orderContract == None
 
     def testRealtimeBars(self):
         global testHandlerCalls

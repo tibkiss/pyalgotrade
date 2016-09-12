@@ -18,6 +18,7 @@
 .. moduleauthor:: Tibor Kiss <tibor.kiss@gmail.com>
 """
 
+import pytest
 import unittest
 import time, datetime
 

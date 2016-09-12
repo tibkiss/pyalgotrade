@@ -18,6 +18,7 @@
 .. moduleauthor:: Gabriel Martin Becedillas Ruiz <gabriel.becedillas@gmail.com>
 """
 
+import pytest
 import unittest
 import datetime
 
@@ -27,8 +28,8 @@ from pyalgotrade import bar
 class TestSequenceDataSeries(unittest.TestCase):
     def testEmpty(self):
         ds = dataseries.SequenceDataSeries([])
-        self.assertTrue(ds.getFirstValidPos() == 0)
-        self.assertTrue(ds.getLength() == 0)
+        assert ds.getFirstValidPos() == 0
+        assert ds.getLength() == 0
         with self.assertRaises(IndexError):
             ds[-1]
         with self.assertRaises(IndexError):
@@ -40,22 +41,22 @@ class TestSequenceDataSeries(unittest.TestCase):
 
     def testNonEmpty(self):
         ds = dataseries.SequenceDataSeries(range(10))
-        self.assertTrue(ds.getFirstValidPos() == 0)
-        self.assertTrue(ds.getLength() == 10)
-        self.assertTrue(ds[-1] == 9)
-        self.assertTrue(ds[-2] == 8)
-        self.assertTrue(ds[0] == 0)
-        self.assertTrue(ds[1] == 1)
+        assert ds.getFirstValidPos() == 0
+        assert ds.getLength() == 10
+        assert ds[-1] == 9
+        assert ds[-2] == 8
+        assert ds[0] == 0
+        assert ds[1] == 1
 
-        self.assertTrue(ds[-1:] == [9])
-        self.assertTrue(ds[-2:] == [8, 9])
-        self.assertTrue(ds[-2:-1] == [8])
-        self.assertTrue(ds[-3:-1] == [7, 8])
+        assert ds[-1:] == [9]
+        assert ds[-2:] == [8, 9]
+        assert ds[-2:-1] == [8]
+        assert ds[-3:-1] == [7, 8]
 
-        self.assertTrue(ds.getValuesAbsolute(1, 3) == [1, 2, 3])
-        self.assertTrue(ds.getValuesAbsolute(9, 9) == [9])
-        self.assertTrue(ds.getValuesAbsolute(9, 10) == None)
-        self.assertTrue(ds.getValuesAbsolute(9, 10, True) == [9, None])
+        assert ds.getValuesAbsolute(1, 3) == [1, 2, 3]
+        assert ds.getValuesAbsolute(9, 9) == [9]
+        assert ds.getValuesAbsolute(9, 10) == None
+        assert ds.getValuesAbsolute(9, 10, True) == [9, None]
 
     def testSeqLikeOps(self):
         seq = range(10)
@@ -113,11 +114,11 @@ class TestBarDataSeries(unittest.TestCase):
             ds.appendValue( bar.Bar(datetime.datetime.now() + datetime.timedelta(seconds=i), 0, 0, 0, 0, 0, 0) )
 
         for i in range(0, 10):
-            self.assertTrue(ds[i].getOpen() == 0)
+            assert ds[i].getOpen() == 0
 
     def __testGetValue(self, ds, itemCount, value):
         for i in range(0, itemCount):
-            self.assertTrue(ds[i] == value)
+            assert ds[i] == value
 
     def testNestedDataSeries(self):
         ds = dataseries.BarDataSeries()

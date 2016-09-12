@@ -18,6 +18,7 @@
 .. moduleauthor:: Gabriel Martin Becedillas Ruiz <gabriel.becedillas@gmail.com>
 """
 
+import pytest
 import unittest
 import datetime
 import threading
@@ -342,8 +343,8 @@ class BrokerOrderTestCase(StrategyTestCase):
         o = strat.getBroker().createMarketOrder(broker.Order.Action.BUY, StrategyTestCase.TestInstrument, 1)
         strat.getBroker().placeOrder(o)
         strat.run()
-        self.assertTrue(o.isFilled())
-        self.assertTrue(strat.getOrderUpdatedEvents() == 1)
+        assert o.isFilled()
+        assert strat.getOrderUpdatedEvents() == 1
 
 class StrategyOrderTestCase(StrategyTestCase):
     def testMarketOrder(self):
@@ -351,8 +352,8 @@ class StrategyOrderTestCase(StrategyTestCase):
 
         o = strat.order(StrategyTestCase.TestInstrument, 1)
         strat.run()
-        self.assertTrue(o.isFilled())
-        self.assertTrue(strat.getOrderUpdatedEvents() == 1)
+        assert o.isFilled()
+        assert strat.getOrderUpdatedEvents() == 1
 
 class LongPosTestCase(StrategyTestCase):
     def __testLongPositionImpl(self, simulateExternalBarFeed, simulateExternalBroker):
@@ -368,12 +369,12 @@ class LongPosTestCase(StrategyTestCase):
         strat.addPosExit(datetime_from_date(2000, 11, 7), strat.exitPosition)
         strat.run()
 
-        self.assertTrue(strat.getEnterOkEvents() == 1)
-        self.assertTrue(strat.getExitOkEvents() == 1)
-        self.assertTrue(strat.getOrderUpdatedEvents() == 0)
-        self.assertTrue(round(strat.getBroker().getCash(), 2) == round(1000 + 27.37 - 30.69, 2))
-        self.assertTrue(round(strat.getResult(), 3) == -0.108)
-        self.assertTrue(round(strat.getNetProfit(), 2) == round(27.37 - 30.69, 2))
+        assert strat.getEnterOkEvents() == 1
+        assert strat.getExitOkEvents() == 1
+        assert strat.getOrderUpdatedEvents() == 0
+        assert round(strat.getBroker().getCash(), 2) == round(1000 + 27.37 - 30.69, 2)
+        assert round(strat.getResult(), 3) == -0.108
+        assert round(strat.getNetProfit(), 2) == round(27.37 - 30.69, 2)
 
     def testLongPosition(self):
         self.__testLongPositionImpl(False, False)
@@ -398,11 +399,11 @@ class LongPosTestCase(StrategyTestCase):
         strat.addPosExit(datetime_from_date(2000, 10, 12), strat.exitPosition)
         strat.run()
 
-        self.assertTrue(strat.getEnterOkEvents() == 1)
-        self.assertTrue(strat.getExitOkEvents() == 1)
-        self.assertTrue(round(strat.getBroker().getCash(), 2) == round(1000 + 30.31 - 27.44, 2))
-        self.assertTrue(round(strat.getResult(), 3) == 0.105)
-        self.assertTrue(round(strat.getNetProfit(), 2) == round(30.31 - 27.44, 2))
+        assert strat.getEnterOkEvents() == 1
+        assert strat.getExitOkEvents() == 1
+        assert round(strat.getBroker().getCash(), 2) == round(1000 + 30.31 - 27.44, 2)
+        assert round(strat.getResult(), 3) == 0.105
+        assert round(strat.getNetProfit(), 2) == round(30.31 - 27.44, 2)
 
     def testLongPositionAdjClose(self):
         self.__testLongPositionAdjCloseImpl(False, False)
@@ -431,10 +432,10 @@ class LongPosTestCase(StrategyTestCase):
         strat.addPosExit(datetime_from_date(2000, 2, 3), strat.exitPosition)
         strat.run()
 
-        self.assertTrue(strat.getEnterOkEvents() == 1)
-        self.assertTrue(strat.getExitOkEvents() == 1)
-        self.assertTrue(round(strat.getBroker().getCash(), 2) == round(48 + 57.63 - 47.94, 2))
-        self.assertTrue(round(strat.getNetProfit(), 2) == round(57.63 - 47.94, 2))
+        assert strat.getEnterOkEvents() == 1
+        assert strat.getExitOkEvents() == 1
+        assert round(strat.getBroker().getCash(), 2) == round(48 + 57.63 - 47.94, 2)
+        assert round(strat.getNetProfit(), 2) == round(57.63 - 47.94, 2)
 
     def testEntryCanceled(self):
         strat = self.createStrategy(False, False)
@@ -447,12 +448,12 @@ class LongPosTestCase(StrategyTestCase):
         strat.addPosEntry(datetime_from_date(2000, 1, 27), strat.enterLong, StrategyTestCase.TestInstrument, 1, False)
         strat.run()
 
-        self.assertTrue(strat.getEnterOkEvents() == 0)
-        self.assertTrue(strat.getEnterCanceledEvents() == 1)
-        self.assertTrue(strat.getExitOkEvents() == 0)
-        self.assertTrue(strat.getExitCanceledEvents() == 0)
-        self.assertTrue(strat.getBroker().getCash() == 10)
-        self.assertTrue(strat.getNetProfit() == 0)
+        assert strat.getEnterOkEvents() == 0
+        assert strat.getEnterCanceledEvents() == 1
+        assert strat.getExitOkEvents() == 0
+        assert strat.getExitCanceledEvents() == 0
+        assert strat.getBroker().getCash() == 10
+        assert strat.getNetProfit() == 0
 
     def testIntradayExitOnClose_EntryNotFilled(self):
         # Test that if the entry gets canceled, then the exit on close order doesn't get submitted.
@@ -463,10 +464,10 @@ class LongPosTestCase(StrategyTestCase):
         strat.addPosEntry(us_equities_datetime(2011, 1, 3, 14, 30), strat.enterLong, StrategyTestCase.TestInstrument, 1, False)
         strat.run()
 
-        self.assertTrue(strat.getEnterOkEvents() == 0)
-        self.assertTrue(strat.getExitOkEvents() == 0)
-        self.assertTrue(strat.getEnterCanceledEvents() == 1)
-        self.assertTrue(strat.getExitCanceledEvents() == 0)
+        assert strat.getEnterOkEvents() == 0
+        assert strat.getExitOkEvents() == 0
+        assert strat.getEnterCanceledEvents() == 1
+        assert strat.getExitCanceledEvents() == 0
 
     def testIntradayExitOnClose_AllInOneDay(self):
         barFeed = self.loadIntradayBarFeed()
@@ -477,11 +478,11 @@ class LongPosTestCase(StrategyTestCase):
         strat.addPosEntry(us_equities_datetime(2011, 1, 3, 9, 30), strat.enterLong, StrategyTestCase.TestInstrument, 1, False)
         strat.run()
 
-        self.assertTrue(strat.getEnterOkEvents() == 1)
-        self.assertTrue(strat.getExitOkEvents() == 1)
-        self.assertTrue(strat.getEnterCanceledEvents() == 0)
-        self.assertTrue(strat.getExitCanceledEvents() == 0)
-        self.assertTrue(round(strat.getBroker().getCash(), 2) == round(1000 + 127.05 - 126.71, 2))
+        assert strat.getEnterOkEvents() == 1
+        assert strat.getExitOkEvents() == 1
+        assert strat.getEnterCanceledEvents() == 0
+        assert strat.getExitCanceledEvents() == 0
+        assert round(strat.getBroker().getCash(), 2) == round(1000 + 127.05 - 126.71, 2)
 
     def testIntradayExitOnClose_BuyOnLastBar(self):
         barFeed = self.loadIntradayBarFeed()
@@ -494,11 +495,11 @@ class LongPosTestCase(StrategyTestCase):
         strat.addPosEntry(dt.localize(datetime.datetime(2011, 1, 3, 20, 59), pytz.utc), strat.enterLong, StrategyTestCase.TestInstrument, 1, True)
         strat.run()
 
-        self.assertTrue(strat.getEnterOkEvents() == 0)
-        self.assertTrue(strat.getExitOkEvents() == 0)
-        self.assertTrue(strat.getEnterCanceledEvents() == 1)
-        self.assertTrue(strat.getExitCanceledEvents() == 0)
-        self.assertTrue(round(strat.getBroker().getCash(), 2) == 1000)
+        assert strat.getEnterOkEvents() == 0
+        assert strat.getExitOkEvents() == 0
+        assert strat.getEnterCanceledEvents() == 1
+        assert strat.getExitCanceledEvents() == 0
+        assert round(strat.getBroker().getCash(), 2) == 1000
 
     def testIntradayExitOnClose_BuyOnPenultimateBar(self):
         barFeed = self.loadIntradayBarFeed()
@@ -512,11 +513,11 @@ class LongPosTestCase(StrategyTestCase):
         strat.addPosEntry(dt.localize(datetime.datetime(2011, 1, 3, 20, 58), pytz.utc), strat.enterLong, StrategyTestCase.TestInstrument, 1, True)
         strat.run()
 
-        self.assertTrue(strat.getEnterOkEvents() == 1)
-        self.assertTrue(strat.getExitOkEvents() == 1)
-        self.assertTrue(strat.getEnterCanceledEvents() == 0)
-        self.assertTrue(strat.getExitCanceledEvents() == 0)
-        self.assertTrue(round(strat.getBroker().getCash(), 2) == round(1000 + 127.05 - 127.07, 2))
+        assert strat.getEnterOkEvents() == 1
+        assert strat.getExitOkEvents() == 1
+        assert strat.getEnterCanceledEvents() == 0
+        assert strat.getExitCanceledEvents() == 0
+        assert round(strat.getBroker().getCash(), 2) == round(1000 + 127.05 - 127.07, 2)
 
     def testUnrealized(self):
         barFeed = self.loadIntradayBarFeed()
@@ -529,10 +530,10 @@ class LongPosTestCase(StrategyTestCase):
 
         strat.addPosEntry(dt.localize(datetime.datetime(2011, 1, 3, 20, 53), pytz.utc), strat.enterLong, StrategyTestCase.TestInstrument, 1, True)
         strat.run()
-        self.assertTrue(strat.getEnterOkEvents() == 1)
-        self.assertTrue(strat.getExitOkEvents() == 0)
-        self.assertTrue(strat.getEnterCanceledEvents() == 0)
-        self.assertTrue(strat.getExitCanceledEvents() == 0)
+        assert strat.getEnterOkEvents() == 1
+        assert strat.getExitOkEvents() == 0
+        assert strat.getEnterCanceledEvents() == 0
+        assert strat.getExitCanceledEvents() == 0
 
         self.assertEqual(strat.getActivePosition().getUnrealizedReturn(127.21), 0)
         self.assertEqual(strat.getActivePosition().getUnrealizedNetProfit(127.21), 0)
@@ -547,7 +548,7 @@ class LongPosTestCase(StrategyTestCase):
         strat = self.createStrategy(False, False)
         strat.addPosEntry(datetime_from_date(2000, 11, 3), strat.enterLong, StrategyTestCase.TestInstrument, 1, False)
         strat.run()
-        self.assertTrue(strat.getActivePosition().isOpen())
+        assert strat.getActivePosition().isOpen()
 
 class ShortPosTestCase(StrategyTestCase):
     def __testShortPositionImpl(self, simulateExternalBarFeed, simulateExternalBroker):
@@ -563,11 +564,11 @@ class ShortPosTestCase(StrategyTestCase):
         strat.addPosExit(datetime_from_date(2000, 11, 7), strat.exitPosition)
         strat.run()
 
-        self.assertTrue(strat.getEnterOkEvents() == 1)
-        self.assertTrue(strat.getExitOkEvents() == 1)
-        self.assertTrue(round(strat.getBroker().getCash(), 2) == round(1000 + 30.69 - 27.37, 2))
-        self.assertTrue(round(strat.getResult(), 3) == round(0.10817856, 3))
-        self.assertTrue(round(strat.getNetProfit(), 2) == round(30.69 - 27.37, 2))
+        assert strat.getEnterOkEvents() == 1
+        assert strat.getExitOkEvents() == 1
+        assert round(strat.getBroker().getCash(), 2) == round(1000 + 30.69 - 27.37, 2)
+        assert round(strat.getResult(), 3) == round(0.10817856, 3)
+        assert round(strat.getNetProfit(), 2) == round(30.69 - 27.37, 2)
 
     def testShortPosition(self):
         self.__testShortPositionImpl(False, False)
@@ -592,11 +593,11 @@ class ShortPosTestCase(StrategyTestCase):
         strat.addPosExit(datetime_from_date(2000, 10, 12), strat.exitPosition)
         strat.run()
 
-        self.assertTrue(strat.getEnterOkEvents() == 1)
-        self.assertTrue(strat.getExitOkEvents() == 1)
-        self.assertTrue(round(strat.getBroker().getCash(), 2) == round(1000 + 27.44 - 30.31, 2))
-        self.assertTrue(round(strat.getResult(), 3) == round(-0.104591837, 3))
-        self.assertTrue(round(strat.getNetProfit(), 2) == round(27.44 - 30.31, 2))
+        assert strat.getEnterOkEvents() == 1
+        assert strat.getExitOkEvents() == 1
+        assert round(strat.getBroker().getCash(), 2) == round(1000 + 27.44 - 30.31, 2)
+        assert round(strat.getResult(), 3) == round(-0.104591837, 3)
+        assert round(strat.getNetProfit(), 2) == round(27.44 - 30.31, 2)
 
     def testShortPositionAdjClose(self):
         self.__testShortPositionAdjCloseImpl(False, False)
@@ -622,10 +623,10 @@ class ShortPosTestCase(StrategyTestCase):
         strat.addPosExit(datetime_from_date(2000, 12, 7), strat.exitPosition)
         strat.run()
 
-        self.assertTrue(strat.getEnterOkEvents() == 1)
-        self.assertTrue(strat.getExitCanceledEvents() == 1)
-        self.assertTrue(round(strat.getBroker().getCash(), 2) == 23.19)
-        self.assertTrue(strat.getNetProfit() == 0)
+        assert strat.getEnterOkEvents() == 1
+        assert strat.getExitCanceledEvents() == 1
+        assert round(strat.getBroker().getCash(), 2) == 23.19
+        assert strat.getNetProfit() == 0
 
     def testShortPositionExitCanceled(self):
         self.__testShortPositionExitCanceledImpl(False, False)
@@ -657,10 +658,10 @@ class ShortPosTestCase(StrategyTestCase):
         strat.addPosExit(datetime_from_date(2000, 11, 22), strat.exitPosition)
         strat.run()
 
-        self.assertTrue(strat.getEnterOkEvents() == 1)
-        self.assertTrue(strat.getExitCanceledEvents() == 1)
-        self.assertTrue(strat.getExitOkEvents() == 1)
-        self.assertTrue(round(strat.getBroker().getCash(), 2) == round(25.12 - 23.31, 2))
+        assert strat.getEnterOkEvents() == 1
+        assert strat.getExitCanceledEvents() == 1
+        assert strat.getExitOkEvents() == 1
+        assert round(strat.getBroker().getCash(), 2) == round(25.12 - 23.31, 2)
 
     def testIntradayExitOnClose(self):
         barFeed = self.loadIntradayBarFeed()
@@ -676,12 +677,12 @@ class ShortPosTestCase(StrategyTestCase):
         strat.addPosEntry(us_equities_datetime(2011, 1, 3, 13, 20), strat.enterShort, StrategyTestCase.TestInstrument, 1, True)
         strat.run()
 
-        self.assertTrue(strat.getEnterOkEvents() == 1)
-        self.assertTrue(strat.getExitOkEvents() == 1)
-        self.assertTrue(strat.getEnterCanceledEvents() == 0)
-        self.assertTrue(strat.getExitCanceledEvents() == 0)
-        self.assertTrue(round(strat.getBroker().getCash(), 2) == round(1000 + (127.4 - 127.05), 2))
-        self.assertTrue(round(strat.getNetProfit(), 2) == round(127.4 - 127.05, 2))
+        assert strat.getEnterOkEvents() == 1
+        assert strat.getExitOkEvents() == 1
+        assert strat.getEnterCanceledEvents() == 0
+        assert strat.getExitCanceledEvents() == 0
+        assert round(strat.getBroker().getCash(), 2) == round(1000 + (127.4 - 127.05), 2)
+        assert round(strat.getNetProfit(), 2) == round(127.4 - 127.05, 2)
 
     def testUnrealized(self):
         barFeed = self.loadIntradayBarFeed()
@@ -694,10 +695,10 @@ class ShortPosTestCase(StrategyTestCase):
 
         strat.addPosEntry(dt.localize(datetime.datetime(2011, 1, 3, 20, 53), pytz.utc), strat.enterShort, StrategyTestCase.TestInstrument, 1, True)
         strat.run()
-        self.assertTrue(strat.getEnterOkEvents() == 1)
-        self.assertTrue(strat.getExitOkEvents() == 0)
-        self.assertTrue(strat.getEnterCanceledEvents() == 0)
-        self.assertTrue(strat.getExitCanceledEvents() == 0)
+        assert strat.getEnterOkEvents() == 1
+        assert strat.getExitOkEvents() == 0
+        assert strat.getEnterCanceledEvents() == 0
+        assert strat.getExitCanceledEvents() == 0
 
         self.assertEqual(strat.getActivePosition().getUnrealizedReturn(127.21), 0)
         self.assertEqual(strat.getActivePosition().getUnrealizedNetProfit(127.21), 0)
@@ -724,11 +725,11 @@ class LimitPosTestCase(StrategyTestCase):
         strat.addPosExit(datetime_from_date(2000, 11, 16), strat.exitPosition, 29)
         strat.run()
 
-        self.assertTrue(strat.getEnterOkEvents() == 1)
-        self.assertTrue(strat.getEnterCanceledEvents() == 0)
-        self.assertTrue(strat.getExitOkEvents() == 1)
-        self.assertTrue(strat.getExitCanceledEvents() == 0)
-        self.assertTrue(round(strat.getBroker().getCash(), 2) == 1004)
+        assert strat.getEnterOkEvents() == 1
+        assert strat.getEnterCanceledEvents() == 0
+        assert strat.getExitOkEvents() == 1
+        assert strat.getExitCanceledEvents() == 0
+        assert round(strat.getBroker().getCash(), 2) == 1004
 
     def testShort(self):
         strat = self.createStrategy(False, False)
@@ -745,11 +746,11 @@ class LimitPosTestCase(StrategyTestCase):
         strat.addPosExit(datetime_from_date(2000, 11, 22), strat.exitPosition, 24)
         strat.run()
 
-        self.assertTrue(strat.getEnterOkEvents() == 1)
-        self.assertTrue(strat.getEnterCanceledEvents() == 0)
-        self.assertTrue(strat.getExitOkEvents() == 1)
-        self.assertTrue(strat.getExitCanceledEvents() == 0)
-        self.assertTrue(round(strat.getBroker().getCash(), 2) == round(1000 + (29 - 23.31), 2))
+        assert strat.getEnterOkEvents() == 1
+        assert strat.getEnterCanceledEvents() == 0
+        assert strat.getExitOkEvents() == 1
+        assert strat.getExitCanceledEvents() == 0
+        assert round(strat.getBroker().getCash(), 2) == round(1000 + (29 - 23.31), 2)
 
     def testExitOnEntryNotFilled(self):
         strat = self.createStrategy(False, False)
@@ -766,11 +767,11 @@ class LimitPosTestCase(StrategyTestCase):
         strat.addPosExit(datetime_from_date(2000, 11, 16), strat.exitPosition, 29)
         strat.run()
 
-        self.assertTrue(strat.getEnterOkEvents() == 0)
-        self.assertTrue(strat.getEnterCanceledEvents() == 1)
-        self.assertTrue(strat.getExitOkEvents() == 0)
-        self.assertTrue(strat.getExitCanceledEvents() == 0)
-        self.assertTrue(round(strat.getBroker().getCash(), 2) == 1000)
+        assert strat.getEnterOkEvents() == 0
+        assert strat.getEnterCanceledEvents() == 1
+        assert strat.getExitOkEvents() == 0
+        assert strat.getExitCanceledEvents() == 0
+        assert round(strat.getBroker().getCash(), 2) == 1000
 
     def testExitTwice(self):
         strat = self.createStrategy(False, False)
@@ -788,11 +789,11 @@ class LimitPosTestCase(StrategyTestCase):
         strat.addPosExit(datetime_from_date(2000, 11, 16), strat.exitPosition)
         strat.run()
 
-        self.assertTrue(strat.getEnterOkEvents() == 1)
-        self.assertTrue(strat.getEnterCanceledEvents() == 0)
-        self.assertTrue(strat.getExitOkEvents() == 1)
-        self.assertTrue(strat.getExitCanceledEvents() == 1)
-        self.assertTrue(round(strat.getBroker().getCash(), 2) == round(1000 + (26.94 - 25), 2))
+        assert strat.getEnterOkEvents() == 1
+        assert strat.getEnterCanceledEvents() == 0
+        assert strat.getExitOkEvents() == 1
+        assert strat.getExitCanceledEvents() == 1
+        assert round(strat.getBroker().getCash(), 2) == round(1000 + (26.94 - 25), 2)
 
     def testOverwriteExit(self):
         strat = self.createStrategy(False, False)
@@ -811,11 +812,11 @@ class LimitPosTestCase(StrategyTestCase):
         strat.addPosExit(datetime_from_date(2000, 11, 16), strat.exitPosition)
         strat.run()
 
-        self.assertTrue(strat.getEnterOkEvents() == 1)
-        self.assertTrue(strat.getEnterCanceledEvents() == 0)
-        self.assertTrue(strat.getExitOkEvents() == 1)
-        self.assertTrue(strat.getExitCanceledEvents() == 0) # Exit cancelled events are not emitted for overwritten orders.
-        self.assertTrue(round(strat.getBroker().getCash(), 2) == round(1000 + (26.94 - 25), 2))
+        assert strat.getEnterOkEvents() == 1
+        assert strat.getEnterCanceledEvents() == 0
+        assert strat.getExitOkEvents() == 1
+        assert strat.getExitCanceledEvents() == 0 # Exit cancelled events are not emitted for overwritten orders.
+        assert round(strat.getBroker().getCash(), 2) == round(1000 + (26.94 - 25), 2)
 
     def testExitCancelsEntry(self):
         strat = self.createStrategy(False, False)
@@ -829,11 +830,11 @@ class LimitPosTestCase(StrategyTestCase):
         strat.addPosExit(datetime_from_date(2000, 11, 14), strat.exitPosition, 100)
         strat.run()
 
-        self.assertTrue(strat.getEnterOkEvents() == 0)
-        self.assertTrue(strat.getEnterCanceledEvents() == 1)
-        self.assertTrue(strat.getExitOkEvents() == 0)
-        self.assertTrue(strat.getExitCanceledEvents() == 0)
-        self.assertTrue(round(strat.getBroker().getCash(), 2) == 1000)
+        assert strat.getEnterOkEvents() == 0
+        assert strat.getEnterCanceledEvents() == 1
+        assert strat.getExitOkEvents() == 0
+        assert strat.getExitCanceledEvents() == 0
+        assert round(strat.getBroker().getCash(), 2) == 1000
 
     def testEntryGTCExitNotGTC(self):
         strat = self.createStrategy(False, False)
@@ -848,11 +849,11 @@ class LimitPosTestCase(StrategyTestCase):
         strat.addPosExit(datetime_from_date(2000, 11, 15), strat.exitPosition, 100, None, False)
         strat.run()
 
-        self.assertTrue(strat.getEnterOkEvents() == 1)
-        self.assertTrue(strat.getEnterCanceledEvents() == 0)
-        self.assertTrue(strat.getExitOkEvents() == 0)
-        self.assertTrue(strat.getExitCanceledEvents() == 1)
-        self.assertTrue(round(strat.getBroker().getCash(), 2) == round(1000 - 25, 2))
+        assert strat.getEnterOkEvents() == 1
+        assert strat.getEnterCanceledEvents() == 0
+        assert strat.getExitOkEvents() == 0
+        assert strat.getExitCanceledEvents() == 1
+        assert round(strat.getBroker().getCash(), 2) == round(1000 - 25, 2)
 
 class StopPosTestCase(StrategyTestCase):
     def testLong(self):
@@ -870,11 +871,11 @@ class StopPosTestCase(StrategyTestCase):
         strat.addPosExit(datetime_from_date(2000, 11, 16), strat.exitPosition, None, 26)
         strat.run()
 
-        self.assertTrue(strat.getEnterOkEvents() == 1)
-        self.assertTrue(strat.getEnterCanceledEvents() == 0)
-        self.assertTrue(strat.getExitOkEvents() == 1)
-        self.assertTrue(strat.getExitCanceledEvents() == 0)
-        self.assertTrue(round(strat.getBroker().getCash(), 2) == round(1000 + (26 - 25.12), 2))
+        assert strat.getEnterOkEvents() == 1
+        assert strat.getEnterCanceledEvents() == 0
+        assert strat.getExitOkEvents() == 1
+        assert strat.getExitCanceledEvents() == 0
+        assert round(strat.getBroker().getCash(), 2) == round(1000 + (26 - 25.12), 2)
 
     def testShort(self):
         strat = self.createStrategy(False, False)
@@ -891,11 +892,11 @@ class StopPosTestCase(StrategyTestCase):
         strat.addPosExit(datetime_from_date(2000, 11, 22), strat.exitPosition, None, 23)
         strat.run()
 
-        self.assertTrue(strat.getEnterOkEvents() == 1)
-        self.assertTrue(strat.getEnterCanceledEvents() == 0)
-        self.assertTrue(strat.getExitOkEvents() == 1)
-        self.assertTrue(strat.getExitCanceledEvents() == 0)
-        self.assertTrue(round(strat.getBroker().getCash(), 2) == round(1000 + (26.94 - 23.31), 2))
+        assert strat.getEnterOkEvents() == 1
+        assert strat.getEnterCanceledEvents() == 0
+        assert strat.getExitOkEvents() == 1
+        assert strat.getExitCanceledEvents() == 0
+        assert round(strat.getBroker().getCash(), 2) == round(1000 + (26.94 - 23.31), 2)
 
 class StopLimitPosTestCase(StrategyTestCase):
     def testLong(self):
@@ -913,11 +914,11 @@ class StopLimitPosTestCase(StrategyTestCase):
         strat.addPosExit(datetime_from_date(2000, 11, 16), strat.exitPosition, 28, 27)
         strat.run()
 
-        self.assertTrue(strat.getEnterOkEvents() == 1)
-        self.assertTrue(strat.getEnterCanceledEvents() == 0)
-        self.assertTrue(strat.getExitOkEvents() == 1)
-        self.assertTrue(strat.getExitCanceledEvents() == 0)
-        self.assertTrue(round(strat.getBroker().getCash(), 2) == round(1000 + (28 - 24), 2))
+        assert strat.getEnterOkEvents() == 1
+        assert strat.getEnterCanceledEvents() == 0
+        assert strat.getExitOkEvents() == 1
+        assert strat.getExitCanceledEvents() == 0
+        assert round(strat.getBroker().getCash(), 2) == round(1000 + (28 - 24), 2)
 
     def testShort(self):
         strat = self.createStrategy(False, False)
@@ -938,11 +939,11 @@ class StopLimitPosTestCase(StrategyTestCase):
         strat.addPosExit(datetime_from_date(2000, 11, 22), strat.exitPosition, 25, 24)
         strat.run()
 
-        self.assertTrue(strat.getEnterOkEvents() == 1)
-        self.assertTrue(strat.getEnterCanceledEvents() == 0)
-        self.assertTrue(strat.getExitOkEvents() == 1)
-        self.assertTrue(strat.getExitCanceledEvents() == 0)
-        self.assertTrue(round(strat.getBroker().getCash(), 2) == round(1000 + (29 - 24), 2))
+        assert strat.getEnterOkEvents() == 1
+        assert strat.getEnterCanceledEvents() == 0
+        assert strat.getExitOkEvents() == 1
+        assert strat.getExitCanceledEvents() == 0
+        assert round(strat.getBroker().getCash(), 2) == round(1000 + (29 - 24), 2)
 
 def getTestCases(includeExternal = True):
     ret = []

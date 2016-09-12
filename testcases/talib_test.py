@@ -18,6 +18,9 @@
 .. moduleauthor:: Gabriel Martin Becedillas Ruiz <gabriel.becedillas@gmail.com>
 """
 
+import pytest
+import unittest
+
 from pyalgotrade.barfeed import yahoofeed
 from pyalgotrade.talibext import indicator
 from pyalgotrade import bar
@@ -25,7 +28,6 @@ from pyalgotrade import dataseries
 import common
 
 import datetime
-import unittest
 import numpy
 import talib
 
@@ -204,365 +206,365 @@ class TestCase(unittest.TestCase):
 
     def testAD(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.AD(barDs, 252)[0], -1631000.00))
-        self.assertTrue(compare(indicator.AD(barDs, 252)[1], 2974412.02))
-        self.assertTrue(compare(indicator.AD(barDs, 252)[-2], 8707691.07))
-        self.assertTrue(compare(indicator.AD(barDs, 252)[-1], 8328944.54))
+        assert compare(indicator.AD(barDs, 252)[0], -1631000.00)
+        assert compare(indicator.AD(barDs, 252)[1], 2974412.02)
+        assert compare(indicator.AD(barDs, 252)[-2], 8707691.07)
+        assert compare(indicator.AD(barDs, 252)[-1], 8328944.54)
 
     def testADOSC(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.ADOSC(barDs, 252, 3, 10)[9], 841238.33)) # Original value was 841238.32
-        self.assertTrue(compare(indicator.ADOSC(barDs, 252, 3, 10)[9+1], 2255663.07))
-        self.assertTrue(compare(indicator.ADOSC(barDs, 252, 3, 10)[-2], -526700.32))
-        self.assertTrue(compare(indicator.ADOSC(barDs, 252, 3, 10)[-1], -1139932.729))
+        assert compare(indicator.ADOSC(barDs, 252, 3, 10)[9], 841238.33) # Original value was 841238.32
+        assert compare(indicator.ADOSC(barDs, 252, 3, 10)[9+1], 2255663.07)
+        assert compare(indicator.ADOSC(barDs, 252, 3, 10)[-2], -526700.32)
+        assert compare(indicator.ADOSC(barDs, 252, 3, 10)[-1], -1139932.729)
 
     def testADX(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.ADX(barDs, 252, 14)[27], 23.0000))
-        self.assertTrue(compare(indicator.ADX(barDs, 252, 14)[28], 22.0802))
-        self.assertTrue(compare(indicator.ADX(barDs, 252, 14)[-2], 16.6840))
-        self.assertTrue(compare(indicator.ADX(barDs, 252, 14)[-1], 15.5260))
+        assert compare(indicator.ADX(barDs, 252, 14)[27], 23.0000)
+        assert compare(indicator.ADX(barDs, 252, 14)[28], 22.0802)
+        assert compare(indicator.ADX(barDs, 252, 14)[-2], 16.6840)
+        assert compare(indicator.ADX(barDs, 252, 14)[-1], 15.5260)
 
     def testADXR(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.ADXR(barDs, 252, 14)[40], 19.8666))
-        self.assertTrue(compare(indicator.ADXR(barDs, 252, 14)[41], 18.9092))
-        self.assertTrue(compare(indicator.ADXR(barDs, 252, 14)[-2], 21.5972))
-        self.assertTrue(compare(indicator.ADXR(barDs, 252, 14)[-1], 20.4920))
+        assert compare(indicator.ADXR(barDs, 252, 14)[40], 19.8666)
+        assert compare(indicator.ADXR(barDs, 252, 14)[41], 18.9092)
+        assert compare(indicator.ADXR(barDs, 252, 14)[-2], 21.5972)
+        assert compare(indicator.ADXR(barDs, 252, 14)[-1], 20.4920)
 
     def testAPO(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.APO(barDs.getCloseDataSeries(), 252, 26, 12, talib.MA_SMA)[25], -3.3124))
-        self.assertTrue(compare(indicator.APO(barDs.getCloseDataSeries(), 252, 12, 26, talib.MA_SMA)[25], -3.3124))
-        self.assertTrue(compare(indicator.APO(barDs.getCloseDataSeries(), 252, 12, 26, talib.MA_SMA)[26], -3.5876))
-        self.assertTrue(compare(indicator.APO(barDs.getCloseDataSeries(), 252, 12, 26, talib.MA_SMA)[-1], -0.1667))
+        assert compare(indicator.APO(barDs.getCloseDataSeries(), 252, 26, 12, talib.MA_SMA)[25], -3.3124)
+        assert compare(indicator.APO(barDs.getCloseDataSeries(), 252, 12, 26, talib.MA_SMA)[25], -3.3124)
+        assert compare(indicator.APO(barDs.getCloseDataSeries(), 252, 12, 26, talib.MA_SMA)[26], -3.5876)
+        assert compare(indicator.APO(barDs.getCloseDataSeries(), 252, 12, 26, talib.MA_SMA)[-1], -0.1667)
 
     def testAROON(self):
         barDs = self.__loadBarDS()
         # AROON DOWN TEST
-        self.assertTrue(compare(indicator.AROON(barDs, 252, 14)[0][14], 100))
-        self.assertTrue(compare(indicator.AROON(barDs, 252, 14)[0][14+1], 92.857))
-        self.assertTrue(compare(indicator.AROON(barDs, 252, 14)[0][-2], 28.571))
-        self.assertTrue(compare(indicator.AROON(barDs, 252, 14)[0][-1], 21.429))
+        assert compare(indicator.AROON(barDs, 252, 14)[0][14], 100)
+        assert compare(indicator.AROON(barDs, 252, 14)[0][14+1], 92.857)
+        assert compare(indicator.AROON(barDs, 252, 14)[0][-2], 28.571)
+        assert compare(indicator.AROON(barDs, 252, 14)[0][-1], 21.429)
         # AROON UP TEST
-        self.assertTrue(compare(indicator.AROON(barDs, 252, 14)[1][14], 78.571))
-        self.assertTrue(compare(indicator.AROON(barDs, 252, 14)[1][14+1], 71.429))
-        self.assertTrue(compare(indicator.AROON(barDs, 252, 14)[1][-2], 0))
-        self.assertTrue(compare(indicator.AROON(barDs, 252, 14)[1][-1], 7.1429))
+        assert compare(indicator.AROON(barDs, 252, 14)[1][14], 78.571)
+        assert compare(indicator.AROON(barDs, 252, 14)[1][14+1], 71.429)
+        assert compare(indicator.AROON(barDs, 252, 14)[1][-2], 0)
+        assert compare(indicator.AROON(barDs, 252, 14)[1][-1], 7.1429)
 
     def testAROONOSC(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.AROONOSC(barDs, 252, 14)[14], -21.4285))
-        self.assertTrue(compare(indicator.AROONOSC(barDs, 252, 14)[14+6], -21.4285))
-        self.assertTrue(compare(indicator.AROONOSC(barDs, 252, 14)[14+7], -71.4285))
-        self.assertTrue(compare(indicator.AROONOSC(barDs, 252, 14)[-2], -28.5714))
-        self.assertTrue(compare(indicator.AROONOSC(barDs, 252, 14)[-1], -14.28571))
+        assert compare(indicator.AROONOSC(barDs, 252, 14)[14], -21.4285)
+        assert compare(indicator.AROONOSC(barDs, 252, 14)[14+6], -21.4285)
+        assert compare(indicator.AROONOSC(barDs, 252, 14)[14+7], -71.4285)
+        assert compare(indicator.AROONOSC(barDs, 252, 14)[-2], -28.5714)
+        assert compare(indicator.AROONOSC(barDs, 252, 14)[-1], -14.28571)
 
     def testATR(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.ATR(barDs, 252, 1)[1], 3.535, 3))
-        self.assertTrue(compare(indicator.ATR(barDs, 252, 1)[13], 9.685, 3))
-        self.assertTrue(compare(indicator.ATR(barDs, 252, 1)[41], 5.125, 3))
-        self.assertTrue(compare(indicator.ATR(barDs, 252, 1)[-1], 2.88, 3))
+        assert compare(indicator.ATR(barDs, 252, 1)[1], 3.535, 3)
+        assert compare(indicator.ATR(barDs, 252, 1)[13], 9.685, 3)
+        assert compare(indicator.ATR(barDs, 252, 1)[41], 5.125, 3)
+        assert compare(indicator.ATR(barDs, 252, 1)[-1], 2.88, 3)
 
     def testAVGPRICE(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.AVGPRICE(barDs, 252)[0], 92.0))
-        self.assertTrue(compare(indicator.AVGPRICE(barDs, 252)[1], 93.16)) # Original value was 93.17
+        assert compare(indicator.AVGPRICE(barDs, 252)[0], 92.0)
+        assert compare(indicator.AVGPRICE(barDs, 252)[1], 93.16) # Original value was 93.17
 
     def testBBANDS(self):
         barDs = self.__loadBarDS()
         # EMA
-        self.assertTrue(compare(indicator.BBANDS(barDs.getCloseDataSeries(), 252, 20, 2.0, 2.0, talib.MA_EMA)[0][19+13], 93.674))
-        self.assertTrue(compare(indicator.BBANDS(barDs.getCloseDataSeries(), 252, 20, 2.0, 2.0, talib.MA_EMA)[1][19+13], 87.679))
-        self.assertTrue(compare(indicator.BBANDS(barDs.getCloseDataSeries(), 252, 20, 2.0, 2.0, talib.MA_EMA)[2][19+13], 81.685))
+        assert compare(indicator.BBANDS(barDs.getCloseDataSeries(), 252, 20, 2.0, 2.0, talib.MA_EMA)[0][19+13], 93.674)
+        assert compare(indicator.BBANDS(barDs.getCloseDataSeries(), 252, 20, 2.0, 2.0, talib.MA_EMA)[1][19+13], 87.679)
+        assert compare(indicator.BBANDS(barDs.getCloseDataSeries(), 252, 20, 2.0, 2.0, talib.MA_EMA)[2][19+13], 81.685)
         # SMA
-        self.assertTrue(compare(indicator.BBANDS(barDs.getCloseDataSeries(), 252, 20, 2.0, 2.0, talib.MA_SMA)[0][19], 98.0734))
-        self.assertTrue(compare(indicator.BBANDS(barDs.getCloseDataSeries(), 252, 20, 2.0, 2.0, talib.MA_SMA)[1][19], 92.8910))
-        self.assertTrue(compare(indicator.BBANDS(barDs.getCloseDataSeries(), 252, 20, 2.0, 2.0, talib.MA_SMA)[2][19], 87.7086))
+        assert compare(indicator.BBANDS(barDs.getCloseDataSeries(), 252, 20, 2.0, 2.0, talib.MA_SMA)[0][19], 98.0734)
+        assert compare(indicator.BBANDS(barDs.getCloseDataSeries(), 252, 20, 2.0, 2.0, talib.MA_SMA)[1][19], 92.8910)
+        assert compare(indicator.BBANDS(barDs.getCloseDataSeries(), 252, 20, 2.0, 2.0, talib.MA_SMA)[2][19], 87.7086)
 
     def testBETA(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.BETA(barDs.getHighDataSeries(), barDs.getLowDataSeries(), 252, 5)[5], 0.62907))
-        self.assertTrue(compare(indicator.BETA(barDs.getHighDataSeries(), barDs.getLowDataSeries(), 252, 5)[6], 0.83604))
+        assert compare(indicator.BETA(barDs.getHighDataSeries(), barDs.getLowDataSeries(), 252, 5)[5], 0.62907)
+        assert compare(indicator.BETA(barDs.getHighDataSeries(), barDs.getLowDataSeries(), 252, 5)[6], 0.83604)
 
     def testBOP(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.BOP(barDs, 252)[0], -0.40))
-        self.assertTrue(compare(indicator.BOP(barDs, 252)[1], 0.94))
+        assert compare(indicator.BOP(barDs, 252)[0], -0.40)
+        assert compare(indicator.BOP(barDs, 252)[1], 0.94)
 
     def testCCI(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.CCI(barDs, 252, 2)[1], 66.666))
-        self.assertTrue(compare(indicator.CCI(barDs, 252, 5)[4], 18.857))
-        self.assertTrue(compare(indicator.CCI(barDs, 252, 11)[10], 87.927))
-        self.assertTrue(compare(indicator.CCI(barDs, 252, 11)[11], 180.005, 3))
+        assert compare(indicator.CCI(barDs, 252, 2)[1], 66.666)
+        assert compare(indicator.CCI(barDs, 252, 5)[4], 18.857)
+        assert compare(indicator.CCI(barDs, 252, 11)[10], 87.927)
+        assert compare(indicator.CCI(barDs, 252, 11)[11], 180.005, 3)
 
     def testCMO(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.CMO(barDs.getCloseDataSeries(), 252, 14)[14], -1.70, 1))
+        assert compare(indicator.CMO(barDs.getCloseDataSeries(), 252, 14)[14], -1.70, 1)
 
     def testCORREL(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.CORREL(barDs.getHighDataSeries(), barDs.getLowDataSeries(), 252, 20)[19], 0.9401569))
-        self.assertTrue(compare(indicator.CORREL(barDs.getHighDataSeries(), barDs.getLowDataSeries(), 252, 20)[20], 0.9471812))
-        self.assertTrue(compare(indicator.CORREL(barDs.getHighDataSeries(), barDs.getLowDataSeries(), 252, 20)[-1], 0.8866901))
+        assert compare(indicator.CORREL(barDs.getHighDataSeries(), barDs.getLowDataSeries(), 252, 20)[19], 0.9401569)
+        assert compare(indicator.CORREL(barDs.getHighDataSeries(), barDs.getLowDataSeries(), 252, 20)[20], 0.9471812)
+        assert compare(indicator.CORREL(barDs.getHighDataSeries(), barDs.getLowDataSeries(), 252, 20)[-1], 0.8866901)
 
     def testDX(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.DX(barDs, 252, 14)[14], 19.3689))
-        self.assertTrue(compare(indicator.DX(barDs, 252, 14)[15], 9.7131))
-        self.assertTrue(compare(indicator.DX(barDs, 252, 14)[16], 17.2905))
-        self.assertTrue(compare(indicator.DX(barDs, 252, 14)[-2], 10.6731))
-        self.assertTrue(compare(indicator.DX(barDs, 252, 14)[-1], 0.4722))
+        assert compare(indicator.DX(barDs, 252, 14)[14], 19.3689)
+        assert compare(indicator.DX(barDs, 252, 14)[15], 9.7131)
+        assert compare(indicator.DX(barDs, 252, 14)[16], 17.2905)
+        assert compare(indicator.DX(barDs, 252, 14)[-2], 10.6731)
+        assert compare(indicator.DX(barDs, 252, 14)[-1], 0.4722)
 
     def testEMA(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.EMA(barDs.getCloseDataSeries(), 252, 2)[1], 93.16)) # Original value 93.15
-        self.assertTrue(compare(indicator.EMA(barDs.getCloseDataSeries(), 252, 2)[2], 93.97)) # Original value 93.96
-        self.assertTrue(compare(indicator.EMA(barDs.getCloseDataSeries(), 252, 2)[-1], 108.22)) # Original value 108.21
-        self.assertTrue(compare(indicator.EMA(barDs.getCloseDataSeries(), 252, 10)[9], 93.23)) # Original value 93.22
+        assert compare(indicator.EMA(barDs.getCloseDataSeries(), 252, 2)[1], 93.16) # Original value 93.15
+        assert compare(indicator.EMA(barDs.getCloseDataSeries(), 252, 2)[2], 93.97) # Original value 93.96
+        assert compare(indicator.EMA(barDs.getCloseDataSeries(), 252, 2)[-1], 108.22) # Original value 108.21
+        assert compare(indicator.EMA(barDs.getCloseDataSeries(), 252, 10)[9], 93.23) # Original value 93.22
 
     def testHT_DCPERIOD(self):
         ds = self.__loadMedPriceDS()
-        self.assertTrue(compare(indicator.HT_DCPERIOD(ds, 252)[32], 15.5527, 4))
-        self.assertTrue(compare(indicator.HT_DCPERIOD(ds, 252)[-1], 18.6140, 4))
+        assert compare(indicator.HT_DCPERIOD(ds, 252)[32], 15.5527, 4)
+        assert compare(indicator.HT_DCPERIOD(ds, 252)[-1], 18.6140, 4)
 
     def testHT_DCPHASE(self):
         ds = self.__loadMedPriceDS()
-        self.assertTrue(compare(indicator.HT_DCPHASE(ds, 252)[63], 22.1496, 4)) # Original value 22.1495
-        self.assertTrue(compare(indicator.HT_DCPHASE(ds, 252)[-3], -31.182, 3))
-        self.assertTrue(compare(indicator.HT_DCPHASE(ds, 252)[-2], 23.2691, 4))
-        self.assertTrue(compare(indicator.HT_DCPHASE(ds, 252)[-1], 47.2765, 4))
+        assert compare(indicator.HT_DCPHASE(ds, 252)[63], 22.1496, 4) # Original value 22.1495
+        assert compare(indicator.HT_DCPHASE(ds, 252)[-3], -31.182, 3)
+        assert compare(indicator.HT_DCPHASE(ds, 252)[-2], 23.2691, 4)
+        assert compare(indicator.HT_DCPHASE(ds, 252)[-1], 47.2765, 4)
 
     def testHT_TRENDLINE(self):
         ds = self.__loadMedPriceDS()
-        self.assertTrue(compare(indicator.HT_TRENDLINE(ds, 252)[63], 88.257))
-        self.assertTrue(compare(indicator.HT_TRENDLINE(ds, 252)[-3], 109.69))
-        self.assertTrue(compare(indicator.HT_TRENDLINE(ds, 252)[-2], 110.18))
-        self.assertTrue(compare(indicator.HT_TRENDLINE(ds, 252)[-1], 110.46))
+        assert compare(indicator.HT_TRENDLINE(ds, 252)[63], 88.257)
+        assert compare(indicator.HT_TRENDLINE(ds, 252)[-3], 109.69)
+        assert compare(indicator.HT_TRENDLINE(ds, 252)[-2], 110.18)
+        assert compare(indicator.HT_TRENDLINE(ds, 252)[-1], 110.46)
 
     def testHT_TRENDMODE(self):
         ds = self.__loadMedPriceDS()
-        self.assertTrue(compare(indicator.HT_TRENDMODE(ds, 252)[63], 1.0))
+        assert compare(indicator.HT_TRENDMODE(ds, 252)[63], 1.0)
 
     def testKAMA(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.KAMA(barDs.getCloseDataSeries(), 252, 10)[10], 92.6575))
-        self.assertTrue(compare(indicator.KAMA(barDs.getCloseDataSeries(), 252, 10)[11], 92.7783))
-        self.assertTrue(compare(indicator.KAMA(barDs.getCloseDataSeries(), 252, 10)[-1], 109.294))
+        assert compare(indicator.KAMA(barDs.getCloseDataSeries(), 252, 10)[10], 92.6575)
+        assert compare(indicator.KAMA(barDs.getCloseDataSeries(), 252, 10)[11], 92.7783)
+        assert compare(indicator.KAMA(barDs.getCloseDataSeries(), 252, 10)[-1], 109.294)
 
     def testMA(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.MA(barDs.getCloseDataSeries(), 252, 2, talib.MA_SMA)[1], 93.16)) # Original value 93.15
-        self.assertTrue(compare(indicator.MA(barDs.getCloseDataSeries(), 252, 2, talib.MA_SMA)[2], 94.59))
-        self.assertTrue(compare(indicator.MA(barDs.getCloseDataSeries(), 252, 2, talib.MA_SMA)[3], 94.73))
-        self.assertTrue(compare(indicator.MA(barDs.getCloseDataSeries(), 252, 2, talib.MA_SMA)[-1], 108.31))
+        assert compare(indicator.MA(barDs.getCloseDataSeries(), 252, 2, talib.MA_SMA)[1], 93.16) # Original value 93.15
+        assert compare(indicator.MA(barDs.getCloseDataSeries(), 252, 2, talib.MA_SMA)[2], 94.59)
+        assert compare(indicator.MA(barDs.getCloseDataSeries(), 252, 2, talib.MA_SMA)[3], 94.73)
+        assert compare(indicator.MA(barDs.getCloseDataSeries(), 252, 2, talib.MA_SMA)[-1], 108.31)
 
     def testMACD(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.MACD(barDs.getCloseDataSeries(), 252, 12, 26, 9)[0][33], -1.9738))
-        self.assertTrue(compare(indicator.MACD(barDs.getCloseDataSeries(), 252, 12, 26, 9)[1][33], -2.7071))
-        self.assertTrue(compare(indicator.MACD(barDs.getCloseDataSeries(), 252, 12, 26, 9)[2][33], (-1.9738)-(-2.7071)))
-        self.assertTrue(compare(indicator.MACD(barDs.getCloseDataSeries(), 252, 26, 12, 9)[0][33], -1.9738))
-        self.assertTrue(compare(indicator.MACD(barDs.getCloseDataSeries(), 252, 26, 12, 9)[1][33], -2.7071))
-        self.assertTrue(compare(indicator.MACD(barDs.getCloseDataSeries(), 252, 26, 12, 9)[2][33], (-1.9738)-(-2.7071)))
+        assert compare(indicator.MACD(barDs.getCloseDataSeries(), 252, 12, 26, 9)[0][33], -1.9738)
+        assert compare(indicator.MACD(barDs.getCloseDataSeries(), 252, 12, 26, 9)[1][33], -2.7071)
+        assert compare(indicator.MACD(barDs.getCloseDataSeries(), 252, 12, 26, 9)[2][33], (-1.9738)-(-2.7071))
+        assert compare(indicator.MACD(barDs.getCloseDataSeries(), 252, 26, 12, 9)[0][33], -1.9738)
+        assert compare(indicator.MACD(barDs.getCloseDataSeries(), 252, 26, 12, 9)[1][33], -2.7071)
+        assert compare(indicator.MACD(barDs.getCloseDataSeries(), 252, 26, 12, 9)[2][33], (-1.9738)-(-2.7071))
 
     def testMACDEXT(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.MACDEXT(barDs.getCloseDataSeries(), 252, 12, talib.MA_EMA , 26, talib.MA_EMA, 9, talib.MA_EMA)[0][33], -1.9738))
-        self.assertTrue(compare(indicator.MACDEXT(barDs.getCloseDataSeries(), 252, 12, talib.MA_EMA , 26, talib.MA_EMA, 9, talib.MA_EMA)[1][33], -2.7071))
-        self.assertTrue(compare(indicator.MACDEXT(barDs.getCloseDataSeries(), 252, 12, talib.MA_EMA , 26, talib.MA_EMA, 9, talib.MA_EMA)[2][33], (-1.9738)-(-2.7071)))
+        assert compare(indicator.MACDEXT(barDs.getCloseDataSeries(), 252, 12, talib.MA_EMA , 26, talib.MA_EMA, 9, talib.MA_EMA)[0][33], -1.9738)
+        assert compare(indicator.MACDEXT(barDs.getCloseDataSeries(), 252, 12, talib.MA_EMA , 26, talib.MA_EMA, 9, talib.MA_EMA)[1][33], -2.7071)
+        assert compare(indicator.MACDEXT(barDs.getCloseDataSeries(), 252, 12, talib.MA_EMA , 26, talib.MA_EMA, 9, talib.MA_EMA)[2][33], (-1.9738)-(-2.7071))
 
     def testMAMA(self):
         ds = self.__loadMedPriceDS()
-        self.assertTrue(compare(indicator.MAMA(ds, 252, 0.5, 0.05)[0][32], 85.3643))
-        self.assertTrue(compare(indicator.MAMA(ds, 252, 0.5, 0.05)[0][-1], 110.1116))
+        assert compare(indicator.MAMA(ds, 252, 0.5, 0.05)[0][32], 85.3643)
+        assert compare(indicator.MAMA(ds, 252, 0.5, 0.05)[0][-1], 110.1116)
 
     def testMAX(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.MAX(barDs.getOpenDataSeries(), 252, 14)[13], 98.815))
-        self.assertTrue(compare(indicator.MAX(barDs.getOpenDataSeries(), 252, 14)[14], 98.815))
-        self.assertTrue(compare(indicator.MAX(barDs.getOpenDataSeries(), 252, 14)[-1], 110.69))
+        assert compare(indicator.MAX(barDs.getOpenDataSeries(), 252, 14)[13], 98.815)
+        assert compare(indicator.MAX(barDs.getOpenDataSeries(), 252, 14)[14], 98.815)
+        assert compare(indicator.MAX(barDs.getOpenDataSeries(), 252, 14)[-1], 110.69)
 
     def testMFI(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.MFI(barDs, 252, 14)[14], 42.8923))
-        self.assertTrue(compare(indicator.MFI(barDs, 252, 14)[15], 45.6072))
-        self.assertTrue(compare(indicator.MFI(barDs, 252, 14)[-1], 53.1997))
+        assert compare(indicator.MFI(barDs, 252, 14)[14], 42.8923)
+        assert compare(indicator.MFI(barDs, 252, 14)[15], 45.6072)
+        assert compare(indicator.MFI(barDs, 252, 14)[-1], 53.1997)
 
     def testMIN(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.MIN(barDs.getOpenDataSeries(), 252, 14)[13], 91.125))
-        self.assertTrue(compare(indicator.MIN(barDs.getOpenDataSeries(), 252, 14)[14], 91.125))
-        self.assertTrue(compare(indicator.MIN(barDs.getOpenDataSeries(), 252, 14)[-1], 107.75))
+        assert compare(indicator.MIN(barDs.getOpenDataSeries(), 252, 14)[13], 91.125)
+        assert compare(indicator.MIN(barDs.getOpenDataSeries(), 252, 14)[14], 91.125)
+        assert compare(indicator.MIN(barDs.getOpenDataSeries(), 252, 14)[-1], 107.75)
 
     def testMINUS_DI(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.MINUS_DI(barDs, 252, 14)[14], 30.1684))
-        self.assertTrue(compare(indicator.MINUS_DI(barDs, 252, 14)[28], 24.969182))
-        self.assertTrue(compare(indicator.MINUS_DI(barDs, 252, 14)[-1], 21.1988))
+        assert compare(indicator.MINUS_DI(barDs, 252, 14)[14], 30.1684)
+        assert compare(indicator.MINUS_DI(barDs, 252, 14)[28], 24.969182)
+        assert compare(indicator.MINUS_DI(barDs, 252, 14)[-1], 21.1988)
 
     def testMINUS_DM(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.MINUS_DM(barDs, 252, 14)[13], 12.995, 3))
-        self.assertTrue(compare(indicator.MINUS_DM(barDs, 252, 14)[-2], 8.33))
-        self.assertTrue(compare(indicator.MINUS_DM(barDs, 252, 14)[-1], 9.68)) # Original value 9.672
+        assert compare(indicator.MINUS_DM(barDs, 252, 14)[13], 12.995, 3)
+        assert compare(indicator.MINUS_DM(barDs, 252, 14)[-2], 8.33)
+        assert compare(indicator.MINUS_DM(barDs, 252, 14)[-1], 9.68) # Original value 9.672
 
     def testMOM(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.MOM(barDs.getCloseDataSeries(), 252, 14)[14], -0.50))
-        self.assertTrue(compare(indicator.MOM(barDs.getCloseDataSeries(), 252, 14)[15], -2.00))
-        self.assertTrue(compare(indicator.MOM(barDs.getCloseDataSeries(), 252, 14)[16], -5.22))
-        self.assertTrue(compare(indicator.MOM(barDs.getCloseDataSeries(), 252, 14)[-1], -1.13))
+        assert compare(indicator.MOM(barDs.getCloseDataSeries(), 252, 14)[14], -0.50)
+        assert compare(indicator.MOM(barDs.getCloseDataSeries(), 252, 14)[15], -2.00)
+        assert compare(indicator.MOM(barDs.getCloseDataSeries(), 252, 14)[16], -5.22)
+        assert compare(indicator.MOM(barDs.getCloseDataSeries(), 252, 14)[-1], -1.13)
 
     def testNATR(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.NATR(barDs, 252, 14)[14], 3.9321))
-        self.assertTrue(compare(indicator.NATR(barDs, 252, 14)[15], 3.7576))
-        self.assertTrue(compare(indicator.NATR(barDs, 252, 14)[-1], 3.0229))
+        assert compare(indicator.NATR(barDs, 252, 14)[14], 3.9321)
+        assert compare(indicator.NATR(barDs, 252, 14)[15], 3.7576)
+        assert compare(indicator.NATR(barDs, 252, 14)[-1], 3.0229)
 
     def testPLUS_DI(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.PLUS_DI(barDs, 252, 14)[14], 20.3781))
-        self.assertTrue(compare(indicator.PLUS_DI(barDs, 252, 14)[14+13], 22.1073))
-        self.assertTrue(compare(indicator.PLUS_DI(barDs, 252, 14)[14+14], 20.3746))
-        self.assertTrue(compare(indicator.PLUS_DI(barDs, 252, 14)[-1], 21.0000))
+        assert compare(indicator.PLUS_DI(barDs, 252, 14)[14], 20.3781)
+        assert compare(indicator.PLUS_DI(barDs, 252, 14)[14+13], 22.1073)
+        assert compare(indicator.PLUS_DI(barDs, 252, 14)[14+14], 20.3746)
+        assert compare(indicator.PLUS_DI(barDs, 252, 14)[-1], 21.0000)
 
     def testPLUS_DM(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.PLUS_DM(barDs, 252, 14)[13], 10.28))
-        self.assertTrue(compare(indicator.PLUS_DM(barDs, 252, 14)[-2], 10.317))
-        self.assertTrue(compare(indicator.PLUS_DM(barDs, 252, 14)[-1], 9.59)) # Original value 9.58
+        assert compare(indicator.PLUS_DM(barDs, 252, 14)[13], 10.28)
+        assert compare(indicator.PLUS_DM(barDs, 252, 14)[-2], 10.317)
+        assert compare(indicator.PLUS_DM(barDs, 252, 14)[-1], 9.59) # Original value 9.58
 
     def testPPO(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.PPO(barDs.getCloseDataSeries(), 252, 2, 3, talib.MA_SMA)[2], 1.10264))
-        self.assertTrue(compare(indicator.PPO(barDs.getCloseDataSeries(), 252, 2, 3, talib.MA_SMA)[3], -0.02813))
-        self.assertTrue(compare(indicator.PPO(barDs.getCloseDataSeries(), 252, 2, 3, talib.MA_SMA)[-1], -0.21191))
+        assert compare(indicator.PPO(barDs.getCloseDataSeries(), 252, 2, 3, talib.MA_SMA)[2], 1.10264)
+        assert compare(indicator.PPO(barDs.getCloseDataSeries(), 252, 2, 3, talib.MA_SMA)[3], -0.02813)
+        assert compare(indicator.PPO(barDs.getCloseDataSeries(), 252, 2, 3, talib.MA_SMA)[-1], -0.21191)
 
     def testROC(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.ROC(barDs.getCloseDataSeries(), 252, 14)[14], -0.546))
-        self.assertTrue(compare(indicator.ROC(barDs.getCloseDataSeries(), 252, 14)[15], -2.109))
-        self.assertTrue(compare(indicator.ROC(barDs.getCloseDataSeries(), 252, 14)[16], -5.53))
-        self.assertTrue(compare(indicator.ROC(barDs.getCloseDataSeries(), 252, 14)[-1], -1.0367))
+        assert compare(indicator.ROC(barDs.getCloseDataSeries(), 252, 14)[14], -0.546)
+        assert compare(indicator.ROC(barDs.getCloseDataSeries(), 252, 14)[15], -2.109)
+        assert compare(indicator.ROC(barDs.getCloseDataSeries(), 252, 14)[16], -5.53)
+        assert compare(indicator.ROC(barDs.getCloseDataSeries(), 252, 14)[-1], -1.0367)
 
     def testROCR(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.ROCR(barDs.getCloseDataSeries(), 252, 14)[14], 0.994536, 4))
-        self.assertTrue(compare(indicator.ROCR(barDs.getCloseDataSeries(), 252, 14)[15], 0.978906, 4))
-        self.assertTrue(compare(indicator.ROCR(barDs.getCloseDataSeries(), 252, 14)[16], 0.944689, 4))
-        self.assertTrue(compare(indicator.ROCR(barDs.getCloseDataSeries(), 252, 14)[-1], 0.989633, 4))
+        assert compare(indicator.ROCR(barDs.getCloseDataSeries(), 252, 14)[14], 0.994536, 4)
+        assert compare(indicator.ROCR(barDs.getCloseDataSeries(), 252, 14)[15], 0.978906, 4)
+        assert compare(indicator.ROCR(barDs.getCloseDataSeries(), 252, 14)[16], 0.944689, 4)
+        assert compare(indicator.ROCR(barDs.getCloseDataSeries(), 252, 14)[-1], 0.989633, 4)
 
     def testROCR100(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.ROCR100(barDs.getCloseDataSeries(), 252, 14)[14], 99.4536, 4))
-        self.assertTrue(compare(indicator.ROCR100(barDs.getCloseDataSeries(), 252, 14)[15], 97.8906, 4))
-        self.assertTrue(compare(indicator.ROCR100(barDs.getCloseDataSeries(), 252, 14)[16], 94.4689, 4))
-        self.assertTrue(compare(indicator.ROCR100(barDs.getCloseDataSeries(), 252, 14)[-1], 98.9633, 4))
+        assert compare(indicator.ROCR100(barDs.getCloseDataSeries(), 252, 14)[14], 99.4536, 4)
+        assert compare(indicator.ROCR100(barDs.getCloseDataSeries(), 252, 14)[15], 97.8906, 4)
+        assert compare(indicator.ROCR100(barDs.getCloseDataSeries(), 252, 14)[16], 94.4689, 4)
+        assert compare(indicator.ROCR100(barDs.getCloseDataSeries(), 252, 14)[-1], 98.9633, 4)
 
     def testRSI(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.RSI(barDs.getCloseDataSeries(), 252, 14)[14], 49.15)) # Original value 49.14
-        self.assertTrue(compare(indicator.RSI(barDs.getCloseDataSeries(), 252, 14)[15], 52.33)) # Original value 52.32
-        self.assertTrue(compare(indicator.RSI(barDs.getCloseDataSeries(), 252, 14)[16], 46.07))
-        self.assertTrue(compare(indicator.RSI(barDs.getCloseDataSeries(), 252, 14)[-1], 49.63))
+        assert compare(indicator.RSI(barDs.getCloseDataSeries(), 252, 14)[14], 49.15) # Original value 49.14
+        assert compare(indicator.RSI(barDs.getCloseDataSeries(), 252, 14)[15], 52.33) # Original value 52.32
+        assert compare(indicator.RSI(barDs.getCloseDataSeries(), 252, 14)[16], 46.07)
+        assert compare(indicator.RSI(barDs.getCloseDataSeries(), 252, 14)[-1], 49.63)
 
     def testSAR(self):
         barDs = self.__loadSarTestBarDs()
-        self.assertTrue(compare(indicator.SAR(barDs, len(SAR_HIGH), 0.02, 0.20)[1], 50.00))
-        self.assertTrue(compare(indicator.SAR(barDs, len(SAR_HIGH), 0.02, 0.20)[2], 50.047))
-        self.assertTrue(compare(indicator.SAR(barDs, len(SAR_HIGH), 0.02, 0.20)[5], 50.182))
-        self.assertTrue(compare(indicator.SAR(barDs, len(SAR_HIGH), 0.02, 0.20)[-2], 52.93))
-        self.assertTrue(compare(indicator.SAR(barDs, len(SAR_HIGH), 0.02, 0.20)[-1], 50.00))
+        assert compare(indicator.SAR(barDs, len(SAR_HIGH), 0.02, 0.20)[1], 50.00)
+        assert compare(indicator.SAR(barDs, len(SAR_HIGH), 0.02, 0.20)[2], 50.047)
+        assert compare(indicator.SAR(barDs, len(SAR_HIGH), 0.02, 0.20)[5], 50.182)
+        assert compare(indicator.SAR(barDs, len(SAR_HIGH), 0.02, 0.20)[-2], 52.93)
+        assert compare(indicator.SAR(barDs, len(SAR_HIGH), 0.02, 0.20)[-1], 50.00)
 
     def testSMA(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.SMA(barDs.getCloseDataSeries(), 252, 2)[1], 93.16)) # Original value 93.15
-        self.assertTrue(compare(indicator.SMA(barDs.getCloseDataSeries(), 252, 2)[2], 94.59))
-        self.assertTrue(compare(indicator.SMA(barDs.getCloseDataSeries(), 252, 2)[3], 94.73))
-        self.assertTrue(compare(indicator.SMA(barDs.getCloseDataSeries(), 252, 2)[-1], 108.31))
+        assert compare(indicator.SMA(barDs.getCloseDataSeries(), 252, 2)[1], 93.16) # Original value 93.15
+        assert compare(indicator.SMA(barDs.getCloseDataSeries(), 252, 2)[2], 94.59)
+        assert compare(indicator.SMA(barDs.getCloseDataSeries(), 252, 2)[3], 94.73)
+        assert compare(indicator.SMA(barDs.getCloseDataSeries(), 252, 2)[-1], 108.31)
 
     def testSTDDEV(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.STDDEV(barDs.getCloseDataSeries(), 252, 5.0, 1)[4], 1.2856))
-        self.assertTrue(compare(indicator.STDDEV(barDs.getCloseDataSeries(), 252, 5.0, 1)[5], 0.4462))
-        self.assertTrue(compare(indicator.STDDEV(barDs.getCloseDataSeries(), 252, 5.0, 1)[-1], 0.7144))
-        self.assertTrue(compare(indicator.STDDEV(barDs.getCloseDataSeries(), 252, 5.0, 1.5)[4], 1.9285))
-        self.assertTrue(compare(indicator.STDDEV(barDs.getCloseDataSeries(), 252, 5.0, 1.5)[5], 0.66937))
-        self.assertTrue(compare(indicator.STDDEV(barDs.getCloseDataSeries(), 252, 5.0, 1.5)[-1], 1.075))
+        assert compare(indicator.STDDEV(barDs.getCloseDataSeries(), 252, 5.0, 1)[4], 1.2856)
+        assert compare(indicator.STDDEV(barDs.getCloseDataSeries(), 252, 5.0, 1)[5], 0.4462)
+        assert compare(indicator.STDDEV(barDs.getCloseDataSeries(), 252, 5.0, 1)[-1], 0.7144)
+        assert compare(indicator.STDDEV(barDs.getCloseDataSeries(), 252, 5.0, 1.5)[4], 1.9285)
+        assert compare(indicator.STDDEV(barDs.getCloseDataSeries(), 252, 5.0, 1.5)[5], 0.66937)
+        assert compare(indicator.STDDEV(barDs.getCloseDataSeries(), 252, 5.0, 1.5)[-1], 1.075)
 
     def testSTOCH(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.STOCH(barDs, 252, 5, 3, talib.MA_SMA, 3, talib.MA_SMA)[0][8], 24.0128))
-        self.assertTrue(compare(indicator.STOCH(barDs, 252, 5, 3, talib.MA_SMA, 3, talib.MA_SMA)[1][8], 36.254))
-        self.assertTrue(compare(indicator.STOCH(barDs, 252, 5, 3, talib.MA_SMA, 4, talib.MA_SMA)[0][-1], 30.194))
-        self.assertTrue(compare(indicator.STOCH(barDs, 252, 5, 3, talib.MA_SMA, 4, talib.MA_SMA)[1][-1], 46.641))
+        assert compare(indicator.STOCH(barDs, 252, 5, 3, talib.MA_SMA, 3, talib.MA_SMA)[0][8], 24.0128)
+        assert compare(indicator.STOCH(barDs, 252, 5, 3, talib.MA_SMA, 3, talib.MA_SMA)[1][8], 36.254)
+        assert compare(indicator.STOCH(barDs, 252, 5, 3, talib.MA_SMA, 4, talib.MA_SMA)[0][-1], 30.194)
+        assert compare(indicator.STOCH(barDs, 252, 5, 3, talib.MA_SMA, 4, talib.MA_SMA)[1][-1], 46.641)
 
     def testSTOCHRSI(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.STOCHRSI(barDs.getCloseDataSeries(), 252, 14, 14, 1, talib.MA_SMA)[0][27], 94.156709))
-        self.assertTrue(compare(indicator.STOCHRSI(barDs.getCloseDataSeries(), 252, 14, 14, 1, talib.MA_SMA)[1][27], 94.156709))
-        self.assertTrue(compare(indicator.STOCHRSI(barDs.getCloseDataSeries(), 252, 14, 14, 1, talib.MA_SMA)[0][-1], 0))
-        self.assertTrue(compare(indicator.STOCHRSI(barDs.getCloseDataSeries(), 252, 14, 14, 1, talib.MA_SMA)[1][-1], 0))
+        assert compare(indicator.STOCHRSI(barDs.getCloseDataSeries(), 252, 14, 14, 1, talib.MA_SMA)[0][27], 94.156709)
+        assert compare(indicator.STOCHRSI(barDs.getCloseDataSeries(), 252, 14, 14, 1, talib.MA_SMA)[1][27], 94.156709)
+        assert compare(indicator.STOCHRSI(barDs.getCloseDataSeries(), 252, 14, 14, 1, talib.MA_SMA)[0][-1], 0)
+        assert compare(indicator.STOCHRSI(barDs.getCloseDataSeries(), 252, 14, 14, 1, talib.MA_SMA)[1][-1], 0)
 
-        self.assertTrue(compare(indicator.STOCHRSI(barDs.getCloseDataSeries(), 252, 14, 45, 1, talib.MA_SMA)[0][58], 79.729186))
-        self.assertTrue(compare(indicator.STOCHRSI(barDs.getCloseDataSeries(), 252, 14, 45, 1, talib.MA_SMA)[1][58], 79.729186))
-        self.assertTrue(compare(indicator.STOCHRSI(barDs.getCloseDataSeries(), 252, 14, 45, 1, talib.MA_SMA)[0][-1], 48.1550743))
-        self.assertTrue(compare(indicator.STOCHRSI(barDs.getCloseDataSeries(), 252, 14, 45, 1, talib.MA_SMA)[1][-1], 48.1550743))
+        assert compare(indicator.STOCHRSI(barDs.getCloseDataSeries(), 252, 14, 45, 1, talib.MA_SMA)[0][58], 79.729186)
+        assert compare(indicator.STOCHRSI(barDs.getCloseDataSeries(), 252, 14, 45, 1, talib.MA_SMA)[1][58], 79.729186)
+        assert compare(indicator.STOCHRSI(barDs.getCloseDataSeries(), 252, 14, 45, 1, talib.MA_SMA)[0][-1], 48.1550743)
+        assert compare(indicator.STOCHRSI(barDs.getCloseDataSeries(), 252, 14, 45, 1, talib.MA_SMA)[1][-1], 48.1550743)
 
     def testT3(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.T3(barDs.getCloseDataSeries(), 252, 5, 0.7)[24],  85.73))
-        self.assertTrue(compare(indicator.T3(barDs.getCloseDataSeries(), 252, 5, 0.7)[25],  84.37))
-        self.assertTrue(compare(indicator.T3(barDs.getCloseDataSeries(), 252, 5, 0.7)[-2], 109.03))
-        self.assertTrue(compare(indicator.T3(barDs.getCloseDataSeries(), 252, 5, 0.7)[-1], 108.88))
+        assert compare(indicator.T3(barDs.getCloseDataSeries(), 252, 5, 0.7)[24],  85.73)
+        assert compare(indicator.T3(barDs.getCloseDataSeries(), 252, 5, 0.7)[25],  84.37)
+        assert compare(indicator.T3(barDs.getCloseDataSeries(), 252, 5, 0.7)[-2], 109.03)
+        assert compare(indicator.T3(barDs.getCloseDataSeries(), 252, 5, 0.7)[-1], 108.88)
 
     def testTRANGE(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.TRANGE(barDs, 252)[1], 3.535, 3))
-        self.assertTrue(compare(indicator.TRANGE(barDs, 252)[13], 9.685, 3))
-        self.assertTrue(compare(indicator.TRANGE(barDs, 252)[41], 5.125, 3))
-        self.assertTrue(compare(indicator.TRANGE(barDs, 252)[-1], 2.88))
+        assert compare(indicator.TRANGE(barDs, 252)[1], 3.535, 3)
+        assert compare(indicator.TRANGE(barDs, 252)[13], 9.685, 3)
+        assert compare(indicator.TRANGE(barDs, 252)[41], 5.125, 3)
+        assert compare(indicator.TRANGE(barDs, 252)[-1], 2.88)
 
     def testTRIMA(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.TRIMA(barDs.getCloseDataSeries(), 252, 10)[9], 93.6043))
-        self.assertTrue(compare(indicator.TRIMA(barDs.getCloseDataSeries(), 252, 10)[10], 93.4252))
-        self.assertTrue(compare(indicator.TRIMA(barDs.getCloseDataSeries(), 252, 10)[-2], 109.1850, 3))
-        self.assertTrue(compare(indicator.TRIMA(barDs.getCloseDataSeries(), 252, 10)[-1], 109.1407))
+        assert compare(indicator.TRIMA(barDs.getCloseDataSeries(), 252, 10)[9], 93.6043)
+        assert compare(indicator.TRIMA(barDs.getCloseDataSeries(), 252, 10)[10], 93.4252)
+        assert compare(indicator.TRIMA(barDs.getCloseDataSeries(), 252, 10)[-2], 109.1850, 3)
+        assert compare(indicator.TRIMA(barDs.getCloseDataSeries(), 252, 10)[-1], 109.1407)
 
     def testTRIX(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.TRIX(barDs.getCloseDataSeries(), 252, 5)[13], 0.2589))
-        self.assertTrue(compare(indicator.TRIX(barDs.getCloseDataSeries(), 252, 5)[14], 0.010495))
-        self.assertTrue(compare(indicator.TRIX(barDs.getCloseDataSeries(), 252, 5)[-2], -0.058))
-        self.assertTrue(compare(indicator.TRIX(barDs.getCloseDataSeries(), 252, 5)[-1], -0.095))
+        assert compare(indicator.TRIX(barDs.getCloseDataSeries(), 252, 5)[13], 0.2589)
+        assert compare(indicator.TRIX(barDs.getCloseDataSeries(), 252, 5)[14], 0.010495)
+        assert compare(indicator.TRIX(barDs.getCloseDataSeries(), 252, 5)[-2], -0.058)
+        assert compare(indicator.TRIX(barDs.getCloseDataSeries(), 252, 5)[-1], -0.095)
 
     def testULTOSC(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.ULTOSC(barDs, 252, 7, 14, 28)[28], 47.1713))
-        self.assertTrue(compare(indicator.ULTOSC(barDs, 252, 7, 14, 28)[29], 46.2802))
-        self.assertTrue(compare(indicator.ULTOSC(barDs, 252, 7, 14, 28)[-1], 40.0854))
+        assert compare(indicator.ULTOSC(barDs, 252, 7, 14, 28)[28], 47.1713)
+        assert compare(indicator.ULTOSC(barDs, 252, 7, 14, 28)[29], 46.2802)
+        assert compare(indicator.ULTOSC(barDs, 252, 7, 14, 28)[-1], 40.0854)
 
     def testVAR(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.VAR(barDs.getCloseDataSeries(), 252, 5.0, 1)[4], 1.2856**2))
-        self.assertTrue(compare(indicator.VAR(barDs.getCloseDataSeries(), 252, 5.0, 1)[5], 0.4462**2))
-        self.assertTrue(compare(indicator.VAR(barDs.getCloseDataSeries(), 252, 5.0, 1)[-1], 0.7144**2))
+        assert compare(indicator.VAR(barDs.getCloseDataSeries(), 252, 5.0, 1)[4], 1.2856**2)
+        assert compare(indicator.VAR(barDs.getCloseDataSeries(), 252, 5.0, 1)[5], 0.4462**2)
+        assert compare(indicator.VAR(barDs.getCloseDataSeries(), 252, 5.0, 1)[-1], 0.7144**2)
 
     def testWILLR(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.WILLR(barDs, 252, 14)[13], -90.1943))
-        self.assertTrue(compare(indicator.WILLR(barDs, 252, 14)[13+112], 0))
+        assert compare(indicator.WILLR(barDs, 252, 14)[13], -90.1943)
+        assert compare(indicator.WILLR(barDs, 252, 14)[13+112], 0)
 
     def testWMA(self):
         barDs = self.__loadBarDS()
-        self.assertTrue(compare(indicator.WMA(barDs.getCloseDataSeries(), 252, 2)[1], 93.71))
-        self.assertTrue(compare(indicator.WMA(barDs.getCloseDataSeries(), 252, 2)[2], 94.52))
-        self.assertTrue(compare(indicator.WMA(barDs.getCloseDataSeries(), 252, 2)[3], 94.86)) # Original value 94.85
-        self.assertTrue(compare(indicator.WMA(barDs.getCloseDataSeries(), 252, 2)[-1], 108.16))
+        assert compare(indicator.WMA(barDs.getCloseDataSeries(), 252, 2)[1], 93.71)
+        assert compare(indicator.WMA(barDs.getCloseDataSeries(), 252, 2)[2], 94.52)
+        assert compare(indicator.WMA(barDs.getCloseDataSeries(), 252, 2)[3], 94.86) # Original value 94.85
+        assert compare(indicator.WMA(barDs.getCloseDataSeries(), 252, 2)[-1], 108.16)
 
 def getTestCases():
     ret = []

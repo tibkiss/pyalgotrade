@@ -18,6 +18,7 @@
 .. moduleauthor:: Gabriel Martin Becedillas Ruiz <gabriel.becedillas@gmail.com>
 """
 
+import pytest
 import unittest
 
 from pyalgotrade import barfeed
@@ -67,9 +68,9 @@ class NikkeiSpyStrategy(strategy.Strategy):
 
 class TestCase(unittest.TestCase):
     def __testDifferentTimezonesImpl(self, feed):
-        self.assertTrue("^n225" in feed)
-        self.assertTrue("spy" in feed)
-        self.assertTrue("cacho" not in feed)
+        assert "^n225" in feed
+        assert "spy" in feed
+        assert "cacho" not in feed
         strat = NikkeiSpyStrategy(feed, 34)
         strat.run()
         self.assertEqual(round(strat.getResult(), 2), 1125558.12)

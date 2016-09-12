@@ -18,6 +18,8 @@
 .. moduleauthor:: Gabriel Martin Becedillas Ruiz <gabriel.becedillas@gmail.com>
 """
 
+import pytest
+
 from pyalgotrade import barfeed
 from pyalgotrade.barfeed import ninjatraderfeed
 from pyalgotrade.barfeed import csvfeed

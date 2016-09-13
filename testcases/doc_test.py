@@ -64,7 +64,7 @@ def compare_tail(fileName, lines):
 
 class TutorialTestCase(unittest.TestCase):
     def testTutorial1(self):
-        run_python_code("from pyalgotrade.tools import yahoofinance; print yahoofinance.get_daily_csv('orcl', 2000)", "orcl-2000.csv")
+        # run_python_code("from pyalgotrade.tools import yahoofinance; print yahoofinance.get_daily_csv('orcl', 2000)", "orcl-2000.csv")
         lines = run_sample_script("tutorial-1.py").split("\n")
         assert compare_head("tutorial-1.output", lines[:3])
         assert compare_tail("tutorial-1.output", lines[-4:-1])

@@ -45,7 +45,7 @@ def us_equities_datetime(*params):
 def datetime_from_date(year, month, day):
     ret = datetime.datetime(year, month, day)
     ret = datetime.datetime.combine(ret, datetime.time(23, 59, 59))
-    return ret
+    return dt.localize(ret, pytz.utc)
 
 # This class decorates a barfeed.BarFeed and simulates an external barfeed that lives in a different thread.
 class ExternalBarFeed(barfeed.BasicBarFeed):

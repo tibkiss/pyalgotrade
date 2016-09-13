@@ -19,6 +19,7 @@
 """
 
 from pyalgotrade.barfeed import csvfeed
+import pytz
 
 import types
 
@@ -48,7 +49,7 @@ class Feed(csvfeed.YahooFeed):
                     * If any of the instruments loaded are from different timezones, then the timezone parameter must be set.
     """
 
-    def __init__(self, timezone = None):
+    def __init__(self, timezone = pytz.utc):
         csvfeed.YahooFeed.__init__(self, timezone, True)
 
     def addBarsFromCSV(self, instrument, path, timezone = None):

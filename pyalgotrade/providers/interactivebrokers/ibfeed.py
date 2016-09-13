@@ -21,6 +21,7 @@ from pyalgotrade.bar import Bars
 from pyalgotrade.barfeed import csvfeed, BarFeed, Frequency
 from pyalgotrade.providers.interactivebrokers import ibbar
 
+import pytz
 import datetime
 from threading import Lock
 
@@ -76,7 +77,7 @@ class CSVFeed(csvfeed.BarFeed):
     def __init__(self):
         csvfeed.BarFeed.__init__(self, Frequency.MINUTE)
 
-    def addBarsFromCSV(self, instrument, path, timeZone = 0):
+    def addBarsFromCSV(self, instrument, path, timezone = pytz.utc):
         """Loads bars for a given instrument from a CSV formatted file.
         The instrument gets registered in the bar feed.
 
@@ -84,15 +85,15 @@ class CSVFeed(csvfeed.BarFeed):
         :type instrument: string.
         :param path: The path to the file.
         :type path: string.
-        :param timeZone: The timezone for bars. 0 if bar dates are in UTC.
-        :type timeZone: int.
+        :param timezone: The timezone for bars. 0 if bar dates are in UTC.
+        :type timezone: int.
         """
-        rowParser = RowParser(timeZone)
+        rowParser = RowParser(timezone)
         csvfeed.BarFeed.addBarsFromCSV(self, instrument, path, rowParser)
 
 
 class LiveFeed(BarFeed):
-    def __init__(self, ibConnection, timezone=0, barsToInject=None):
+    def __init__(self, ibConnection, timezone=pytz.utc, barsToInject=None):
         BarFeed.__init__(self, Frequency.SECOND)
 
         # The zone specifies the offset from Coordinated Universal Time (UTC)

@@ -210,7 +210,7 @@ class YahooRowParser(RowParser):
         return bar.Bar(dateTime, open_, high, low, close, volume, adjClose, date_)
 
 class YahooFeed(BarFeed):
-    def __init__(self, timezone = None, skipWarning=False):
+    def __init__(self, timezone = pytz.utc, skipWarning=False):
         if type(timezone) == types.IntType:
             raise Exception("timezone as an int parameter is not supported anymore. Please use a pytz timezone instead.")
 

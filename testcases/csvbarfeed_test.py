@@ -21,10 +21,13 @@
 import pytest
 import unittest
 import datetime
+import pytz
 
+from pyalgotrade.barfeed import Frequency
 from pyalgotrade.barfeed import csvfeed
 from pyalgotrade.barfeed import yahoofeed
 from pyalgotrade.barfeed import ninjatraderfeed
+from pyalgotrade.providers.interactivebrokers import ibfeed
 from pyalgotrade.utils import dt
 from pyalgotrade import marketsession
 import common
@@ -124,24 +127,43 @@ class YahooTestCase(unittest.TestCase):
 
     def testFilteredRangeFrom(self):
         # Only load bars from year 2001.
-        self.__testFilteredRangeImpl(datetime.datetime(2001, 1, 1, 00, 00), None)
+        self.__testFilteredRangeImpl(datetime.datetime(2001, 1, 1, 00, 00, tzinfo=pytz.utc), None)
 
     def testFilteredRangeTo(self):
         # Only load bars up to year 2000.
-        self.__testFilteredRangeImpl(None, datetime.datetime(2000, 12, 31, 23, 55))
+        self.__testFilteredRangeImpl(None, datetime.datetime(2000, 12, 31, 23, 55, tzinfo=pytz.utc))
 
     def testFilteredRangeFromTo(self):
         # Only load bars in year 2000.
-        self.__testFilteredRangeImpl(datetime.datetime(2000, 1, 1, 00, 00), datetime.datetime(2000, 12, 31, 23, 55))
+        self.__testFilteredRangeImpl(datetime.datetime(2000, 1, 1, 00, 00, tzinfo=pytz.utc),
+                                     datetime.datetime(2000, 12, 31, 23, 55, tzinfo=pytz.utc))
 
     def testWithoutTimezone(self):
-        barFeed = yahoofeed.Feed()
-        barFeed.addBarsFromCSV(YahooTestCase.TestInstrument, common.get_data_file_path("orcl-2000-yahoofinance.csv"))
-        barFeed.addBarsFromCSV(YahooTestCase.TestInstrument, common.get_data_file_path("orcl-2001-yahoofinance.csv"))
+        # At the moment we need to set both the Feed's constructor and addBarsFromCSV to None in order to get a naive
+        # datetime
+        barFeed = yahoofeed.Feed(timezone=None)
+        barFeed.addBarsFromCSV(YahooTestCase.TestInstrument, common.get_data_file_path("orcl-2000-yahoofinance.csv"),
+                               timezone=None)
+        barFeed.addBarsFromCSV(YahooTestCase.TestInstrument, common.get_data_file_path("orcl-2001-yahoofinance.csv"),
+                               timezone=None)
         barFeed.start()
         for bars in barFeed:
             bar = bars.getBar(YahooTestCase.TestInstrument)
             assert dt.datetime_is_naive(bar.getDateTime())
+        barFeed.stop()
+        barFeed.join()
+
+    def testDefaultTimezoneIsUTC(self):
+        barFeed = yahoofeed.Feed()
+        barFeed.addBarsFromCSV(YahooTestCase.TestInstrument, common.get_data_file_path("orcl-2000-yahoofinance.csv"),
+                               timezone=None)
+        barFeed.addBarsFromCSV(YahooTestCase.TestInstrument, common.get_data_file_path("orcl-2001-yahoofinance.csv"),
+                               timezone=None)
+        barFeed.start()
+        for bars in barFeed:
+            bar = bars.getBar(YahooTestCase.TestInstrument)
+            assert bar.getDateTime().tzinfo == pytz.utc
+
         barFeed.stop()
         barFeed.join()
 
@@ -260,7 +282,8 @@ class NinjaTraderTestCase(unittest.TestCase):
         for bars in barFeed:
             price = prices.get(bars.getDateTime(), None)
             if price != None:
-                closingPrice = bars.getBar("spy").getClose()
+                bar = bars.getBar("spy")
+                closingPrice = bar.getClose()
                 assert price == closingPrice
 
 def getTestCases():

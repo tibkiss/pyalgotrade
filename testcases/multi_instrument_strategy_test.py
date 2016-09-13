@@ -34,7 +34,7 @@ class NikkeiSpyStrategy(strategy.Strategy):
     def __init__(self, feed, smaPeriod):
         strategy.Strategy.__init__(self, feed)
 
-        assert(smaPeriod > 3)
+        assert smaPeriod > 3
         self.__lead = "^n225"
         self.__lag = "spy"
         # Exit signal is more sensitive than entry.
@@ -44,11 +44,11 @@ class NikkeiSpyStrategy(strategy.Strategy):
         self.__pos = None
 
     def onEnterCanceled(self, position):
-        assert(position == self.__pos)
+        assert position == self.__pos
         self.__pos = None
 
     def onExitOk(self, position):
-        assert(position == self.__pos)
+        assert position == self.__pos
         self.__pos = None
 
     def __calculatePosSize(self):
@@ -73,7 +73,7 @@ class TestCase(unittest.TestCase):
         assert "cacho" not in feed
         strat = NikkeiSpyStrategy(feed, 34)
         strat.run()
-        self.assertEqual(round(strat.getResult(), 2), 1125558.12)
+        assert round(strat.getResult(), 2) == 1125558.12
 
     def testDifferentTimezones(self):
         # Market times in UTC:

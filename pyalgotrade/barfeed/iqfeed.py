@@ -24,7 +24,7 @@ from pyalgotrade import bar
 
 import types
 import datetime
-
+import pytz
 
 ######################################################################
 ## IQFeed CSV parser - Based on ninjatraderfeed.py
@@ -101,7 +101,7 @@ class Feed(csvfeed.BarFeed):
              * pyalgotrade.barfeed.Frequency.MINUTE
     """
 
-    def __init__(self, frequency, timezone = None):
+    def __init__(self, frequency, timezone = pytz.utc):
         if type(timezone) == types.IntType:
             raise Exception("timezone as an int parameter is not supported anymore. Please use a pytz timezone instead.")
 

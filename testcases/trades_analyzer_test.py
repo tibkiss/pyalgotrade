@@ -59,10 +59,10 @@ class TradesAnalyzerTestCase(unittest.TestCase):
 
         assert strat.getBroker().getCash() == 1000
 
-        self.assertTrue(stratAnalyzer.getCount() == 0)
-        self.assertTrue(stratAnalyzer.getEvenCount() == 0)
-        self.assertTrue(stratAnalyzer.getProfitableCount() == 0)
-        self.assertTrue(stratAnalyzer.getUnprofitableCount() == 0)
+        assert stratAnalyzer.getCount() == 0
+        assert stratAnalyzer.getEvenCount() == 0
+        assert stratAnalyzer.getProfitableCount() == 0
+        assert stratAnalyzer.getUnprofitableCount() == 0
 
     def testSomeTrades_Position(self):
         strat = self.__createStrategy()
@@ -82,28 +82,28 @@ class TradesAnalyzerTestCase(unittest.TestCase):
         strat.addPosEntry(buildUTCDateTime(2011, 1, 3, 15, 47), strat.enterLong, TradesAnalyzerTestCase.TestInstrument, 1) # 127.34
         strat.run()
 
-        self.assertTrue(round(strat.getBroker().getCash(), 2) == round(1000 + (127.16 - 127.14) + (127.16 - 127.2) + (127.26 - 127.16) - 127.34, 2))
+        assert round(strat.getBroker().getCash(), 2) == round(1000 + (127.16 - 127.14) + (127.16 - 127.2) + (127.26 - 127.16) - 127.34, 2)
 
-        self.assertTrue(stratAnalyzer.getCount() == 3)
-        self.assertTrue(stratAnalyzer.getEvenCount() == 0)
-        self.assertTrue(round(stratAnalyzer.getAll().mean(), 2) == 0.03)
-        self.assertTrue(round(stratAnalyzer.getAll().std(ddof=1), 2) == 0.07)
-        self.assertTrue(round(stratAnalyzer.getAll().std(ddof=0), 2) == 0.06)
+        assert stratAnalyzer.getCount() == 3
+        assert stratAnalyzer.getEvenCount() == 0
+        assert round(stratAnalyzer.getAll().mean(), 2) == 0.03
+        assert round(stratAnalyzer.getAll().std(ddof=1), 2) == 0.07
+        assert round(stratAnalyzer.getAll().std(ddof=0), 2) == 0.06
 
-        self.assertTrue(stratAnalyzer.getProfitableCount() == 2)
-        self.assertTrue(round(stratAnalyzer.getProfits().mean(), 2) == 0.06)
-        self.assertTrue(round(stratAnalyzer.getProfits().std(ddof=1), 2) == 0.06)
-        self.assertTrue(round(stratAnalyzer.getProfits().std(ddof=0), 2) == 0.04)
+        assert stratAnalyzer.getProfitableCount() == 2
+        assert round(stratAnalyzer.getProfits().mean(), 2) == 0.06
+        assert round(stratAnalyzer.getProfits().std(ddof=1), 2) == 0.06
+        assert round(stratAnalyzer.getProfits().std(ddof=0), 2) == 0.04
         self.assertEqual(stratAnalyzer.getPositiveReturns()[0], (127.16 - 127.14) / 127.14)
         self.assertEqual(stratAnalyzer.getPositiveReturns()[1], (127.26 - 127.16) / 127.16)
 
-        self.assertTrue(stratAnalyzer.getUnprofitableCount() == 1)
-        self.assertTrue(round(stratAnalyzer.getLosses().mean(), 2) == -0.04)
+        assert stratAnalyzer.getUnprofitableCount() == 1
+        assert round(stratAnalyzer.getLosses().mean(), 2) == -0.04
         if version.LooseVersion(numpy.__version__) >= version.LooseVersion("1.6.2"):
-            self.assertTrue(math.isnan(stratAnalyzer.getLosses().std(ddof=1)))
+            assert math.isnan(stratAnalyzer.getLosses().std(ddof=1))
         else:
-            self.assertTrue(stratAnalyzer.getLosses().std(ddof=1) == 0)
-        self.assertTrue(stratAnalyzer.getLosses().std(ddof=0) == 0)
+            assert stratAnalyzer.getLosses().std(ddof=1) == 0
+        assert stratAnalyzer.getLosses().std(ddof=0) == 0
         self.assertEqual(stratAnalyzer.getNegativeReturns()[0], (127.16 - 127.2) / 127.2)
 
     def testSomeTrades(self):
@@ -124,26 +124,26 @@ class TradesAnalyzerTestCase(unittest.TestCase):
         strat.addOrder(buildUTCDateTime(2011, 1, 3, 15, 47), strat.getBroker().createMarketOrder, broker.Order.Action.BUY, TradesAnalyzerTestCase.TestInstrument, 1) # 127.34
         strat.run()
 
-        self.assertTrue(round(strat.getBroker().getCash(), 2) == round(1000 + (127.16 - 127.14) + (127.16 - 127.2) + (127.26 - 127.16) - 127.34, 2))
+        assert round(strat.getBroker().getCash(), 2) == round(1000 + (127.16 - 127.14) + (127.16 - 127.2) + (127.26 - 127.16) - 127.34, 2)
 
-        self.assertTrue(stratAnalyzer.getCount() == 3)
-        self.assertTrue(stratAnalyzer.getEvenCount() == 0)
-        self.assertTrue(round(stratAnalyzer.getAll().mean(), 2) == 0.03)
-        self.assertTrue(round(stratAnalyzer.getAll().std(ddof=1), 2) == 0.07)
-        self.assertTrue(round(stratAnalyzer.getAll().std(ddof=0), 2) == 0.06)
+        assert stratAnalyzer.getCount() == 3
+        assert stratAnalyzer.getEvenCount() == 0
+        assert round(stratAnalyzer.getAll().mean(), 2) == 0.03
+        assert round(stratAnalyzer.getAll().std(ddof=1), 2) == 0.07
+        assert round(stratAnalyzer.getAll().std(ddof=0), 2) == 0.06
 
-        self.assertTrue(stratAnalyzer.getProfitableCount() == 2)
-        self.assertTrue(round(stratAnalyzer.getProfits().mean(), 2) == 0.06)
-        self.assertTrue(round(stratAnalyzer.getProfits().std(ddof=1), 2) == 0.06)
-        self.assertTrue(round(stratAnalyzer.getProfits().std(ddof=0), 2) == 0.04)
+        assert stratAnalyzer.getProfitableCount() == 2
+        assert round(stratAnalyzer.getProfits().mean(), 2) == 0.06
+        assert round(stratAnalyzer.getProfits().std(ddof=1), 2) == 0.06
+        assert round(stratAnalyzer.getProfits().std(ddof=0), 2) == 0.04
 
-        self.assertTrue(stratAnalyzer.getUnprofitableCount() == 1)
-        self.assertTrue(round(stratAnalyzer.getLosses().mean(), 2) == -0.04)
+        assert stratAnalyzer.getUnprofitableCount() == 1
+        assert round(stratAnalyzer.getLosses().mean(), 2) == -0.04
         if version.LooseVersion(numpy.__version__) >= version.LooseVersion("1.6.2"):
-            self.assertTrue(math.isnan(stratAnalyzer.getLosses().std(ddof=1)))
+            assert math.isnan(stratAnalyzer.getLosses().std(ddof=1))
         else:
-            self.assertTrue(stratAnalyzer.getLosses().std(ddof=1) == 0)
-        self.assertTrue(stratAnalyzer.getLosses().std(ddof=0) == 0)
+            assert stratAnalyzer.getLosses().std(ddof=1) == 0
+        assert stratAnalyzer.getLosses().std(ddof=0) == 0
 
     def testSomeTradesWithCommissions(self):
         strat = self.__createStrategy()
@@ -161,11 +161,11 @@ class TradesAnalyzerTestCase(unittest.TestCase):
         strat.addOrder(buildUTCDateTime(2011, 1, 3, 15, 47), strat.getBroker().createMarketOrder, broker.Order.Action.BUY, TradesAnalyzerTestCase.TestInstrument, 1) # 127.34
         strat.run()
 
-        self.assertTrue(round(strat.getBroker().getCash(), 2) == round(1000 + (127.16 - 127.2) + (127.26 - 127.16) - 127.34 - 0.01*5, 2))
-        self.assertTrue(numpy.array_equal(stratAnalyzer.getCommissionsForAllTrades(), numpy.array([0.02, 0.02])))
-        self.assertTrue(numpy.array_equal(stratAnalyzer.getCommissionsForProfitableTrades(), numpy.array([0.02])))
-        self.assertTrue(numpy.array_equal(stratAnalyzer.getCommissionsForUnprofitableTrades(), numpy.array([0.02])))
-        self.assertTrue(numpy.array_equal(stratAnalyzer.getCommissionsForEvenTrades(), numpy.array([])))
+        assert round(strat.getBroker().getCash(), 2) == round(1000 + (127.16 - 127.2) + (127.26 - 127.16) - 127.34 - 0.01*5, 2)
+        assert numpy.array_equal(stratAnalyzer.getCommissionsForAllTrades(), numpy.array([0.02, 0.02]))
+        assert numpy.array_equal(stratAnalyzer.getCommissionsForProfitableTrades(), numpy.array([0.02]))
+        assert numpy.array_equal(stratAnalyzer.getCommissionsForUnprofitableTrades(), numpy.array([0.02]))
+        assert numpy.array_equal(stratAnalyzer.getCommissionsForEvenTrades(), numpy.array([]))
 
     def testLongShort(self):
         strat = self.__createStrategy()
@@ -180,19 +180,19 @@ class TradesAnalyzerTestCase(unittest.TestCase):
         strat.addOrder(buildUTCDateTime(2011, 1, 3, 15, 30), strat.getBroker().createMarketOrder, broker.Order.Action.BUY_TO_COVER, TradesAnalyzerTestCase.TestInstrument, 1) # 127.2
         strat.run()
 
-        self.assertTrue(round(strat.getBroker().getCash(), 2) == round(1000 + (127.16 - 127.14) + (127.16 - 127.2), 2))
+        assert round(strat.getBroker().getCash(), 2) == round(1000 + (127.16 - 127.14) + (127.16 - 127.2), 2)
 
-        self.assertTrue(stratAnalyzer.getCount() == 2)
-        self.assertTrue(stratAnalyzer.getEvenCount() == 0)
+        assert stratAnalyzer.getCount() == 2
+        assert stratAnalyzer.getEvenCount() == 0
 
-        self.assertTrue(round(stratAnalyzer.getAll().mean(), 2) == -0.01)
-        self.assertTrue(round(stratAnalyzer.getAll().std(ddof=1), 4) == 0.0424)
+        assert round(stratAnalyzer.getAll().mean(), 2) == -0.01
+        assert round(stratAnalyzer.getAll().std(ddof=1), 4) == 0.0424
 
-        self.assertTrue(stratAnalyzer.getProfitableCount() == 1)
-        self.assertTrue(round(stratAnalyzer.getProfits().mean(), 2) == 0.02)
+        assert stratAnalyzer.getProfitableCount() == 1
+        assert round(stratAnalyzer.getProfits().mean(), 2) == 0.02
 
-        self.assertTrue(stratAnalyzer.getUnprofitableCount() == 1)
-        self.assertTrue(round(stratAnalyzer.getLosses().mean(), 2) == -0.04)
+        assert stratAnalyzer.getUnprofitableCount() == 1
+        assert round(stratAnalyzer.getLosses().mean(), 2) == -0.04
 
     def testLongShort2(self):
         strat = self.__createStrategy()
@@ -209,19 +209,19 @@ class TradesAnalyzerTestCase(unittest.TestCase):
         strat.addOrder(buildUTCDateTime(2011, 1, 3, 15, 30), strat.getBroker().createMarketOrder, broker.Order.Action.BUY_TO_COVER, TradesAnalyzerTestCase.TestInstrument, 1) # 127.2
         strat.run()
 
-        self.assertTrue(round(strat.getBroker().getCash(), 2) == round(1000 + (127.16 - 127.14) + (127.16 - 127.2), 2))
+        assert round(strat.getBroker().getCash(), 2) == round(1000 + (127.16 - 127.14) + (127.16 - 127.2), 2)
 
-        self.assertTrue(stratAnalyzer.getCount() == 2)
-        self.assertTrue(stratAnalyzer.getEvenCount() == 0)
+        assert stratAnalyzer.getCount() == 2
+        assert stratAnalyzer.getEvenCount() == 0
 
-        self.assertTrue(round(stratAnalyzer.getAll().mean(), 2) == -0.01)
-        self.assertTrue(round(stratAnalyzer.getAll().std(ddof=1), 4) == 0.0424)
+        assert round(stratAnalyzer.getAll().mean(), 2) == -0.01
+        assert round(stratAnalyzer.getAll().std(ddof=1), 4) == 0.0424
 
-        self.assertTrue(stratAnalyzer.getProfitableCount() == 1)
-        self.assertTrue(round(stratAnalyzer.getProfits().mean(), 2) == 0.02)
+        assert stratAnalyzer.getProfitableCount() == 1
+        assert round(stratAnalyzer.getProfits().mean(), 2) == 0.02
 
-        self.assertTrue(stratAnalyzer.getUnprofitableCount() == 1)
-        self.assertTrue(round(stratAnalyzer.getLosses().mean(), 2) == -0.04)
+        assert stratAnalyzer.getUnprofitableCount() == 1
+        assert round(stratAnalyzer.getLosses().mean(), 2) == -0.04
 
     def testShortLong(self):
         strat = self.__createStrategy()
@@ -236,19 +236,19 @@ class TradesAnalyzerTestCase(unittest.TestCase):
         strat.addOrder(buildUTCDateTime(2011, 1, 3, 15, 30), strat.getBroker().createMarketOrder, broker.Order.Action.SELL, TradesAnalyzerTestCase.TestInstrument, 1) # 127.2
         strat.run()
 
-        self.assertTrue(round(strat.getBroker().getCash(), 2) == round(1000 + (127.14 - 127.16) + (127.2 - 127.16), 2))
+        assert round(strat.getBroker().getCash(), 2) == round(1000 + (127.14 - 127.16) + (127.2 - 127.16), 2)
 
-        self.assertTrue(stratAnalyzer.getCount() == 2)
-        self.assertTrue(stratAnalyzer.getEvenCount() == 0)
+        assert stratAnalyzer.getCount() == 2
+        assert stratAnalyzer.getEvenCount() == 0
 
-        self.assertTrue(round(stratAnalyzer.getAll().mean(), 2) == 0.01)
-        self.assertTrue(round(stratAnalyzer.getAll().std(ddof=1), 4) == 0.0424)
+        assert round(stratAnalyzer.getAll().mean(), 2) == 0.01
+        assert round(stratAnalyzer.getAll().std(ddof=1), 4) == 0.0424
 
-        self.assertTrue(stratAnalyzer.getProfitableCount() == 1)
-        self.assertTrue(round(stratAnalyzer.getProfits().mean(), 2) == 0.04)
+        assert stratAnalyzer.getProfitableCount() == 1
+        assert round(stratAnalyzer.getProfits().mean(), 2) == 0.04
 
-        self.assertTrue(stratAnalyzer.getUnprofitableCount() == 1)
-        self.assertTrue(round(stratAnalyzer.getLosses().mean(), 2) == -0.02)
+        assert stratAnalyzer.getUnprofitableCount() == 1
+        assert round(stratAnalyzer.getLosses().mean(), 2) == -0.02
 
     def testShortLong2(self):
         strat = self.__createStrategy()
@@ -265,19 +265,19 @@ class TradesAnalyzerTestCase(unittest.TestCase):
         strat.addOrder(buildUTCDateTime(2011, 1, 3, 15, 30), strat.getBroker().createMarketOrder, broker.Order.Action.SELL, TradesAnalyzerTestCase.TestInstrument, 1) # 127.2
         strat.run()
 
-        self.assertTrue(round(strat.getBroker().getCash(), 2) == round(1000 + (127.14 - 127.16) + (127.2 - 127.16), 2))
+        assert round(strat.getBroker().getCash(), 2) == round(1000 + (127.14 - 127.16) + (127.2 - 127.16), 2)
 
-        self.assertTrue(stratAnalyzer.getCount() == 2)
-        self.assertTrue(stratAnalyzer.getEvenCount() == 0)
+        assert stratAnalyzer.getCount() == 2
+        assert stratAnalyzer.getEvenCount() == 0
 
-        self.assertTrue(round(stratAnalyzer.getAll().mean(), 2) == 0.01)
-        self.assertTrue(round(stratAnalyzer.getAll().std(ddof=1), 4) == 0.0424)
+        assert round(stratAnalyzer.getAll().mean(), 2) == 0.01
+        assert round(stratAnalyzer.getAll().std(ddof=1), 4) == 0.0424
 
-        self.assertTrue(stratAnalyzer.getProfitableCount() == 1)
-        self.assertTrue(round(stratAnalyzer.getProfits().mean(), 2) == 0.04)
+        assert stratAnalyzer.getProfitableCount() == 1
+        assert round(stratAnalyzer.getProfits().mean(), 2) == 0.04
 
-        self.assertTrue(stratAnalyzer.getUnprofitableCount() == 1)
-        self.assertTrue(round(stratAnalyzer.getLosses().mean(), 2) == -0.02)
+        assert stratAnalyzer.getUnprofitableCount() == 1
+        assert round(stratAnalyzer.getLosses().mean(), 2) == -0.02
 
     def testLong2(self):
         strat = self.__createStrategy()
@@ -292,17 +292,17 @@ class TradesAnalyzerTestCase(unittest.TestCase):
         strat.addOrder(buildUTCDateTime(2011, 1, 3, 15, 30), strat.getBroker().createMarketOrder, broker.Order.Action.SELL, TradesAnalyzerTestCase.TestInstrument, 2) # 127.2
         strat.run()
 
-        self.assertTrue(round(strat.getBroker().getCash(), 2) == round(1000 + (127.2 - 127.14) + (127.2 - 127.16), 2))
+        assert round(strat.getBroker().getCash(), 2) == round(1000 + (127.2 - 127.14) + (127.2 - 127.16), 2)
 
-        self.assertTrue(stratAnalyzer.getCount() == 1)
-        self.assertTrue(stratAnalyzer.getEvenCount() == 0)
+        assert stratAnalyzer.getCount() == 1
+        assert stratAnalyzer.getEvenCount() == 0
 
-        self.assertTrue(round(stratAnalyzer.getAll().mean(), 2) == 0.1)
+        assert round(stratAnalyzer.getAll().mean(), 2) == 0.1
 
-        self.assertTrue(stratAnalyzer.getProfitableCount() == 1)
-        self.assertTrue(round(stratAnalyzer.getProfits().mean(), 2) == 0.1)
+        assert stratAnalyzer.getProfitableCount() == 1
+        assert round(stratAnalyzer.getProfits().mean(), 2) == 0.1
 
-        self.assertTrue(stratAnalyzer.getUnprofitableCount() == 0)
+        assert stratAnalyzer.getUnprofitableCount() == 0
 
     def testLong3(self):
         strat = self.__createStrategy()
@@ -317,17 +317,17 @@ class TradesAnalyzerTestCase(unittest.TestCase):
         strat.addOrder(buildUTCDateTime(2011, 1, 3, 15, 30), strat.getBroker().createMarketOrder, broker.Order.Action.SELL, TradesAnalyzerTestCase.TestInstrument, 1) # 127.2
         strat.run()
 
-        self.assertTrue(round(strat.getBroker().getCash(), 2) == round(1000 + (127.2 - 127.14) + (127.16 - 127.14), 2))
+        assert round(strat.getBroker().getCash(), 2) == round(1000 + (127.2 - 127.14) + (127.16 - 127.14), 2)
 
-        self.assertTrue(stratAnalyzer.getCount() == 1)
-        self.assertTrue(stratAnalyzer.getEvenCount() == 0)
+        assert stratAnalyzer.getCount() == 1
+        assert stratAnalyzer.getEvenCount() == 0
 
-        self.assertTrue(round(stratAnalyzer.getAll().mean(), 2) == 0.08)
+        assert round(stratAnalyzer.getAll().mean(), 2) == 0.08
 
-        self.assertTrue(stratAnalyzer.getProfitableCount() == 1)
-        self.assertTrue(round(stratAnalyzer.getProfits().mean(), 2) == 0.08)
+        assert stratAnalyzer.getProfitableCount() == 1
+        assert round(stratAnalyzer.getProfits().mean(), 2) == 0.08
 
-        self.assertTrue(stratAnalyzer.getUnprofitableCount() == 0)
+        assert stratAnalyzer.getUnprofitableCount() == 0
 
     def testShort2(self):
         strat = self.__createStrategy()
@@ -342,17 +342,17 @@ class TradesAnalyzerTestCase(unittest.TestCase):
         strat.addOrder(buildUTCDateTime(2011, 1, 3, 15, 30), strat.getBroker().createMarketOrder, broker.Order.Action.BUY_TO_COVER, TradesAnalyzerTestCase.TestInstrument, 2) # 127.2
         strat.run()
 
-        self.assertTrue(round(strat.getBroker().getCash(), 2) == round(1000 + (127.14 - 127.2) + (127.16 - 127.2), 2))
+        assert round(strat.getBroker().getCash(), 2) == round(1000 + (127.14 - 127.2) + (127.16 - 127.2), 2)
 
-        self.assertTrue(stratAnalyzer.getCount() == 1)
-        self.assertTrue(stratAnalyzer.getEvenCount() == 0)
+        assert stratAnalyzer.getCount() == 1
+        assert stratAnalyzer.getEvenCount() == 0
 
-        self.assertTrue(round(stratAnalyzer.getAll().mean(), 2) == -0.1)
+        assert round(stratAnalyzer.getAll().mean(), 2) == -0.1
 
-        self.assertTrue(stratAnalyzer.getUnprofitableCount() == 1)
-        self.assertTrue(round(stratAnalyzer.getLosses().mean(), 2) == -0.1)
+        assert stratAnalyzer.getUnprofitableCount() == 1
+        assert round(stratAnalyzer.getLosses().mean(), 2) == -0.1
 
-        self.assertTrue(stratAnalyzer.getProfitableCount() == 0)
+        assert stratAnalyzer.getProfitableCount() == 0
 
     def testShort3(self):
         strat = self.__createStrategy()
@@ -367,17 +367,17 @@ class TradesAnalyzerTestCase(unittest.TestCase):
         strat.addOrder(buildUTCDateTime(2011, 1, 3, 15, 30), strat.getBroker().createMarketOrder, broker.Order.Action.BUY_TO_COVER, TradesAnalyzerTestCase.TestInstrument, 1) # 127.2
         strat.run()
 
-        self.assertTrue(round(strat.getBroker().getCash(), 2) == round(1000 + (127.14 - 127.16) + (127.14 - 127.2), 2))
+        assert round(strat.getBroker().getCash(), 2) == round(1000 + (127.14 - 127.16) + (127.14 - 127.2), 2)
 
-        self.assertTrue(stratAnalyzer.getCount() == 1)
-        self.assertTrue(stratAnalyzer.getEvenCount() == 0)
+        assert stratAnalyzer.getCount() == 1
+        assert stratAnalyzer.getEvenCount() == 0
 
-        self.assertTrue(round(stratAnalyzer.getAll().mean(), 2) == -0.08)
+        assert round(stratAnalyzer.getAll().mean(), 2) == -0.08
 
-        self.assertTrue(stratAnalyzer.getUnprofitableCount() == 1)
-        self.assertTrue(round(stratAnalyzer.getLosses().mean(), 2) == -0.08)
+        assert stratAnalyzer.getUnprofitableCount() == 1
+        assert round(stratAnalyzer.getLosses().mean(), 2) == -0.08
 
-        self.assertTrue(stratAnalyzer.getProfitableCount() == 0)
+        assert stratAnalyzer.getProfitableCount() == 0
 
 def getTestCases():
     ret = []

@@ -158,6 +158,12 @@ class EMATestCase(unittest.TestCase):
         # Load all the feed.
         barFeed.loadAll()
 
+        # need to pass at least once the barFeed in order to the dataseries to be created
+        # without this workaround the next assert statement would fail due to empty dataset
+        # returned by getCloseDataSeries()
+        for _ in barFeed:
+            pass
+
         # Check that the max recursion limit bug is not hit when generating the last value first.
         self.assertEquals(round(ma.EMA(barFeed["any"].getCloseDataSeries(), 10)[-1], 2), 128.81)
 

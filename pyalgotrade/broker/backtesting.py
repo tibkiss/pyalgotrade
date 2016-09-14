@@ -19,6 +19,7 @@
 """
 
 from pyalgotrade import broker
+from pyalgotrade.broker import Order
 from pyalgotrade import warninghelpers
 import pyalgotrade.logger
 import pyalgotrade.bar
@@ -525,7 +526,8 @@ class Broker(broker.Broker):
         activeOrders = copy.copy(self.__activeOrders)
 
         for order in activeOrders:
-            if order.isAccepted() and not order.getGoodTillCanceled():
+            # Market orders should not be cancelled  as they are filled during EOD handling (at a later stage)
+            if order.isAccepted() and not order.getGoodTillCanceled() and not order.getType() == Order.Type.MARKET:
                 logger.debug("Cancelling non-GTC order: %s" % order)
                 order.setState(broker.Order.State.CANCELED)
                 self.__activeOrders.remove(order)

@@ -361,6 +361,10 @@ class OrderExecutionInfo:
         """Returns the :class:`datatime.datetime` when the order was executed."""
         return self.__dateTime
 
+    def __repr__(self):
+        return "OrderExecution: price=%s quantity=%s commission=%s dateTime=%s" % (
+            self.__price, self.__quantity, self.__commission, self.__dateTime)
+
 ######################################################################
 ## Base broker class
 class Broker:

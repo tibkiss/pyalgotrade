@@ -481,8 +481,11 @@ class Broker(broker.Broker):
             # Update the order.
             orderExecutionInfo = broker.OrderExecutionInfo(price, quantity, commission, dateTime)
             order.setExecuted(orderExecutionInfo)
+
+            logger.debug("%s Order filled: %s" % (instrument, orderExecutionInfo))
+            logger.debug("%s shares owned. Total cost: %s" % (self.__shares[instrument], self.__totalCost[instrument]))
         else:
-            logger.info("Not enough cash to fill the order for %s @ %.2f. Avail: %.2f, Req: %.2f" %
+            logger.debug("Not enough cash to fill the order for %s @ %.2f. Avail: %.2f, Req: %.2f" %
                         (instrument, price, self.getCash(), cost * -1))
 
         return ret

@@ -292,7 +292,10 @@ class TradesAnalyzerTestCase(unittest.TestCase):
         strat.addOrder(buildUTCDateTime(2011, 1, 3, 15, 30), strat.getBroker().createMarketOrder, broker.Order.Action.SELL, TradesAnalyzerTestCase.TestInstrument, 2) # 127.2
         strat.run()
 
-        assert round(strat.getBroker().getCash(), 2) == round(1000 + (127.2 - 127.14) + (127.2 - 127.16), 2)
+        expectedCash = round(1000 + (127.2 - 127.14) + (127.2 - 127.16), 2)
+        actualCash = round(strat.getBroker().getCash(), 2)
+
+        assert actualCash == expectedCash
 
         assert stratAnalyzer.getCount() == 1
         assert stratAnalyzer.getEvenCount() == 0

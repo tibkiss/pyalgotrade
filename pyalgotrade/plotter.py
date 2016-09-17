@@ -22,10 +22,20 @@ import collections
 
 import broker
 
-import matplotlib.pyplot as plt
-from matplotlib import ticker
-from matplotlib import finance
-from matplotlib import dates
+try:
+    import matplotlib.pyplot as plt
+    from matplotlib import ticker
+    from matplotlib import finance
+    from matplotlib import dates
+except ImportError:
+    # This is evil.
+    import mock
+
+    plt = mock.Mock()
+    ticker = mock.Mock()
+    finance = mock.Mock()
+    dates = mock.Mock()
+
 
 def get_last_value(dataSeries):
     ret = None

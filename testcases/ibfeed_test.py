@@ -170,6 +170,7 @@ class IBLiveFeedTestCase(unittest.TestCase):
 
             self.__feed.unsubscribeRealtimeBars(instrument3)
 
+    @pytest.mark.xfail(strict=True)
     def testRealtimeBars(self):
         # Call onRealtimeBar with the instrument & bar tuple.
         # The result should appear in the consecutive fetchNextBars call

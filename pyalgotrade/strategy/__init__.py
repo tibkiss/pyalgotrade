@@ -23,6 +23,15 @@ import pyalgotrade.broker.backtesting
 import pyalgotrade.observer
 import pyalgotrade.strategy.position
 
+#################################################################################
+## WARNING:
+## The design of Strategy makes it hard to interface it with live feeds.
+## The refactorings of pyalgotrade to support live trading rendered some of the
+## functions of this class buggy and hard to fix.
+## See the associated testcases (which are skipped due to failure).
+#################################################################################
+
+
 class Strategy:
     """Base class for strategies.
 

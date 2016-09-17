@@ -22,6 +22,8 @@ import pytest
 import unittest
 import datetime
 
+import pytz
+
 import common
 
 from pyalgotrade.barfeed import csvfeed
@@ -74,7 +76,7 @@ class IBCSVFeedTestCase(unittest.TestCase):
     TestInstrument = "spy"
 
     def __parseDate(self, date):
-        parser = RowParser("test")
+        parser = RowParser()
         row = {"Date":date, "Close":0, "Open":0 , "High":0 , "Low":0 , "Volume":0 , "TradeCount":0 , "VWAP":0 , "HasGap": "False"}
         return parser.parseBar(row).getDateTime()
 
@@ -120,13 +122,14 @@ class IBCSVFeedTestCase(unittest.TestCase):
         assert handler.getEventCount() > 0
 
     def testFilteredRangeFrom(self):
-        self.__testFilteredRangeImpl(datetime.datetime(2012, 06, 28, 00, 00), None)
+        self.__testFilteredRangeImpl(datetime.datetime(2012, 06, 28, 00, 00, tzinfo=pytz.UTC), None)
 
     def testFilteredRangeTo(self):
-        self.__testFilteredRangeImpl(None, datetime.datetime(2012, 06, 29, 23, 55))
+        self.__testFilteredRangeImpl(None, datetime.datetime(2012, 06, 29, 23, 55, tzinfo=pytz.UTC))
 
     def testFilteredRangeFromTo(self):
-        self.__testFilteredRangeImpl(datetime.datetime(2000, 1, 1, 00, 00), datetime.datetime(2020, 12, 31, 23, 55))
+        self.__testFilteredRangeImpl(datetime.datetime(2000, 1, 1, 00, 00, tzinfo=pytz.UTC),
+                                     datetime.datetime(2020, 12, 31, 23, 55, tzinfo=pytz.UTC))
 
 class IBLiveFeedTestCase(unittest.TestCase):
     TestInstrument = "spy"

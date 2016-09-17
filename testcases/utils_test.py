@@ -21,58 +21,12 @@
 from pyalgotrade.utils import stats
 from pyalgotrade.utils import intersect
 
+import pytest
 import unittest
 import math
 import numpy
 from distutils import version
 import datetime
-
-class StatsTestCase(unittest.TestCase):
-    def __assertEqFloat(self, v1, v2):
-        if v1 != None and v2 != None:
-            # Assume that both are floats.
-            if math.isnan(v1) and math.isnan(v2):
-                # self.assertEqual will fail if both are nan.
-                pass
-            else:
-                precision = 5
-                self.assertEqual(round(v1, precision), round(v2, precision))
-        else:
-            self.assertEqual(v1, v2)
-
-    def __testMeanImpl(self, values):
-        self.__assertEqFloat(stats.mean(values), stats.py_mean(values))
-
-    def __testStdDevImpl(self, values, ddof):
-        self.__assertEqFloat(stats.stddev(values, ddof), stats.py_stddev(values, ddof))
-
-    def testMean(self):
-        # Test that the numpy and the builtin versions behave the same.
-        self.__testMeanImpl([])
-        self.__testMeanImpl([1])
-        self.__testMeanImpl([1, 2, 4])
-        self.__testMeanImpl([-1, 2, -4])
-        self.__testMeanImpl([1.04, 2.07, 4.41324])
-
-    # numpy greater or equal than 1.6.2
-    def testStdDev_NumpyGE162(self):
-        self.__testStdDevImpl([1], 1)
-        self.__testStdDevImpl([1, 2, 4], 3)
-        self.__testStdDevImpl([-1, 2, -4], 3)
-        self.__testStdDevImpl([-1.034, 2.012341, -4], 3)
-
-    def testStdDev(self):
-        # Test that the numpy and the builtin versions behave the same.
-        self.__testStdDevImpl([], 0)
-        self.__testStdDevImpl([], 1)
-        self.__testStdDevImpl([1], 0)
-        self.__testStdDevImpl([1, 2, 4], 0)
-        self.__testStdDevImpl([1, 2, 4], 4)
-        self.__testStdDevImpl([-1, 2, -4], 0)
-        self.__testStdDevImpl([-1, 2, -4], 4)
-
-        self.__testStdDevImpl([-1.034, 2.012341, -4], 0)
-        self.__testStdDevImpl([-1.034, 2.012341, -4], 4)
 
 class CollectionsTestCase(unittest.TestCase):
     def testEmptyIntersection(self):

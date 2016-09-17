@@ -18,52 +18,17 @@
 .. moduleauthor:: Gabriel Martin Becedillas Ruiz <gabriel.becedillas@gmail.com>
 """
 import sys
-IS_PYPY = '__pypy__' in sys.builtin_module_names
 
-from pyalgotrade import execcontext
-import math
+import numpy
 
-def py_mean(values):
+def mean(values):
     ret = None
     if len(values):
-        accum = 0
-        for value in values:
-            if value is None:
-                return None
-            accum += value
-        ret = accum / float(len(values))
+        ret =  numpy.array(values).mean()
     return ret
 
-def py_stddev(values, ddof = 1):
+def stddev(values, ddof = 1):
     ret = None
     if len(values):
-        mn = mean(values)
-        accum = 0
-        for value in values:
-            if value is None:
-                return None
-            accum += (value - mn)**2
-
-        denom = len(values) - ddof
-        if denom <= 0:
-            return float('nan')
-        ret = math.sqrt(accum / float(denom))
+        ret =  numpy.array(values).std(ddof=ddof)
     return ret
-
-if execcontext.running_in_google_app_engine:
-    mean = py_mean
-    stddev = py_stddev
-else:
-    import numpy
-
-    def mean(values):
-        ret = None
-        if len(values):
-            ret =  numpy.array(values).mean()
-        return ret
-
-    def stddev(values, ddof = 1):
-        ret = None
-        if len(values):
-            ret =  numpy.array(values).std()
-        return ret

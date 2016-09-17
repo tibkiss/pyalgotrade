@@ -22,14 +22,19 @@ import pytest
 import unittest
 
 from pyalgotrade.barfeed import yahoofeed
-from pyalgotrade.talibext import indicator
 from pyalgotrade import bar
 from pyalgotrade import dataseries
 import common
 
 import datetime
 import numpy
-import talib
+
+# TA-Lib is unavailable in pypy
+try:
+    import talib
+    from pyalgotrade.talibext import indicator
+except ImportError:
+    pytestmark = pytest.mark.skipif(True, reason="TA-Lib is not installed")
 
 # Market data used for regression tests (252 price bars) extracted from ta-lib/src/tools/ta_regtest/test_data.c
 OPEN_VALUES = [92.500000,91.500000,95.155000,93.970000,95.500000,94.500000,95.000000,91.500000,91.815000,91.125000,93.875000,

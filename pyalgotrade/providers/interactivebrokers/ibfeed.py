@@ -36,7 +36,7 @@ from threading import Lock
 
 
 class RowParser(csvfeed.RowParser):
-    def __init__(self, zone = 0):
+    def __init__(self, zone = pytz.UTC):
         self.__zone = zone
 
     def __parseDate(self, dateString, simpleParser=True):
@@ -46,10 +46,10 @@ class RowParser(csvfeed.RowParser):
             (yr, mt, dt) = dt.split("-")
             (hr, mn, sc) = tm.split(":")
 
-            ret = datetime.datetime(int(yr), int(mt), int(dt), int(hr)-int(self.__zone), int(mn), int(sc))
+            ret = datetime.datetime(int(yr), int(mt), int(dt), int(hr), int(mn), int(sc), tzinfo=self.__zone)
         else:
-            ret = datetime.datetime.strptime(dateString, "%Y-%m-%d %H:%M:%S")
-            ret += datetime.timedelta(hours= (-1 * self.__zone))
+            ret = self.__zone.localize(datetime.datetime.strptime(dateString, "%Y-%m-%d %H:%M:%S"))
+
         return ret
 
     def getFieldNames(self):

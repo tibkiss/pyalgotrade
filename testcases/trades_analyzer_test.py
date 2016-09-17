@@ -48,7 +48,7 @@ class TradesAnalyzerTestCase(unittest.TestCase):
         barFilter = csvfeed.USEquitiesRTH()
         barFeed.setBarFilter(barFilter)
         barFeed.addBarsFromCSV(TradesAnalyzerTestCase.TestInstrument, common.get_data_file_path("nt-spy-minute-2011.csv"))
-        return strategy_test.TestStrategy(barFeed, 1000)
+        return strategy_test.DummyStrategy(barFeed, 1000)
 
     def testNoTrades(self):
         strat = self.__createStrategy()

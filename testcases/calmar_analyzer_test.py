@@ -34,7 +34,7 @@ class CalmarRatioTestCase(unittest.TestCase):
     def testNoTrades(self):
         barFeed = yahoofeed.Feed()
         barFeed.addBarsFromCSV("ige", common.get_data_file_path("sharpe-ratio-test-ige.csv"))
-        strat = strategy_test.TestStrategy(barFeed, 1000)
+        strat = strategy_test.DummyStrategy(barFeed, 1000)
         stratAnalyzer = sharpe.SharpeRatio()
         strat.attachAnalyzer(stratAnalyzer)
 

@@ -197,7 +197,7 @@ class ReturnsTestCase(unittest.TestCase):
         barFeed = yahoofeed.Feed()
         barFeed.setBarFilter(csvfeed.DateRangeFilter(strategy_test.datetime_from_date(2001, 12, 07), strategy_test.datetime_from_date(2001, 12, 07)))
         barFeed.addBarsFromCSV(ReturnsTestCase.TestInstrument, common.get_data_file_path("orcl-2001-yahoofinance.csv"))
-        strat = strategy_test.TestStrategy(barFeed, initialCash)
+        strat = strategy_test.DummyStrategy(barFeed, initialCash)
 
         # 2001-12-07,15.74,15.95,15.55,15.91,42463200,15.56
         # Manually place the orders to get them filled on the first (and only) bar.
@@ -220,7 +220,7 @@ class ReturnsTestCase(unittest.TestCase):
         barFeed = yahoofeed.Feed()
         barFeed.setBarFilter(csvfeed.DateRangeFilter(strategy_test.datetime_from_date(2001, 12, 06), strategy_test.datetime_from_date(2001, 12, 07)))
         barFeed.addBarsFromCSV(ReturnsTestCase.TestInstrument, common.get_data_file_path("orcl-2001-yahoofinance.csv"))
-        strat = strategy_test.TestStrategy(barFeed, initialCash)
+        strat = strategy_test.DummyStrategy(barFeed, initialCash)
 
         # 2001-12-06,15.61,16.03,15.50,15.90,66944900,15.55
         # 2001-12-07,15.74,15.95,15.55,15.91,42463200,15.56
@@ -243,7 +243,7 @@ class ReturnsTestCase(unittest.TestCase):
         barFeed = yahoofeed.Feed()
         barFeed.setBarFilter(csvfeed.DateRangeFilter(strategy_test.datetime_from_date(2001, 12, 06), strategy_test.datetime_from_date(2001, 12, 07)))
         barFeed.addBarsFromCSV(ReturnsTestCase.TestInstrument, common.get_data_file_path("orcl-2001-yahoofinance.csv"))
-        strat = strategy_test.TestStrategy(barFeed, initialCash)
+        strat = strategy_test.DummyStrategy(barFeed, initialCash)
 
         # 2001-12-06,15.61,16.03,15.50,15.90,66944900,15.55
         # 2001-12-07,15.74,15.95,15.55,15.91,42463200,15.56
@@ -266,7 +266,7 @@ class ReturnsTestCase(unittest.TestCase):
         barFeed = yahoofeed.Feed()
         barFeed.setBarFilter(csvfeed.DateRangeFilter(strategy_test.datetime_from_date(2001, 12, 06), strategy_test.datetime_from_date(2001, 12, 07)))
         barFeed.addBarsFromCSV(ReturnsTestCase.TestInstrument, common.get_data_file_path("orcl-2001-yahoofinance.csv"))
-        strat = strategy_test.TestStrategy(barFeed, initialCash)
+        strat = strategy_test.DummyStrategy(barFeed, initialCash)
 
         # 2001-12-06,15.61,16.03,15.50,15.90,66944900,15.55
         # 2001-12-07,15.74,15.95,15.55,15.91,42463200,15.56
@@ -289,7 +289,7 @@ class ReturnsTestCase(unittest.TestCase):
         barFeed = yahoofeed.Feed()
         barFeed.setBarFilter(csvfeed.DateRangeFilter(strategy_test.datetime_from_date(2001, 12, 06), strategy_test.datetime_from_date(2001, 12, 07)))
         barFeed.addBarsFromCSV(ReturnsTestCase.TestInstrument, common.get_data_file_path("orcl-2001-yahoofinance.csv"))
-        strat = strategy_test.TestStrategy(barFeed, initialCash)
+        strat = strategy_test.DummyStrategy(barFeed, initialCash)
 
         # 2001-12-06,15.61,16.03,15.50,15.90,66944900,15.55
         # 2001-12-07,15.74,15.95,15.55,15.91,42463200,15.56
@@ -311,7 +311,7 @@ class ReturnsTestCase(unittest.TestCase):
         initialCash = 33.06
         barFeed = yahoofeed.Feed()
         barFeed.addBarsFromCSV(ReturnsTestCase.TestInstrument, common.get_data_file_path("orcl-2001-yahoofinance.csv"))
-        strat = strategy_test.TestStrategy(barFeed, initialCash)
+        strat = strategy_test.DummyStrategy(barFeed, initialCash)
 
         strat.addPosEntry(strategy_test.datetime_from_date(2001, 1, 12), strat.enterLong, ReturnsTestCase.TestInstrument, 1) # 33.06
         strat.addPosExit(strategy_test.datetime_from_date(2001, 11, 27), strat.exitPosition) # 14.32
@@ -327,7 +327,7 @@ class ReturnsTestCase(unittest.TestCase):
         barFeed = yahoofeed.Feed()
         barFeed.addBarsFromCSV(ReturnsTestCase.TestInstrument, common.get_data_file_path("goog-2011-yahoofinance.csv"))
 
-        strat = strategy_test.TestStrategy(barFeed, initialValue)
+        strat = strategy_test.DummyStrategy(barFeed, initialValue)
         order = strat.getBroker().createMarketOrder(broker.Order.Action.BUY, ReturnsTestCase.TestInstrument, 1654, True) # 2011-01-03 close: 604.35
         strat.getBroker().placeOrder(order)
 

@@ -137,7 +137,7 @@ class AnalyzerTestCase(unittest.TestCase):
         barFeed = yahoofeed.Feed()
         barFeed.addBarsFromCSV("ige", common.get_data_file_path("sharpe-ratio-test-ige.csv"))
         barFeed.addBarsFromCSV("spy", common.get_data_file_path("sharpe-ratio-test-spy.csv"))
-        strat = strategy_test.TestStrategy(barFeed, 1000)
+        strat = strategy_test.DummyStrategy(barFeed, 1000)
         strat.setBrokerOrdersGTC(True)
         strat.getBroker().setUseAdjustedValues(True)
         stratAnalyzer = drawdown.DrawDown()
@@ -155,7 +155,7 @@ class AnalyzerTestCase(unittest.TestCase):
         # 'Quantitative Trading: How to Build Your Own Algorithmic Trading Business'
         barFeed = yahoofeed.Feed()
         barFeed.addBarsFromCSV("ige", common.get_data_file_path("sharpe-ratio-test-ige.csv"))
-        strat = strategy_test.TestStrategy(barFeed, initialCash)
+        strat = strategy_test.DummyStrategy(barFeed, initialCash)
         strat.getBroker().setUseAdjustedValues(True)
         strat.setBrokerOrdersGTC(True)
         stratAnalyzer = drawdown.DrawDown()
@@ -184,7 +184,7 @@ class AnalyzerTestCase(unittest.TestCase):
         bars = build_bars_from_closing_prices(closingPrices)
         barFeed.addBarsFromSequence("orcl", bars)
 
-        strat = strategy_test.TestStrategy(barFeed, cash)
+        strat = strategy_test.DummyStrategy(barFeed, cash)
         stratAnalyzer = drawdown.DrawDown()
         strat.attachAnalyzer(stratAnalyzer)
 

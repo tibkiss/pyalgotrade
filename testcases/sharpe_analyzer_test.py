@@ -33,7 +33,7 @@ class SharpeRatioTestCase(unittest.TestCase):
     def testNoTrades(self):
         barFeed = yahoofeed.Feed()
         barFeed.addBarsFromCSV("ige", common.get_data_file_path("sharpe-ratio-test-ige.csv"))
-        strat = strategy_test.TestStrategy(barFeed, 1000)
+        strat = strategy_test.DummyStrategy(barFeed, 1000)
         stratAnalyzer = sharpe.SharpeRatio()
         strat.attachAnalyzer(stratAnalyzer)
 
@@ -49,7 +49,7 @@ class SharpeRatioTestCase(unittest.TestCase):
         # 'Quantitative Trading: How to Build Your Own Algorithmic Trading Business'
         barFeed = yahoofeed.Feed()
         barFeed.addBarsFromCSV("ige", common.get_data_file_path("sharpe-ratio-test-ige.csv"))
-        strat = strategy_test.TestStrategy(barFeed, initialCash)
+        strat = strategy_test.DummyStrategy(barFeed, initialCash)
         strat.getBroker().setUseAdjustedValues(True)
         strat.setBrokerOrdersGTC(True)
         stratAnalyzer = sharpe.SharpeRatio()
@@ -80,7 +80,7 @@ class SharpeRatioTestCase(unittest.TestCase):
         barFeed = yahoofeed.Feed()
         barFeed.addBarsFromCSV("ige", common.get_data_file_path("sharpe-ratio-test-ige.csv"))
         brk = backtesting.Broker(initialCash, barFeed, backtesting.FixedCommission(commision))
-        strat = strategy_test.TestStrategy(barFeed, initialCash, brk)
+        strat = strategy_test.DummyStrategy(barFeed, initialCash, brk)
         strat.getBroker().setUseAdjustedValues(True)
         strat.setBrokerOrdersGTC(True)
         stratAnalyzer = sharpe.SharpeRatio()
@@ -105,7 +105,7 @@ class SharpeRatioTestCase(unittest.TestCase):
         barFeed = yahoofeed.Feed()
         barFeed.addBarsFromCSV("ige", common.get_data_file_path("sharpe-ratio-test-ige.csv"))
         barFeed.addBarsFromCSV("spy", common.get_data_file_path("sharpe-ratio-test-spy.csv"))
-        strat = strategy_test.TestStrategy(barFeed, initialCash)
+        strat = strategy_test.DummyStrategy(barFeed, initialCash)
         strat.getBroker().setUseAdjustedValues(True)
         strat.setBrokerOrdersGTC(True)
         stratAnalyzer = sharpe.SharpeRatio()

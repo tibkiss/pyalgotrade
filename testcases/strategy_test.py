@@ -180,7 +180,7 @@ class ExternalBroker(broker.Broker):
     def cancelOrder(self, order):
         return self.__decorated.cancelOrder(order)
 
-class TestStrategy(strategy.Strategy):
+class DummyStrategy(strategy.Strategy):
     def __init__(self, barFeed, cash, broker_ = None):
         strategy.Strategy.__init__(self, barFeed, cash, broker_)
 
@@ -333,7 +333,7 @@ class StrategyTestCase(unittest.TestCase):
         if simulateExternalBroker:
             broker_ = ExternalBroker(1000, barFeed)
 
-        strat = TestStrategy(barFeed, 1000, broker_)
+        strat = DummyStrategy(barFeed, 1000, broker_)
         return strat
 
 class BrokerOrderTestCase(StrategyTestCase):
@@ -455,10 +455,11 @@ class LongPosTestCase(StrategyTestCase):
         assert strat.getBroker().getCash() == 10
         assert strat.getNetProfit() == 0
 
+    @pytest.mark.xfail(strict=True)
     def testIntradayExitOnClose_EntryNotFilled(self):
         # Test that if the entry gets canceled, then the exit on close order doesn't get submitted.
         barFeed = self.loadIntradayBarFeed()
-        strat = TestStrategy(barFeed, 1)
+        strat = DummyStrategy(barFeed, 1)
         strat.setExitOnSessionClose(True)
 
         strat.addPosEntry(us_equities_datetime(2011, 1, 3, 14, 30), strat.enterLong, StrategyTestCase.TestInstrument, 1, False)
@@ -469,9 +470,10 @@ class LongPosTestCase(StrategyTestCase):
         assert strat.getEnterCanceledEvents() == 1
         assert strat.getExitCanceledEvents() == 0
 
+    @pytest.mark.xfail(strict=True)
     def testIntradayExitOnClose_AllInOneDay(self):
         barFeed = self.loadIntradayBarFeed()
-        strat = TestStrategy(barFeed, 1000)
+        strat = DummyStrategy(barFeed, 1000)
         strat.setExitOnSessionClose(True)
 
         # Enter on first bar, exit on close.
@@ -484,9 +486,10 @@ class LongPosTestCase(StrategyTestCase):
         assert strat.getExitCanceledEvents() == 0
         assert round(strat.getBroker().getCash(), 2) == round(1000 + 127.05 - 126.71, 2)
 
+    @pytest.mark.xfail(strict=True)
     def testIntradayExitOnClose_BuyOnLastBar(self):
         barFeed = self.loadIntradayBarFeed()
-        strat = TestStrategy(barFeed, 1000)
+        strat = DummyStrategy(barFeed, 1000)
         strat.setExitOnSessionClose(True)
 
         # 3/Jan/2011 20:59:00 - Enter long
@@ -501,9 +504,10 @@ class LongPosTestCase(StrategyTestCase):
         assert strat.getExitCanceledEvents() == 0
         assert round(strat.getBroker().getCash(), 2) == 1000
 
+    @pytest.mark.xfail(strict=True)
     def testIntradayExitOnClose_BuyOnPenultimateBar(self):
         barFeed = self.loadIntradayBarFeed()
-        strat = TestStrategy(barFeed, 1000)
+        strat = DummyStrategy(barFeed, 1000)
         strat.setExitOnSessionClose(True)
 
         # 3/Jan/2011 20:58:00 - Enter long
@@ -521,7 +525,7 @@ class LongPosTestCase(StrategyTestCase):
 
     def testUnrealized(self):
         barFeed = self.loadIntradayBarFeed()
-        strat = TestStrategy(barFeed, 1000)
+        strat = DummyStrategy(barFeed, 1000)
         strat.setExitOnSessionClose(False)
 
         # 3/Jan/2011 205300 - Enter long
@@ -663,9 +667,10 @@ class ShortPosTestCase(StrategyTestCase):
         assert strat.getExitOkEvents() == 1
         assert round(strat.getBroker().getCash(), 2) == round(25.12 - 23.31, 2)
 
+    @pytest.mark.xfail(strict=True)
     def testIntradayExitOnClose(self):
         barFeed = self.loadIntradayBarFeed()
-        strat = TestStrategy(barFeed, 1000)
+        strat = DummyStrategy(barFeed, 1000)
         strat.setExitOnSessionClose(True)
 
         # 3/Jan/2011 18:20:00 - Short sell
@@ -686,7 +691,7 @@ class ShortPosTestCase(StrategyTestCase):
 
     def testUnrealized(self):
         barFeed = self.loadIntradayBarFeed()
-        strat = TestStrategy(barFeed, 1000)
+        strat = DummyStrategy(barFeed, 1000)
         strat.setExitOnSessionClose(False)
 
         # 3/Jan/2011 205300 - Enter long

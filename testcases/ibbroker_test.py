@@ -84,10 +84,12 @@ class IBBrokerTestCase(unittest.TestCase):
         quantity2 = 22
 
         for gtc in (True, False):
-            longMarketOrder = self.__broker.createLongMarketOrder(instrument=instrument1,
-                                                                  quantity=quantity1, goodTillCanceled=gtc)
-            shortMarketOrder = self.__broker.createShortMarketOrder(instrument=instrument2, quantity=quantity2,
-                                                                    goodTillCanceled=gtc)
+            longMarketOrder = self.__broker.createMarketOrder(action=Order.Action.BUY,
+                                                              instrument=instrument1,
+                                                              quantity=quantity1, goodTillCanceled=gtc)
+            shortMarketOrder = self.__broker.createMarketOrder(action=Order.Action.SELL,
+                                                               instrument=instrument2, quantity=quantity2,
+                                                               goodTillCanceled=gtc)
 
             # Issue the Order
             orderIdLong = self.__broker.placeOrder(longMarketOrder)
@@ -95,14 +97,14 @@ class IBBrokerTestCase(unittest.TestCase):
                                       auxPrice=0, lmtPrice=0, quantity=quantity1, goodTillCanceled=gtc)
 
             # Try to cancel it
-            longMarketOrder.cancel()
+            self.__broker.cancelOrder(longMarketOrder)
             self.__validateOrderCancel()
 
             orderIdShort = self.__broker.placeOrder(shortMarketOrder)
             self.__validateOrderEntry(instrument=instrument2, orderId=orderIdShort, orderType='MKT', action='SELL',
                                       auxPrice=0, lmtPrice=0, quantity=quantity2, goodTillCanceled=gtc)
 
-            shortMarketOrder.cancel()
+            self.__broker.cancelOrder(shortMarketOrder)
             self.__validateOrderCancel()
 
             self.assertNotEqual(orderIdLong, orderIdShort)
@@ -115,12 +117,14 @@ class IBBrokerTestCase(unittest.TestCase):
         price1 = 4.20
         price2 = 5.20
         for gtc in (True, False):
-            longLimitOrder = self.__broker.createLongLimitOrder(instrument=instrument1, price=price1,
-                                                                quantity=quantity1,
-                                                                goodTillCanceled=gtc)
-            shortLimitOrder = self.__broker.createShortLimitOrder(instrument=instrument2, price=price2,
-                                                                  quantity=quantity2,
-                                                                  goodTillCanceled=gtc)
+            longLimitOrder = self.__broker.createLimitOrder(action=Order.Action.BUY,
+                                                            instrument=instrument1, limitPrice=price1,
+                                                            quantity=quantity1,
+                                                            goodTillCanceled=gtc)
+            shortLimitOrder = self.__broker.createLimitOrder(action=Order.Action.SELL,
+                                                             instrument=instrument2, limitPrice=price2,
+                                                             quantity=quantity2,
+                                                             goodTillCanceled=gtc)
 
             # Issue the Order
             orderIdLong = self.__broker.placeOrder(longLimitOrder)
@@ -128,14 +132,14 @@ class IBBrokerTestCase(unittest.TestCase):
                                       auxPrice=0, lmtPrice=price1, quantity=quantity1, goodTillCanceled=gtc)
 
             # Try to cancel it
-            longLimitOrder.cancel()
+            self.__broker.cancelOrder(longLimitOrder)
             self.__validateOrderCancel()
 
             orderIdShort = self.__broker.placeOrder(shortLimitOrder)
             self.__validateOrderEntry(instrument=instrument2, orderId=orderIdShort, orderType='LMT', action='SELL',
                                       auxPrice=0, lmtPrice=price2, quantity=quantity2, goodTillCanceled=gtc)
 
-            shortLimitOrder.cancel()
+            self.__broker.cancelOrder(shortLimitOrder)
             self.__validateOrderCancel()
 
             self.assertNotEqual(orderIdLong, orderIdShort)
@@ -148,10 +152,12 @@ class IBBrokerTestCase(unittest.TestCase):
         price1 = 511.4
         price2 = 20
         for gtc in (True, False):
-            longStopOrder = self.__broker.createLongStopOrder(instrument=instrument1, price=price1,
-                                                              quantity=quantity1, goodTillCanceled=gtc)
-            shortStopOrder = self.__broker.createShortStopOrder(instrument=instrument2, price=price2,
-                                                                quantity=quantity2, goodTillCanceled=gtc)
+            longStopOrder = self.__broker.createStopOrder(action=Order.Action.BUY,
+                                                          instrument=instrument1, stopPrice=price1,
+                                                          quantity=quantity1, goodTillCanceled=gtc)
+            shortStopOrder = self.__broker.createStopOrder(action=Order.Action.SELL,
+                                                           instrument=instrument2, stopPrice=price2,
+                                                           quantity=quantity2, goodTillCanceled=gtc)
 
             # Issue the Order
             orderIdLong = self.__broker.placeOrder(longStopOrder)
@@ -159,14 +165,14 @@ class IBBrokerTestCase(unittest.TestCase):
                                       auxPrice=price1, lmtPrice=0, quantity=quantity1, goodTillCanceled=gtc)
 
             # Try to cancel it
-            longStopOrder.cancel()
+            self.__broker.cancelOrder(longStopOrder)
             self.__validateOrderCancel()
 
             orderIdShort = self.__broker.placeOrder(shortStopOrder)
             self.__validateOrderEntry(instrument=instrument2, orderId=orderIdShort, orderType='STP', action='SELL',
                                       auxPrice=price2, lmtPrice=0, quantity=quantity2, goodTillCanceled=gtc)
 
-            shortStopOrder.cancel()
+            self.__broker.cancelOrder(shortStopOrder)
             self.__validateOrderCancel()
 
             self.assertNotEqual(orderIdLong, orderIdShort)
@@ -181,12 +187,14 @@ class IBBrokerTestCase(unittest.TestCase):
         lmtPrice2 = 1.61803399  # Short SL Order: lmtPrice < stopPrice
         stopPrice2 = 1.6
         for gtc in (True, False):
-            longStopLimitOrder = self.__broker.createLongStopLimitOrder(instrument=instrument1,
-                                                                        limitPrice=lmtPrice1, stopPrice=stopPrice1,
-                                                                        quantity=quantity1, goodTillCanceled=gtc)
-            shortStopLimitOrder = self.__broker.createShortStopLimitOrder(instrument=instrument2,
-                                                                          limitPrice=lmtPrice2, stopPrice=stopPrice2,
-                                                                          quantity=quantity2, goodTillCanceled=gtc)
+            longStopLimitOrder = self.__broker.createStopLimitOrder(action=Order.Action.BUY,
+                                                                    instrument=instrument1,
+                                                                    limitPrice=lmtPrice1, stopPrice=stopPrice1,
+                                                                    quantity=quantity1, goodTillCanceled=gtc)
+            shortStopLimitOrder = self.__broker.createStopLimitOrder(action=Order.Action.SELL,
+                                                                     instrument=instrument2,
+                                                                     limitPrice=lmtPrice2, stopPrice=stopPrice2,
+                                                                     quantity=quantity2, goodTillCanceled=gtc)
 
             # Issue the Order
             orderIdLong = self.__broker.placeOrder(longStopLimitOrder)
@@ -194,14 +202,14 @@ class IBBrokerTestCase(unittest.TestCase):
                                       auxPrice=stopPrice1, lmtPrice=lmtPrice1, quantity=quantity1, goodTillCanceled=gtc)
 
             # Try to cancel it
-            longStopLimitOrder.cancel()
+            self.__broker.cancelOrder(longStopLimitOrder)
             self.__validateOrderCancel()
 
             orderIdShort = self.__broker.placeOrder(shortStopLimitOrder)
             self.__validateOrderEntry(instrument=instrument2, orderId=orderIdShort, orderType='STP LMT', action='SELL',
                                       auxPrice=stopPrice2, lmtPrice=lmtPrice2, quantity=quantity2, goodTillCanceled=gtc)
 
-            shortStopLimitOrder.cancel()
+            self.__broker.cancelOrder(shortStopLimitOrder)
             self.__validateOrderCancel()
 
             self.assertNotEqual(orderIdLong, orderIdShort)

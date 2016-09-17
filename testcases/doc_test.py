@@ -24,6 +24,10 @@ import subprocess
 import os
 import shutil
 
+import sys
+IS_PYPY = '__pypy__' in sys.builtin_module_names
+
+
 def run_and_get_output(cmd):
     return subprocess.check_output(cmd, universal_newlines=True)
 
@@ -111,6 +115,7 @@ class TechnicalTestCase(unittest.TestCase):
         assert compare_head("technical-1.output", lines[:-1])
 
 class SampleStratTestCase(unittest.TestCase):
+    @pytest.mark.skipif(IS_PYPY, reason="pypy lack statsmodel support which is the basis of this strategy")
     def testErnieChanGldVsGdx(self):
         # Get the files that generated the result that we're checking for.
         for year in range(2006, 2013):

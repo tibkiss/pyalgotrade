@@ -18,15 +18,19 @@ class MyStrategy(strategy.Strategy):
     def onBars(self, bars):
         lower = self.__bbands.getLowerBand()[-1]
         upper = self.__bbands.getUpperBand()[-1]
+
+        # print "onBars: lower:%s, upper:%s, bars: %s" % (lower, upper, bars)
+
         if lower == None:
             return
 
         shares = self.getBroker().getShares(self.__instrument)
         bar = bars[self.__instrument]
-        if shares == 0 and bar.getClose() < lower:
-            sharesToBuy = int(self.getBroker().getCash(False) / bar.getClose())
+        closePrice = bar.getClose()
+        if shares == 0 and closePrice < lower:
+            sharesToBuy = int(self.getBroker().getCash(False) / closePrice)
             self.order(self.__instrument, sharesToBuy)
-        elif shares > 0 and bar.getClose() > upper:
+        elif shares > 0 and closePrice > upper:
             self.order(self.__instrument, -1*shares)
 
 def build_feed(instruments, fromYear, toYear):

@@ -24,11 +24,11 @@ import numpy
 def mean(values):
     ret = None
     if len(values):
-        ret =  numpy.array(values).mean()
+        ret =  numpy.array([e for e in values]).mean()
     return ret
 
 def stddev(values, ddof = 1):
     ret = None
     if len(values):
-        ret =  numpy.array(values).std(ddof=ddof)
+        ret =  numpy.array([e for e in values]).std(ddof=ddof)
     return ret

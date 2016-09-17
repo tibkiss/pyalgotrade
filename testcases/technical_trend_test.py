@@ -19,8 +19,15 @@
 """
 
 import unittest
-from pyalgotrade.technical import trend
+import pytest
+
 from pyalgotrade import dataseries
+
+# SciPy (therefore pyalgotrade.technical) is not available in pypy
+try:
+    from pyalgotrade.technical import trend
+except ImportError:
+    pytestmark = pytest.mark.skip(reason="SciPy is unavailable")
 
 class TestCase(unittest.TestCase):
     def __buildTrend(self, values, trendDays, positiveThreshold, negativeThreshold):

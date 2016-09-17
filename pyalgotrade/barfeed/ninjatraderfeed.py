@@ -74,14 +74,10 @@ class RowParser(csvfeed.RowParser):
             # The returned dates are localized if timezone was given
             ret = parse_datetime(dateTime, self.__timezone)
         elif self.__frequency == pyalgotrade.barfeed.Frequency.DAY:
-            ret = datetime.datetime.strptime(dateTime, "%Y%m%d")
+            ret = self.__timezone.localize(datetime.datetime.strptime(dateTime, "%Y%m%d"))
             # Time on CSV files is empty. If told to set one, do it.
             if self.__dailyBarTime != None:
                 ret = datetime.datetime.combine(ret, self.__dailyBarTime)
-
-            # Localize bars if a market session was set.
-            if self.__timezone:
-                ret = dt.localize(ret, self.__timezone)
 
         else:
             assert(False)

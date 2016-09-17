@@ -271,12 +271,12 @@ class NinjaTraderTestCase(unittest.TestCase):
         timezone = marketsession.USEquities.getTimezone()
         # The prices come from NinjaTrader interface when set to use 'US Equities RTH' session template.
         prices = {
-                dt.localize(datetime.datetime(2011, 3, 9, 9, 31), timezone) : 132.35,
-                dt.localize(datetime.datetime(2011, 3, 9, 16), timezone) : 131.82,
-                dt.localize(datetime.datetime(2011, 3, 10, 9, 31), timezone) : 130.81,
-                dt.localize(datetime.datetime(2011, 3, 10, 16), timezone) : 130.47,
-                dt.localize(datetime.datetime(2011, 3, 11, 9, 31), timezone) : 129.72,
-                dt.localize(datetime.datetime(2011, 3, 11, 16), timezone) : 130.07,
+            datetime.datetime(2011, 3, 9, 9, 31, tzinfo=timezone) : 132.35,
+            datetime.datetime(2011, 3, 9, 16, tzinfo=timezone) : 131.82,
+            datetime.datetime(2011, 3, 10, 9, 31, tzinfo=timezone) : 130.81,
+            datetime.datetime(2011, 3, 10, 16, tzinfo=timezone) : 130.47,
+            datetime.datetime(2011, 3, 11, 9, 31, tzinfo=timezone) : 129.72,
+            datetime.datetime(2011, 3, 11, 16, tzinfo=timezone) : 130.07,
         }
         barFeed = ninjatraderfeed.Feed(ninjatraderfeed.Frequency.MINUTE, timezone)
         barFeed.addBarsFromCSV("spy", common.get_data_file_path("nt-spy-minute-2011-03.csv"))

@@ -128,13 +128,13 @@ class LimitOrderStrategy(SMACrossOverStrategy):
 
     def enterLongPosition(self, bars):
         price = self.__getMiddlePrice(bars)
-        ret = self.enterLongLimit("orcl", price, 10)
+        ret = self.enterLongLimit("orcl", price, 10, goodTillCanceled=True)
         self.printDebug("enterLong:", self.getCurrentDateTime(), price, ret)
         return ret
 
     def enterShortPosition(self, bars):
         price = self.__getMiddlePrice(bars)
-        ret = self.enterShortLimit("orcl", price, 10)
+        ret = self.enterShortLimit("orcl", price, 10, goodTillCanceled=True)
         self.printDebug("enterShort:", self.getCurrentDateTime(), price, ret)
         return ret
 
@@ -154,8 +154,9 @@ class TestSMACrossOver(unittest.TestCase):
         feed.addBarsFromCSV("orcl", common.get_data_file_path("orcl-2001-yahoofinance.csv"))
         myStrategy = strategyClass(feed, 10, 25)
         myStrategy.run()
-        myStrategy.printDebug("Final result:", round(myStrategy.getFinalValue(), 2))
-        assert round(myStrategy.getFinalValue(), 2) == finalValue
+        profit = round(myStrategy.getFinalValue(), 2)
+        myStrategy.printDebug("Final result:", profit)
+        assert profit == finalValue
 
     def testWithMarketOrder(self):
         # This is the exact same result that we get using NinjaTrader.
@@ -163,7 +164,7 @@ class TestSMACrossOver(unittest.TestCase):
 
     def testWithLimitOrder(self):
         # The result is different than the one we get using NinjaTrader. NinjaTrader processes Limit orders in a different way.
-        self.__test(LimitOrderStrategy, 1000 + 32.7)
+        self.__test(LimitOrderStrategy, 1000 + 9.4)
 
 def getTestCases():
     ret = []

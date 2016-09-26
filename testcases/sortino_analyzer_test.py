@@ -63,16 +63,24 @@ class SharpeRatioTestCase(unittest.TestCase):
         strat.run()
         assert round(strat.getBroker().getCash(), 2) == initialCash + (127.64 - 42.09 - commision*2)
         assert strat.getOrderUpdatedEvents() == 2
-        assert round(stratAnalyzer.getSortinoRatio(), 4) == 0.0866
+        assert round(stratAnalyzer.getSortinoRatio(), 4) == 1.375
 
     def testSortinoCalculation_Redrock(self):
         # Based on http://www.redrockcapital.com/Sortino__A__Sharper__Ratio_Red_Rock_Capital.pdf
         annual_returns = [0.17, 0.15, 0.23, -0.05, 0.12, 0.09, 0.13, -0.04]
         target_return = 0
 
-        result = sortino.sortino_ratio(annual_returns, target_return)
+        result = sortino.sortino_ratio(annual_returns, target_return, annualized=False)
 
         assert round(result, 3) == 4.417
+
+    def testSortinoCalculation_Random(self):
+        daily_returns = [0.0268, -0.0399, -0.019, -0.0277, -0.0282, -0.0264, -0.0183, 0.0314, -0.0141, -0.0244]
+        target_return = 0
+
+        result = sortino.sortino_ratio(daily_returns, target_return)
+
+        assert round(result, 3) == -9.602
 
     def testSortinoCalculation_Sunrise(self):
         # Based on http://www.sunrisecapital.com/wp-content/uploads/2014/06/Futures_Mag_Sortino_0213.pdf
@@ -80,15 +88,15 @@ class SharpeRatioTestCase(unittest.TestCase):
         annual_returns = [0.02, 0.01, -0.01, 0.18, 0.08, -0.02, 0.01, -0.01]
         target_return = 0
 
-        result = sortino.sortino_ratio(annual_returns, target_return)
+        result = sortino.sortino_ratio(annual_returns, target_return, annualized=False)
 
         assert round(result, 2) == 3.75
 
     @pytest.mark.xfail(strict=True)
     def testSortinoCalculation_IBPerf(self):
         # Based on Huba's performance for time period 2016. 08. 19. - 08. 29.
-        daily_returns = [0.0025, 0.0017, 0.0041, 0.0002, 0.0007, 0.0005, -0.0029,]
-                         # -0.0063, -0.0059, 0.0007, 0.0027, 0, -0.0020, -0.0034, 0.0015, -0.0010]
+        daily_returns = [0.0025, 0.0017, 0.0041, 0.0002, 0.0007, 0.0005, -0.0029,
+                         -0.0063, -0.0059, 0.0007, 0.0027, 0, -0.0020, -0.0034, 0.0015, -0.0010]
 
         target_return = 0
 

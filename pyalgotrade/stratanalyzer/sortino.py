@@ -24,21 +24,26 @@ from pyalgotrade.utils import stats
 import numpy as np
 import math
 
-def sortino_ratio(returns, targetReturn=0):
+def sortino_ratio(returns, target_return=0, annualized=True):
     """Sortino is an adjusted ratio which only takes the standard deviation of negative returns into account
     Calculation is based on the formula described at:
     http://www.redrockcapital.com/Sortino__A__Sharper__Ratio_Red_Rock_Capital.pdf
     """
 
     avg_period_return = np.mean(returns)
-    target_returns = np.array(returns) - targetReturn
+    target_returns = np.array(returns) - target_return
 
     negative_return_sum = np.sum([e**2 for e in target_returns if e < 0])
     target_downside_avg = negative_return_sum / len(target_returns)
     target_downside_deviation = np.sqrt(target_downside_avg)
 
+
     if target_downside_deviation > 0.0001:
-        sortino = (avg_period_return - targetReturn) / target_downside_deviation
+        # Assuming daily returns: https://sixfigureinvesting.com/2013/09/daily-scaling-sharpe-sortino-excel/
+        sortino = ((avg_period_return - target_return) / target_downside_deviation)
+
+        if annualized:
+            sortino *= math.sqrt(252)
     else:
         sortino = 0
 
@@ -65,5 +70,4 @@ class SortinoRatio(stratanalyzer.StrategyAnalyzer):
         self.__netReturns.append(returnsAnalyzerBase.getNetReturn())
 
     def getSortinoRatio(self, targetReturns=0):
-
-        return sortino_ratio(self.__netReturns, targetReturns)
+        return sortino_ratio(self.__netReturns, targetReturns, annualized=True)

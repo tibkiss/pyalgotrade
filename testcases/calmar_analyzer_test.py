@@ -43,15 +43,3 @@ class CalmarRatioTestCase(unittest.TestCase):
         assert stratAnalyzer.getSharpeRatio(0.04, 252, annualized=True) == 0
         assert stratAnalyzer.getSharpeRatio(0, 252) == 0
         assert stratAnalyzer.getSharpeRatio(0, 252, annualized=True) == 0
-
-
-def getTestCases():
-    ret = []
-
-    ret.append(SharpeRatioTestCase("testNoTrades"))
-    ret.append(SharpeRatioTestCase("testIGE_Broker"))
-    ret.append(SharpeRatioTestCase("testIGE_Broker2"))
-    ret.append(SharpeRatioTestCase("testIGE_BrokerWithCommission"))
-    ret.append(SharpeRatioTestCase("testSharpeRatioIGE_SPY_Broker"))
-
-    return ret

@@ -129,14 +129,3 @@ class SharpeRatioTestCase(unittest.TestCase):
         assert round(strat.getBroker().getCash(), 2) == round(initialCash + (127.64 - 42.09) + (105.52 - 147.67), 2)
         # TODO: The results are different from the ones in the book. Analyze why.
         # assert round(stratAnalyzer.getSharpeRatio(0, 252), 5) == 0.92742
-
-def getTestCases():
-    ret = []
-
-    ret.append(SharpeRatioTestCase("testNoTrades"))
-    ret.append(SharpeRatioTestCase("testIGE_Broker"))
-    ret.append(SharpeRatioTestCase("testIGE_Broker2"))
-    ret.append(SharpeRatioTestCase("testIGE_BrokerWithCommission"))
-    ret.append(SharpeRatioTestCase("testSharpeRatioIGE_SPY_Broker"))
-
-    return ret

@@ -83,9 +83,3 @@ class TestCase(unittest.TestCase):
         self.assertEqual(len(stochFilter.getDateTimes()), len(closePrices))
         for i in range(len(stochFilter)):
             self.assertNotEqual(stochFilter.getDateTimes()[i], None)
-
-def getTestCases():
-    ret = []
-    ret.append(TestCase("testShortPeriod"))
-    ret.append(TestCase("testStockChartsStoch"))
-    return ret

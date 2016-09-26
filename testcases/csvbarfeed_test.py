@@ -286,26 +286,3 @@ class NinjaTraderTestCase(unittest.TestCase):
                 bar = bars.getBar("spy")
                 closingPrice = bar.getClose()
                 assert price == closingPrice
-
-def getTestCases():
-    ret = []
-
-    ret.append(YahooTestCase("testParseDate_1"))
-    ret.append(YahooTestCase("testParseDate_2"))
-    ret.append(YahooTestCase("testDateCompare"))
-    ret.append(YahooTestCase("testCSVFeedLoadOrder"))
-    ret.append(YahooTestCase("testFilteredRangeFrom"))
-    ret.append(YahooTestCase("testFilteredRangeTo"))
-    ret.append(YahooTestCase("testFilteredRangeFromTo"))
-    ret.append(YahooTestCase("testWithoutTimezone"))
-    ret.append(YahooTestCase("testWithDefaultTimezone"))
-    ret.append(YahooTestCase("testWithPerFileTimezone"))
-    ret.append(YahooTestCase("testWithIntegerTimezone"))
-    ret.append(YahooTestCase("testMapTypeOperations"))
-
-    ret.append(NinjaTraderTestCase("testWithTimezone"))
-    ret.append(NinjaTraderTestCase("testWithoutTimezone"))
-    ret.append(NinjaTraderTestCase("testWithIntegerTimezone"))
-    ret.append(NinjaTraderTestCase("testLocalizeAndFilter"))
-
-    return ret

@@ -218,17 +218,4 @@ class IBLiveFeedTestCase(unittest.TestCase):
         self.assertEqual(bars[instrument3], bar3)
 
 
-def getTestCases():
-    ret = []
-    ret.append(IBCSVFeedTestCase("testParseDate_1"))
-    ret.append(IBCSVFeedTestCase("testDateCompare"))
-    ret.append(IBCSVFeedTestCase("testCSVFeedLoadOrder"))
-    ret.append(IBCSVFeedTestCase("testFilteredRangeFrom"))
-    ret.append(IBCSVFeedTestCase("testFilteredRangeTo"))
-    ret.append(IBCSVFeedTestCase("testFilteredRangeFromTo"))
-    ret.append(IBLiveFeedTestCase("testSubscription"))
-    ret.append(IBLiveFeedTestCase("testRealtimeBars"))
-    return ret
-
-
 # vim: noet:ci:pi:sts=0:sw=4:ts=4

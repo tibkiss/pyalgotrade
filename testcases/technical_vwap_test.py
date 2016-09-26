@@ -82,16 +82,3 @@ class VWAPTestCase(unittest.TestCase):
             self.assertEqual(vwap_[i], None)
         for i in xrange(49, len(vwap_)):
             self.assertNotEqual(vwap_[i], None)
-
-def getTestCases():
-    ret = []
-
-    ret.append(VWAPTestCase("testPeriod1_ClosingPrice"))
-    ret.append(VWAPTestCase("testPeriod1_TypicalPrice"))
-    ret.append(VWAPTestCase("testPeriod2_ClosingPrice"))
-    ret.append(VWAPTestCase("testPeriod2_TypicalPrice"))
-    ret.append(VWAPTestCase("testPeriod50_ClosingPrice"))
-    ret.append(VWAPTestCase("testPeriod50_TypicalPrice"))
-
-
-    return ret

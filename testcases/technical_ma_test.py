@@ -167,21 +167,3 @@ class EMATestCase(unittest.TestCase):
         # Check that the max recursion limit bug is not hit when generating the last value first.
         self.assertEquals(round(ma.EMA(barFeed["any"].getCloseDataSeries(), 10)[-1], 2), 128.81)
 
-def getTestCases():
-    ret = []
-
-    ret.append(SMATestCase("testPeriod1"))
-    ret.append(SMATestCase("testPeriod2"))
-    ret.append(SMATestCase("testMultipleValues"))
-    ret.append(SMATestCase("testStockChartsSMA"))
-    ret.append(SMATestCase("testMultipleValuesSkippingOne"))
-    ret.append(SMATestCase("testNinjaTraderSMA"))
-    ret.append(SMATestCase("testSeqLikeOps"))
-
-    ret.append(WMATestCase("testPeriod1"))
-    ret.append(WMATestCase("testPeriod2"))
-
-    ret.append(EMATestCase("testStockChartsEMA"))
-    ret.append(EMATestCase("testStockChartsEMA_Reverse"))
-    ret.append(EMATestCase("testMaxRecursion"))
-    return ret

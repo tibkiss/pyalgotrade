@@ -85,10 +85,3 @@ class ObserverTestCase(unittest.TestCase):
         event.unsubscribe(handler2)
         event.emit()
         assert handlersData == [1, 1, 2, 2]
-
-def getTestCases():
-    ret = []
-    ret.append(ObserverTestCase("testEmitOrder"))
-    ret.append(ObserverTestCase("testDuplicateHandlers"))
-    ret.append(ObserverTestCase("testReentrancy"))
-    return ret

@@ -58,9 +58,3 @@ class TestCase(unittest.TestCase):
         self.assertEqual(len(ratio.getDateTimes()), 3)
         for i in range(len(ratio)):
             self.assertEqual(ratio.getDateTimes()[i], None)
-
-def getTestCases():
-    ret = []
-    ret.append(TestCase("testSimple"))
-    ret.append(TestCase("testNegativeValues"))
-    return ret

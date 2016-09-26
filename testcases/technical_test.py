@@ -79,10 +79,3 @@ class DataSeriesFilterTest(unittest.TestCase):
             testFilter[20]
         values.append(10)
         assert testFilter[20] == 10
-
-def getTestCases():
-    ret = []
-    ret.append(CacheTest("testCacheSize1"))
-    ret.append(CacheTest("testCacheSize2"))
-    ret.append(DataSeriesFilterTest("testInvalidPosNotCached"))
-    return ret

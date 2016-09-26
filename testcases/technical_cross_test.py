@@ -163,12 +163,3 @@ class TestCase(unittest.TestCase):
         for i in range(len(crs)):
             self.assertEqual(crs.getDateTimes()[i], None)
 
-def getTestCases():
-    ret = []
-
-    ret.append(TestCase("testCrossAboveOnce"))
-    ret.append(TestCase("testCrossAboveMany"))
-    ret.append(TestCase("testCrossBelowOnce"))
-    ret.append(TestCase("testCrossBelowMany"))
-    ret.append(TestCase("testWithSMAs"))
-    return ret

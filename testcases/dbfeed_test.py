@@ -83,10 +83,3 @@ class SQLiteFeedTestCase(unittest.TestCase):
                 self.assertEqual(yahooDS[i].getAdjClose(), sqliteDS[i].getAdjClose())
                 self.assertEqual(yahooDS[i].getBarsTillSessionClose(), sqliteDS[i].getBarsTillSessionClose())
                 self.assertEqual(yahooDS[i].getSessionClose(), sqliteDS[i].getSessionClose())
-
-def getTestCases():
-    ret = []
-
-    ret.append(SQLiteFeedTestCase("testLoadDailyBars"))
-
-    return ret

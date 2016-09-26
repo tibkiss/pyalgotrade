@@ -39,9 +39,3 @@ class TestCase(unittest.TestCase):
         self.assertEquals(stdDev[2], numpy.array([1, 2]).std())
         self.assertEquals(stdDev[3], numpy.array([2, 3]).std())
         self.assertEquals(stdDev[4], numpy.array([3, 5]).std())
-
-def getTestCases():
-    ret = []
-    ret.append(TestCase("testStdDev_1"))
-    ret.append(TestCase("testStdDev"))
-    return ret

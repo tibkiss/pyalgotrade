@@ -170,10 +170,5 @@ class IBConnectionTestCase(unittest.TestCase):
     def testGetAccountValues(self): pass
     def testGetPortfolio(self): pass
 
-def getTestCases():
-    ret = []
-    ret.append(IBConnectionTestCase("testOrders"))
-    ret.append(IBConnectionTestCase("testRealtimeBars"))
-    return ret
 
 # vim: noet:ci:pi:sts=0:sw=4:ts=4

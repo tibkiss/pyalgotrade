@@ -66,11 +66,3 @@ class TestCase(unittest.TestCase):
         self.assertEqual(len(rsi.getDateTimes()), 10)
         for i in range(len(rsi)):
             self.assertEqual(rsi.getDateTimes()[i], None)
-
-def getTestCases():
-    ret = []
-    ret.append(TestCase("testAvgGainLoss"))
-    ret.append(TestCase("testStockChartsRSI"))
-    ret.append(TestCase("testStockChartsRSI_Reverse"))
-    ret.append(TestCase("testDateTimes"))
-    return ret

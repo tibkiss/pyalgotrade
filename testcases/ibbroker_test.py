@@ -214,14 +214,4 @@ class IBBrokerTestCase(unittest.TestCase):
 
             self.assertNotEqual(orderIdLong, orderIdShort)
 
-
-def getTestCases():
-    ret = []
-    ret.append(IBBrokerTestCase("testFlatRateCommission"))
-    ret.append(IBBrokerTestCase("testMarketOrders"))
-    ret.append(IBBrokerTestCase("testLimitOrders"))
-    ret.append(IBBrokerTestCase("testStopOrders"))
-    ret.append(IBBrokerTestCase("testStopLimitOrders"))
-    return ret
-
 # vim: noet:ci:pi:sts=0:sw=4:ts=4

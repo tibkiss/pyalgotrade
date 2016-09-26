@@ -44,7 +44,3 @@ class TestCase(unittest.TestCase):
             self.assertEquals(round(bBands.getUpperBand()[i], 2), expectedUpper[i-19])
             self.assertEquals(round(bBands.getLowerBand()[i], 2), expectedLower[i-19])
 
-def getTestCases():
-    ret = []
-    ret.append(TestCase("testStockChartsBollinger"))
-    return ret

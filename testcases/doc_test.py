@@ -160,25 +160,3 @@ bbands.main(False)
 """
         lines = run_python_code(code).split("\n")
         assert compare_tail("bbands.output", lines[-2:-1])
-
-def getTestCases():
-    ret = []
-
-    ret.append(TutorialTestCase("testTutorial1"))
-    ret.append(TutorialTestCase("testTutorial2"))
-    ret.append(TutorialTestCase("testTutorial3"))
-    ret.append(TutorialTestCase("testTutorial4"))
-
-    ret.append(CompInvTestCase("testCompInv_1"))
-
-    ret.append(DataSeriesTestCase("testDataSeries_1"))
-
-    ret.append(StratAnalyzerTestCase("testSampleStrategyAnalyzer"))
-
-    ret.append(TechnicalTestCase("testTechnical_1"))
-
-    ret.append(SampleStratTestCase("testErnieChanGldVsGdx"))
-    ret.append(SampleStratTestCase("testVWAPMomentum"))
-    ret.append(SampleStratTestCase("testBBands"))
-
-    return ret

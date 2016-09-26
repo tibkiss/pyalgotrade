@@ -56,9 +56,3 @@ class TestCase(unittest.TestCase):
         self.assertEqual(len(trend.getDateTimes()), 5)
         for i in range(len(trend)):
             self.assertEqual(trend.getDateTimes()[i], None)
-
-def getTestCases():
-    ret = []
-    ret.append(TestCase("testTrend"))
-    ret.append(TestCase("testTrendWithCustomThresholds"))
-    return ret

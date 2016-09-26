@@ -236,23 +236,3 @@ class TestDateAlignedDataSeries(unittest.TestCase):
             self.assertEqual(ads1[:], ads2[:])
             self.assertEqual(ads1.getDateTimes()[:], ads2.getDateTimes()[:])
 
-def getTestCases():
-    ret = []
-
-    ret.append(TestSequenceDataSeries("testEmpty"))
-    ret.append(TestSequenceDataSeries("testNonEmpty"))
-    ret.append(TestSequenceDataSeries("testSeqLikeOps"))
-
-    ret.append(TestBarDataSeries("testEmpty"))
-    ret.append(TestBarDataSeries("testAppendInvalidDatetime"))
-    ret.append(TestBarDataSeries("testNonEmpty"))
-    ret.append(TestBarDataSeries("testNestedDataSeries"))
-    ret.append(TestBarDataSeries("testSeqLikeOps"))
-    ret.append(TestBarDataSeries("testDateTimes"))
-
-    ret.append(TestDateAlignedDataSeries("testNotAligned"))
-    ret.append(TestDateAlignedDataSeries("testFullyAligned"))
-    ret.append(TestDateAlignedDataSeries("testPartiallyAligned"))
-    ret.append(TestDateAlignedDataSeries("testIncremental"))
-
-    return ret

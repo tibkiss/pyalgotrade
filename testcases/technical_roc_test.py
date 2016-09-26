@@ -49,8 +49,3 @@ class ROCTestCase(unittest.TestCase):
         assert simple_roc(2, 1) == -50
         assert simple_roc(2, 1) == simple_roc(100, 50)
 
-def getTestCases():
-    ret = []
-    ret.append(ROCTestCase("testPeriod12"))
-    ret.append(ROCTestCase("testPeriod1"))
-    return ret

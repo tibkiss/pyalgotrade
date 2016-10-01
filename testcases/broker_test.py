@@ -584,7 +584,7 @@ class StopOrderTestCase(BaseTestCase):
         order = brk.createStopOrder(broker.Order.Action.SELL, BaseTestCase.TestInstrument, 9, 1)
         brk.placeOrder(order)
         brk.onBars(self.buildBars(10, 15, 10, 12)) # Stop loss not hit.
-        self.assertFalse(order.isFilled())
+        assert not order.isFilled()
         assert len(brk.getPendingOrders()) == 1
         assert brk.getCash() == 5
         assert brk.getShares(BaseTestCase.TestInstrument) == 1
@@ -620,7 +620,7 @@ class StopOrderTestCase(BaseTestCase):
         order = brk.createStopOrder(broker.Order.Action.SELL, BaseTestCase.TestInstrument, 9, 1)
         brk.placeOrder(order)
         brk.onBars(self.buildBars(10, 15, 10, 12)) # Stop loss not hit.
-        self.assertFalse(order.isFilled())
+        assert not order.isFilled()
         assert len(brk.getPendingOrders()) == 1
         assert brk.getCash() == 5
         assert brk.getShares(BaseTestCase.TestInstrument) == 1
@@ -656,7 +656,7 @@ class StopOrderTestCase(BaseTestCase):
         order = brk.createStopOrder(broker.Order.Action.BUY_TO_COVER, BaseTestCase.TestInstrument, 11, 1)
         brk.placeOrder(order)
         brk.onBars(self.buildBars(8, 10, 7, 9)) # Stop loss not hit.
-        self.assertFalse(order.isFilled())
+        assert not order.isFilled()
         assert len(brk.getPendingOrders()) == 1
         assert brk.getCash() == 15+10
         assert brk.getShares(BaseTestCase.TestInstrument) == -1
@@ -692,7 +692,7 @@ class StopOrderTestCase(BaseTestCase):
         order = brk.createStopOrder(broker.Order.Action.BUY_TO_COVER, BaseTestCase.TestInstrument, 11, 1)
         brk.placeOrder(order)
         brk.onBars(self.buildBars(8, 10, 7, 9)) # Stop loss not hit.
-        self.assertFalse(order.isFilled())
+        assert not order.isFilled()
         assert len(brk.getPendingOrders()) == 1
         assert brk.getCash() == 15+10
         assert brk.getShares(BaseTestCase.TestInstrument) == -1
@@ -735,7 +735,7 @@ class StopOrderTestCase(BaseTestCase):
         assert not order.isDirty()
 
         brk.onBars(self.buildBars(10, 15, 10, 12)) # Stop loss not hit.
-        self.assertFalse(order.isFilled())
+        assert not order.isFilled()
         assert len(brk.getPendingOrders()) == 1
         assert brk.getCash() == 5
         assert brk.getShares(BaseTestCase.TestInstrument) == 1
@@ -761,7 +761,7 @@ class StopLimitOrderTestCase(BaseTestCase):
 
         # Stop price not hit. Limit price not hit.
         brk.onBars(self.buildBars(8, 9, 7, 8))
-        self.assertFalse(order.isLimitOrderActive())
+        assert not order.isLimitOrderActive()
         assert order.isAccepted()
 
         # Stop price hit. Limit price not hit.
@@ -783,7 +783,7 @@ class StopLimitOrderTestCase(BaseTestCase):
 
         # Stop price not hit. Limit price not hit.
         brk.onBars(self.buildBars(9, 10, 9, 10))
-        self.assertFalse(order.isLimitOrderActive())
+        assert not order.isLimitOrderActive()
         assert order.isAccepted()
 
         # Stop price hit. Limit price not hit.
@@ -808,7 +808,7 @@ class StopLimitOrderTestCase(BaseTestCase):
 
         # Stop price not hit. Limit price not hit.
         brk.onBars(self.buildBars(8, 9, 7, 8))
-        self.assertFalse(order.isLimitOrderActive())
+        assert not order.isLimitOrderActive()
         assert order.isAccepted()
 
         # Stop price hit. Limit price not hit.
@@ -830,7 +830,7 @@ class StopLimitOrderTestCase(BaseTestCase):
 
         # Stop price not hit. Limit price not hit.
         brk.onBars(self.buildBars(9, 10, 9, 10))
-        self.assertFalse(order.isLimitOrderActive())
+        assert not order.isLimitOrderActive()
         assert order.isAccepted()
 
         # Stop price hit. Limit price not hit.
@@ -855,7 +855,7 @@ class StopLimitOrderTestCase(BaseTestCase):
 
         # Stop price not hit. Limit price not hit.
         brk.onBars(self.buildBars(8, 9, 7, 8))
-        self.assertFalse(order.isLimitOrderActive())
+        assert not order.isLimitOrderActive()
         assert order.isAccepted()
 
         # Stop price hit. Limit price not hit.
@@ -877,7 +877,7 @@ class StopLimitOrderTestCase(BaseTestCase):
 
         # Stop price not hit. Limit price not hit.
         brk.onBars(self.buildBars(9, 10, 9, 10))
-        self.assertFalse(order.isLimitOrderActive())
+        assert not order.isLimitOrderActive()
         assert order.isAccepted()
 
         # Stop price hit. Limit price not hit.
@@ -929,7 +929,7 @@ class StopLimitOrderTestCase(BaseTestCase):
 
         # Stop price not hit. Limit price not hit.
         brk.onBars(self.buildBars(8, 9, 7, 8))
-        self.assertFalse(order.isLimitOrderActive())
+        assert not order.isLimitOrderActive()
         assert order.isAccepted()
 
         # Stop price hit. Limit price not hit.
@@ -951,7 +951,7 @@ class StopLimitOrderTestCase(BaseTestCase):
 
         # Stop price not hit. Limit price not hit.
         brk.onBars(self.buildBars(9, 10, 9, 10))
-        self.assertFalse(order.isLimitOrderActive())
+        assert not order.isLimitOrderActive()
         assert order.isAccepted()
 
         # Stop price hit. Limit price not hit.
@@ -976,7 +976,7 @@ class StopLimitOrderTestCase(BaseTestCase):
 
         # Stop price not hit. Limit price not hit.
         brk.onBars(self.buildBars(8, 9, 7, 8))
-        self.assertFalse(order.isLimitOrderActive())
+        assert not order.isLimitOrderActive()
         assert order.isAccepted()
 
         # Stop price hit. Limit price not hit.
@@ -998,7 +998,7 @@ class StopLimitOrderTestCase(BaseTestCase):
 
         # Stop price not hit. Limit price not hit.
         brk.onBars(self.buildBars(9, 10, 9, 10))
-        self.assertFalse(order.isLimitOrderActive())
+        assert not order.isLimitOrderActive()
         assert order.isAccepted()
 
         # Stop price hit. Limit price not hit.
@@ -1023,7 +1023,7 @@ class StopLimitOrderTestCase(BaseTestCase):
 
         # Stop price not hit. Limit price not hit.
         brk.onBars(self.buildBars(8, 9, 7, 8))
-        self.assertFalse(order.isLimitOrderActive())
+        assert not order.isLimitOrderActive()
         assert order.isAccepted()
 
         # Stop price hit. Limit price not hit.
@@ -1045,7 +1045,7 @@ class StopLimitOrderTestCase(BaseTestCase):
 
         # Stop price not hit. Limit price not hit.
         brk.onBars(self.buildBars(9, 10, 9, 10))
-        self.assertFalse(order.isLimitOrderActive())
+        assert not order.isLimitOrderActive()
         assert order.isAccepted()
 
         # Stop price hit. Limit price not hit.
@@ -1108,7 +1108,7 @@ class StopLimitOrderTestCase(BaseTestCase):
 
         # Stop price not hit. Limit price not hit.
         brk.onBars(self.buildBars(8, 9, 7, 8))
-        self.assertFalse(order.isLimitOrderActive())
+        assert not order.isLimitOrderActive()
         assert order.isAccepted()
 
         # Stop price hit. Limit price not hit.

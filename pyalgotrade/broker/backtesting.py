@@ -247,8 +247,8 @@ class BacktestingOrder:
             self.checkCanceled(broker, bars)
 
 class MarketOrder(broker.MarketOrder, BacktestingOrder):
-    def __init__(self, action, instrument, quantity, onClose):
-        broker.MarketOrder.__init__(self, action, instrument, quantity, onClose)
+    def __init__(self, action, instrument, quantity, onClose, goodTillCanceled=False):
+        broker.MarketOrder.__init__(self, action, instrument, quantity, onClose, goodTillCanceled)
         BacktestingOrder.__init__(self)
 
     def tryExecuteImpl(self, broker_, bar_):
@@ -257,8 +257,8 @@ class MarketOrder(broker.MarketOrder, BacktestingOrder):
             broker_.commitOrderExecution(self, price, self.getQuantity(), bar_.getDateTime())
 
 class LimitOrder(broker.LimitOrder, BacktestingOrder):
-    def __init__(self, action, instrument, limitPrice, quantity):
-        broker.LimitOrder.__init__(self, action, instrument, limitPrice, quantity)
+    def __init__(self, action, instrument, limitPrice, quantity, goodTillCanceled=False):
+        broker.LimitOrder.__init__(self, action, instrument, limitPrice, quantity, goodTillCanceled)
         BacktestingOrder.__init__(self)
 
     def tryExecuteImpl(self, broker_, bar_):
@@ -267,8 +267,8 @@ class LimitOrder(broker.LimitOrder, BacktestingOrder):
             broker_.commitOrderExecution(self, price, self.getQuantity(), bar_.getDateTime())
 
 class StopOrder(broker.StopOrder, BacktestingOrder):
-    def __init__(self, action, instrument, stopPrice, quantity):
-        broker.StopOrder.__init__(self, action, instrument, stopPrice, quantity)
+    def __init__(self, action, instrument, stopPrice, quantity, goodTillCanceled=False):
+        broker.StopOrder.__init__(self, action, instrument, stopPrice, quantity, goodTillCanceled)
         BacktestingOrder.__init__(self)
 
     def tryExecuteImpl(self, broker_, bar_):
@@ -279,8 +279,8 @@ class StopOrder(broker.StopOrder, BacktestingOrder):
 # http://www.sec.gov/answers/stoplim.htm
 # http://www.interactivebrokers.com/en/trading/orders/stopLimit.php
 class StopLimitOrder(broker.StopLimitOrder, BacktestingOrder):
-    def __init__(self, action, instrument, limitPrice, stopPrice, quantity):
-        broker.StopLimitOrder.__init__(self, action, instrument, limitPrice, stopPrice, quantity)
+    def __init__(self, action, instrument, limitPrice, stopPrice, quantity, goodTillCanceled=False):
+        broker.StopLimitOrder.__init__(self, action, instrument, limitPrice, stopPrice, quantity, goodTillCanceled)
         BacktestingOrder.__init__(self)
 
     def __stopHit(self, broker_, bar_):
@@ -554,17 +554,17 @@ class Broker(broker.Broker):
         # All events were already emitted while handling barfeed events.
         pass
 
-    def createMarketOrder(self, action, instrument, quantity, onClose = False):
-        return MarketOrder(action, instrument, quantity, onClose)
+    def createMarketOrder(self, action, instrument, quantity, onClose = False, goodTillCanceled=False):
+        return MarketOrder(action, instrument, quantity, onClose, goodTillCanceled)
 
-    def createLimitOrder(self, action, instrument, limitPrice, quantity):
-        return LimitOrder(action, instrument, limitPrice, quantity)
+    def createLimitOrder(self, action, instrument, limitPrice, quantity, goodTillCanceled=False):
+        return LimitOrder(action, instrument, limitPrice, quantity, goodTillCanceled)
 
-    def createStopOrder(self, action, instrument, stopPrice, quantity):
-        return StopOrder(action, instrument, stopPrice, quantity)
+    def createStopOrder(self, action, instrument, stopPrice, quantity, goodTillCanceled=False):
+        return StopOrder(action, instrument, stopPrice, quantity, goodTillCanceled)
 
-    def createStopLimitOrder(self, action, instrument, stopPrice, limitPrice, quantity):
-        return StopLimitOrder(action, instrument, limitPrice, stopPrice, quantity)
+    def createStopLimitOrder(self, action, instrument, stopPrice, limitPrice, quantity, goodTillCanceled=False):
+        return StopLimitOrder(action, instrument, limitPrice, stopPrice, quantity, goodTillCanceled)
 
     def cancelOrder(self, order):
         if order.isFilled():

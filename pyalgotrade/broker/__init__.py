@@ -84,13 +84,13 @@ class Order:
         STOP         = 3
         STOP_LIMIT   = 4
 
-    def __init__(self, type_, action, instrument, quantity):
+    def __init__(self, type_, action, instrument, quantity, goodTillCanceled=False):
         self.__type = type_
         self.__action = action
         self.__instrument = instrument
         self.__quantity = quantity
         self.__executionInfo = None
-        self.__goodTillCanceled = False
+        self.__goodTillCanceled = goodTillCanceled
         self.__allOrNone = True
         self.__state = Order.State.ACCEPTED
         self.__dirty = False
@@ -208,6 +208,8 @@ class Order:
             orderAction = 'Sell'
         elif self.__action == Order.Action.SELL_SHORT:
             orderAction = 'SellShort'
+        else:
+            orderAction = 'UNKNOWN'
 
         if self.__state == Order.State.ACCEPTED:
             orderState = 'Accepted'
@@ -215,8 +217,11 @@ class Order:
             orderState = 'Cancelled'
         elif self.__state == Order.State.FILLED:
             orderState = 'Filled'
+        else:
+            orderState = 'UNKNOWN'
 
-        repr = '%s %s order %s GTC=%s ' % (orderAction, orderType, orderState, self.__goodTillCanceled)
+        repr = '%s %s %s order %s GTC=%s ' % (orderAction, self.__instrument, orderType, orderState,
+                                              self.__goodTillCanceled)
 
         return repr
 
@@ -228,10 +233,9 @@ class MarketOrder(Order):
             This is a base class and should not be used directly.
     """
 
-    def __init__(self, action, instrument, quantity, onClose):
-        Order.__init__(self, Order.Type.MARKET, action, instrument, quantity)
+    def __init__(self, action, instrument, quantity, onClose, goodTillCanceled=False):
+        Order.__init__(self, Order.Type.MARKET, action, instrument, quantity, goodTillCanceled)
         self.__onClose = onClose
-        self.setGoodTillCanceled(False)
 
     def getFillOnClose(self):
         """Returns True if the order should be filled as close to the closing price as possible (Market-On-Close order)."""
@@ -253,8 +257,8 @@ class LimitOrder(Order):
             This is a base class and should not be used directly.
     """
 
-    def __init__(self, action, instrument, limitPrice, quantity):
-        Order.__init__(self, Order.Type.LIMIT, action, instrument, quantity)
+    def __init__(self, action, instrument, limitPrice, quantity, goodTillCanceled=False):
+        Order.__init__(self, Order.Type.LIMIT, action, instrument, quantity, goodTillCanceled)
         self.__limitPrice = limitPrice
 
     def getLimitPrice(self):
@@ -277,8 +281,8 @@ class StopOrder(Order):
             This is a base class and should not be used directly.
     """
 
-    def __init__(self, action, instrument, stopPrice, quantity):
-        Order.__init__(self, Order.Type.STOP, action, instrument, quantity)
+    def __init__(self, action, instrument, stopPrice, quantity, goodTillCanceled=False):
+        Order.__init__(self, Order.Type.STOP, action, instrument, quantity, goodTillCanceled)
         self.__stopPrice = stopPrice
 
     def getStopPrice(self):
@@ -302,8 +306,8 @@ class StopLimitOrder(Order):
             This is a base class and should not be used directly.
     """
 
-    def __init__(self, action, instrument, limitPrice, stopPrice, quantity):
-        Order.__init__(self, Order.Type.STOP_LIMIT, action, instrument, quantity)
+    def __init__(self, action, instrument, limitPrice, stopPrice, quantity, goodTillCanceled=False):
+        Order.__init__(self, Order.Type.STOP_LIMIT, action, instrument, quantity, goodTillCanceled)
         self.__limitPrice = limitPrice
         self.__stopPrice = stopPrice
         self.__limitOrderActive = False # Set to true when the limit order is activated (stop price is hit)
@@ -362,8 +366,8 @@ class OrderExecutionInfo:
         return self.__dateTime
 
     def __repr__(self):
-        return "OrderExecution: price=%s quantity=%s commission=%s dateTime=%s" % (
-            self.__price, self.__quantity, self.__commission, self.__dateTime)
+        return "OrderExecution: dateTime=%s price=%s quantity=%s commission=%s " % (
+            self.__dateTime, self.__price, self.__quantity, self.__commission)
 
 ######################################################################
 ## Base broker class
@@ -453,7 +457,7 @@ class Broker:
         """
         raise NotImplementedError()
 
-    def createMarketOrder(self, action, instrument, quantity, onClose = False):
+    def createMarketOrder(self, action, instrument, quantity, onClose = False, goodTillCanceled=False):
         """Creates a Market order.
         A market order is an order to buy or sell a stock at the best available price.
         Generally, this type of order will be executed immediately. However, the price at which a market order will be executed
@@ -471,7 +475,7 @@ class Broker:
         """
         raise NotImplementedError()
 
-    def createLimitOrder(self, action, instrument, limitPrice, quantity):
+    def createLimitOrder(self, action, instrument, limitPrice, quantity, goodTillCanceled=False):
         """Creates a Limit order.
         A limit order is an order to buy or sell a stock at a specific price or better.
         A buy limit order can only be executed at the limit price or lower, and a sell limit order can only be executed at the
@@ -489,7 +493,7 @@ class Broker:
         """
         raise NotImplementedError()
 
-    def createStopOrder(self, action, instrument, stopPrice, quantity):
+    def createStopOrder(self, action, instrument, stopPrice, quantity, goodTillCanceled=False):
         """Creates a Stop order.
         A stop order, also referred to as a stop-loss order, is an order to buy or sell a stock once the price of the stock
         reaches a specified price, known as the stop price.
@@ -511,7 +515,7 @@ class Broker:
         """
         raise NotImplementedError()
 
-    def createStopLimitOrder(self, action, instrument, stopPrice, limitPrice, quantity):
+    def createStopLimitOrder(self, action, instrument, stopPrice, limitPrice, quantity, goodTillCanceled=False):
         """Creates a Stop-Limit order.
         A stop-limit order is an order to buy or sell a stock that combines the features of a stop order and a limit order.
         Once the stop price is reached, a stop-limit order becomes a limit order that will be executed at a specified price
